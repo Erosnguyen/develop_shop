@@ -14,8 +14,12 @@ Prepare environment
 ```
 poetry shell
 poetry install
-cp .env.example .env
+cp .env.template .env
 ```
+
+Format backend
+
+- make format
 
 Start development server
 
