@@ -76,8 +76,6 @@ class ProductService:
         product_options = []
         options = ProductOption.filter(ProductOption.product_id == product_id).all()
         for option in options:
-            # Retrieves records from the database based on a given filter condition.
-            # Returns a list of model instances matching the filter condition.
             items = ProductOptionItem.filter(
                 ProductOptionItem.option_id == option.id
             ).all()
