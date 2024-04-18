@@ -18,17 +18,11 @@ class AccountService:
         user = await TokenService.fetch_user(token)
         return user
 
-    # ----------------
-    # --- Register ---
-    # ----------------
-
     @classmethod
     def register(cls, email: str, password: str):
         """
         Create a new user and send an email with OTP code.
         """
-
-        # check if user with the given email is exist or not.
         if UserManager.get_user(email=email):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -67,21 +61,17 @@ class AccountService:
             dict: Dictionary containing an authentication token and a success message.
         """
 
-        # --- get user by email ---
         user = UserManager.get_user(email=email)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found."
             )
 
-        # --- check email verified or not ---
         if user.is_verified_email:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="This email is already verified.",
             )
-
-        # --- validate otp_token for this user ---
         token = TokenService(user=user)
 
         if not token.validate_otp_token(otp):
@@ -90,7 +80,6 @@ class AccountService:
                 detail="Invalid OTP code. Please double-check and try again.",
             )
 
-        # --- Update user data and activate the account ---
         UserManager.update_user(
             user.id, is_verified_email=True, is_active=True, last_login=DateTime.now()
         )
@@ -101,10 +90,6 @@ class AccountService:
             "access_token": token.create_access_token(),
             "message": "Your email address has been confirmed. Account activated successfully.",
         }
-
-    # -------------
-    # --- Login ---
-    # -------------
 
     @classmethod
     def login(cls, email: str, password: str):
@@ -148,16 +133,11 @@ class AccountService:
             return False
         return user
 
-    # ----------------------
-    # --- Reset Password ---
-    # ----------------------
-
     @classmethod
     def reset_password(cls, email: str):
         """
         Reset password by user email address.
         """
-        # TODO stop resend email until current otp not expired
         user: User | None
 
         user = UserManager.get_user_or_404(email=email)
@@ -191,8 +171,6 @@ class AccountService:
         UserManager.update_user(user.id, password=password)
         token.reset_otp_token_type()
         token.reset_access_token()
-        # TODO send an email and notice user the password is changed.
-
         return {"message": "Your password has been changed."}
 
     @classmethod
@@ -217,7 +195,6 @@ class AccountService:
         Change password for current user.
         """
 
-        # Check if the new email address is not already associated with another user
         if UserManager.get_user(email=new_email) is None:
 
             TokenService(user.id).request_is_change_email(new_email)
@@ -280,7 +257,6 @@ class AccountService:
         if current_request_type == "change_email":
             email = token.get_new_email()
 
-        # --- resend new OTP ---
         token.check_time_remaining()
         match request_type:
             case "register":
@@ -293,6 +269,3 @@ class AccountService:
     @classmethod
     def logout(cls, current_user):
         TokenService(current_user).reset_access_token()
-
-
-# TODO add a sessions service to manage sections like telegram app (Devices).

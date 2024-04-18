@@ -24,11 +24,6 @@ class ValidatePasswordInSchema(BaseModel):
         return self
 
 
-# ------------------------
-# --- Register Schemas ---
-# ------------------------
-
-
 class RegisterIn(ValidatePasswordInSchema):
     email: EmailStr
 
@@ -86,17 +81,9 @@ class RegisterVerifyOut(BaseModel):
     message: str
 
 
-# --------------------
-# --- Login Schemas ---
-# --------------------
 class LoginOut(BaseModel):
     access_token: str
     token_type: str
-
-
-# ------------------------
-# --- Password Schemas ---
-# ------------------------
 
 
 class PasswordResetIn(BaseModel):
@@ -144,11 +131,6 @@ class PasswordChangeIn(ValidatePasswordInSchema):
 
 class PasswordChangeOut(BaseModel):
     message: str
-
-
-# -------------------
-# --- OTP Schemas ---
-# -------------------
 
 
 class OTPResendIn(BaseModel):
@@ -220,11 +202,6 @@ class EmailChangeVerifyIn(BaseModel):
 
 class EmailChangeVerifyOut(BaseModel):
     message: str
-
-
-# --------------------
-# --- User Schemas ---
-# --------------------
 
 
 class UserSchema(BaseModel):

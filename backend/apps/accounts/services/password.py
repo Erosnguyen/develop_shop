@@ -80,10 +80,6 @@ class PasswordManager:
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=message
             )
 
-    # ---------------------
-    # --- Hash Password ---
-    # ---------------------
-
     @classmethod
     def hash_password(cls, password: str):
         return cls.password_context.hash(password)

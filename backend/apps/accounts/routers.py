@@ -137,11 +137,6 @@ async def resend_otp(
     AccountService.resend_otp(**payload.model_dump())
 
 
-# ---------------------
-# --- Users Routers ---
-# ---------------------
-
-
 @router.get(
     "/me",
     status_code=status.HTTP_200_OK,

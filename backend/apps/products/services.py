@@ -43,12 +43,9 @@ class ProductService:
         cls.options_data = data.pop("options", [])
 
         if "status" in data:
-            # Check if the value is one of the specified values, if not, set it to 'draft'
             valid_statuses = ["active", "archived", "draft"]
             if data["status"] not in valid_statuses:
                 data["status"] = "draft"
-
-        # create a product
         cls.product = Product.create(**data)
 
     @classmethod
@@ -60,9 +57,6 @@ class ProductService:
 
         if cls.options_data:
             for option in cls.options_data:
-
-                # Creates a new instance of the ProductOption model, adds it to the database,
-                # and commits the transaction. Returns the newly created model instance
                 new_option = ProductOption.create(
                     product_id=cls.product.id, option_name=option["option_name"]
                 )

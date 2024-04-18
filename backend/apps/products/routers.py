@@ -40,11 +40,6 @@ from apps.products.services import ProductService
 router = APIRouter(prefix="/products")
 
 
-# -----------------------
-# --- Product Routers ---
-# -----------------------
-
-
 @router.post(
     "/",
     status_code=status.HTTP_201_CREATED,
@@ -215,7 +210,6 @@ async def create_product_media(
     product_id: int = Path(),
     alt: str | None = Form(None),
 ):
-    # check the file size and type
     for file in x_files:
         MediaService.is_allowed_extension(file)
         await MediaService.is_allowed_file_size(file)

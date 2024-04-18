@@ -177,11 +177,9 @@ class CreateProductIn(BaseModel):
         option_name_set = set()
         items_set = set()
 
-        # each product should have just max 3 options.
         if len(options) > 3:
             raise ValueError("The number of options cannot exceed 3.")
 
-        # checking `options-name` and `option-items list` are uniq
         for option in options:
             if isinstance(option, dict):
                 option_name = option.get("option_name")

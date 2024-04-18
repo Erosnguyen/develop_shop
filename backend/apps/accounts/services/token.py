@@ -37,10 +37,6 @@ class TokenService:
                 self.user = None
                 self.user_id = user
 
-    # --------------------
-    # --- Access Token ---
-    # --------------------
-
     """
     Utility class for handling JWT authentication and access tokens.
 
@@ -59,10 +55,8 @@ class TokenService:
             str: Access token string.
         """
 
-        # --- set data to encode ---
         to_encode = {"user_id": self.user_id}
 
-        # --- set expire date ---
         to_encode.update(
             {
                 "exp": datetime.utcnow()
@@ -70,7 +64,6 @@ class TokenService:
             }
         )
 
-        # --- generate access token ---
         access_token = jwt.encode(
             to_encode, self.app_config.secret_key, algorithm=self.ALGORITHM
         )
@@ -106,7 +99,6 @@ class TokenService:
             User: User object if the token is valid, raises HTTPException if not.
         """
 
-        # --- validate token ---
         try:
             payload = jwt.decode(
                 token, cls.app_config.secret_key, algorithms=[cls.ALGORITHM]
@@ -114,20 +106,15 @@ class TokenService:
         except JWTError as e:
             raise cls.credentials_exception
 
-        # --- validate payloads in token ---
         user_id = payload.get("user_id")
         if user_id is None:
             raise cls.credentials_exception
-
-        # --- get user ---
-        # TODO move user data to token and dont fetch them from database
         user = UserManager.get_user(user_id)
         if user is None:
             raise cls.credentials_exception
 
         UserManager.is_active(user)
 
-        # --- validate access token ---
         active_access_token = (
             UserVerification.filter(UserVerification.user_id == user_id)
             .first()
@@ -138,10 +125,6 @@ class TokenService:
 
         UserManager.is_active(user)
         return user
-
-    # -----------------
-    # --- OTP Token ---
-    # -----------------
 
     @classmethod
     def create_otp_token(cls):
@@ -216,7 +199,6 @@ class TokenService:
         )
         time_remaining = int(totp.interval - datetime.now().timestamp() % totp.interval)
         if time_remaining != 0:
-            # OTP has not expired, do not resend
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"OTP not expired. Resend available in {time_remaining} seconds.",
