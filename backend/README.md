@@ -17,6 +17,12 @@ poetry install
 cp .env.template .env
 ```
 
+Config local database
+
+```
+python demo.py
+```
+
 Format code backend
 
 ```
