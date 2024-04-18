@@ -17,9 +17,11 @@ poetry install
 cp .env.template .env
 ```
 
-Format backend
+Format code backend
 
-- make format
+```
+make format
+```
 
 Start development server
 
