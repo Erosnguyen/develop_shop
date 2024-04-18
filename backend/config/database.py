@@ -18,7 +18,7 @@ class DatabaseManager:
 
     @classmethod
     def __init__(cls):
-        global testing 
+        global testing
         db_config = settings.DATABASES.copy()
         if testing:
             db_config["database"] = "test_" + db_config["database"]

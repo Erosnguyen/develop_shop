@@ -71,4 +71,3 @@ MEDIA_DIR.mkdir(parents=True, exist_ok=True)
 
 MAX_FILE_SIZE = 5
 products_list_limit = 12
-
