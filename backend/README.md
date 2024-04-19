@@ -14,7 +14,19 @@ Prepare environment
 ```
 poetry shell
 poetry install
-cp .env.example .env
+cp .env.template .env
+```
+
+Config local database
+
+```
+python demo.py
+```
+
+Format code backend
+
+```
+make format
 ```
 
 Start development server
@@ -22,3 +34,7 @@ Start development server
 ```
 make dev
 ```
+
+Check api endpoint:
+
+* localhost:8000/docs

@@ -1,5 +1,5 @@
 dev:
-	uvicorn src.main:app --reload
+	uvicorn apps.main:app --reload
 path:
 	export PYTHONPATH=$PYTHONPATH:$(pwd)
 format:
