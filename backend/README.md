@@ -34,3 +34,7 @@ Start development server
 ```
 make dev
 ```
+
+Check api endpoint:
+
+* localhost:8000/docs
