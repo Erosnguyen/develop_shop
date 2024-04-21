@@ -29,6 +29,12 @@ Format code backend
 make format
 ```
 
+Export python path:
+
+```
+export PYTHONPATH=$PYTHONPATH:$(pwd)
+```
+
 Start development server
 
 ```
