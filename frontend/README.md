@@ -8,7 +8,12 @@ npm:18.18.0
 
 ## Quickstart
 
-````npm i
-```npm run dev
+```npm
+npm i
+```
+
+Start development server
+
+```
 npm run dev
-````
+```
