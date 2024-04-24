@@ -23,10 +23,16 @@ Config local database
 python demo.py
 ```
 
-Format code backend
+Format backend code
 
 ```
 make format
+```
+
+Export python path:
+
+```
+export PYTHONPATH=$PYTHONPATH:$(pwd)
 ```
 
 Start development server

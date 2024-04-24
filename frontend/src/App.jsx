@@ -1,4 +1,4 @@
-import NavBar from "./components/Navbar/NavBar";
+import NavBar from "./components/Navbar/Navbar";
 import { Route, Routes } from "react-router-dom";
 import "./index.css";
 import Home from "./pages/Home/Home";
@@ -13,6 +13,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/order" element={<PlaceOrder />} />
+        <Route path="/product/:id" element={<p>hiii</p>} />
       </Routes>
     </div>
   );
