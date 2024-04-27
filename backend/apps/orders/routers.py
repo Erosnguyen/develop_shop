@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from apps.core.services.permissions import Permission
-from apps.orders.schemas import OrderSchema
-from apps.orders.services import OrderService
+from .schemas import OrderSchema
+from .services import OrderService
 
-orders_router = APIRouter(prefix="/orders")
+orders_router = APIRouter(prefix="/orders", tags=["Order"])
 
 
 @orders_router.post(
@@ -12,9 +11,7 @@ orders_router = APIRouter(prefix="/orders")
     status_code=status.HTTP_201_CREATED,
     response_model=OrderSchema,
     summary="Create a new order",
-    description="Create a new order.",
-    tags=["Order"],
-    dependencies=[Depends(Permission.is_authenticated)],
+    description="Create a new order."
 )
 async def create_order(order: OrderSchema):
     created_order = OrderService.create_order(order)
@@ -26,9 +23,7 @@ async def create_order(order: OrderSchema):
     status_code=status.HTTP_200_OK,
     response_model=OrderSchema,
     summary="Retrieve a single order",
-    description="Retrieve a single order by its ID.",
-    tags=["Order"],
-    dependencies=[Depends(Permission.is_authenticated)],
+    description="Retrieve a single order by its ID."
 )
 async def retrieve_order(order_id: int):
     order = OrderService.retrieve_order(order_id)
@@ -44,9 +39,7 @@ async def retrieve_order(order_id: int):
     status_code=status.HTTP_200_OK,
     response_model=list[OrderSchema],
     summary="Retrieve a list of orders",
-    description="Retrieve a list of orders.",
-    tags=["Order"],
-    dependencies=[Depends(Permission.is_authenticated)],
+    description="Retrieve a list of orders."
 )
 async def list_orders():
     orders = OrderService.list_orders()

@@ -1,30 +1,33 @@
-from tortoise import fields
-from tortoise.models import Model
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer, Numeric, String,
+                        func)
+from sqlalchemy.orm import relationship
+
+from config.database import FastModel
 
 
-class Order(Model):
-    order_id = fields.IntField(pk=True)
-    customer_id = fields.IntField()
-    total_price = fields.DecimalField(max_digits=10, decimal_places=2)
-    status = fields.CharField(max_length=50)
+class Order(FastModel):
+    __tablename__ = "orders"
 
-    items: fields.ReverseRelation["OrderItem"]
+    order_id = Column(Integer, primary_key=True)
+    customer_id = Column(Integer)
+    total_price = Column(Numeric(10, 2))
+    status = Column(String(50))
 
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
+    items = relationship("OrderItem", back_populates="order")
 
-    class Meta:
-        table = "orders"
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())
 
 
-class OrderItem(Model):
-    item_id = fields.IntField(pk=True)
-    order = fields.ForeignKeyField("models.Order", related_name="items")
-    product_id = fields.IntField()
-    quantity = fields.IntField()
+class OrderItem(FastModel):
+    __tablename__ = "order_items"
 
-    created_at = fields.DatetimeField(auto_now_add=True)
-    updated_at = fields.DatetimeField(auto_now=True)
+    item_id = Column(Integer, primary_key=True)
+    order_id = Column(Integer, ForeignKey("orders.order_id"))
+    product_id = Column(Integer)
+    quantity = Column(Integer)
 
-    class Meta:
-        table = "order_items"
+    order = relationship("Order", back_populates="items")
+
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, onupdate=func.now())

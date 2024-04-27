@@ -1,11 +1,9 @@
 from typing import List
 
-from apps.core.exceptions import \
-    CustomException  # Assuming you have a custom exception class
-from apps.orders.models import (  # Assuming you have models defined for orders
+from apps.orders.models import ( 
     Order, OrderItem)
 from apps.products.services import \
-    ProductService  # Assuming you have a ProductService for interacting with products
+    ProductService 
 
 
 class OrderService:
@@ -26,11 +24,11 @@ class OrderService:
         for item in items:
             product_id = item.get("product_id")
             quantity = item.get("quantity")
-            if product_id is None or quantity is None:
-                raise CustomException("Invalid order item data")
+            # if product_id is None or quantity is None:
+            #     raise CustomException("Invalid order item data")
             product = await ProductService.retrieve_product(product_id)
-            if product is None:
-                raise CustomException(f"Product with ID {product_id} not found")
+            # if product is None:
+            #     raise CustomException(f"Product with ID {product_id} not found")
             total_price += product.price * quantity
             order_items.append(OrderItem(product_id=product_id, quantity=quantity))
 

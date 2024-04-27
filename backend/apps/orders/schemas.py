@@ -16,7 +16,7 @@ class OrderSchema(BaseModel):
     items: List[OrderItemSchema]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class OrderCreateSchema(BaseModel):
@@ -29,6 +29,3 @@ class OrderUpdateSchema(BaseModel):
     total_price: float
     status: str
     items: List[OrderItemSchema]
-
-
-S
