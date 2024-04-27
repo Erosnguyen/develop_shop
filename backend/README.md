@@ -23,7 +23,7 @@ Config local database
 python demo.py
 ```
 
-Format code backend
+Format backend code
 
 ```
 make format
