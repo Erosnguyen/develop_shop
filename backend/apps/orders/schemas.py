@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from typing import List
+
+from pydantic import BaseModel
 
 
 class OrderItemSchema(BaseModel):
@@ -17,6 +18,7 @@ class OrderSchema(BaseModel):
     class Config:
         orm_mode = True
 
+
 class OrderCreateSchema(BaseModel):
     customer_id: int
     items: List[OrderItemSchema]
@@ -27,4 +29,6 @@ class OrderUpdateSchema(BaseModel):
     total_price: float
     status: str
     items: List[OrderItemSchema]
+
+
 S
