@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status # type: ignore
 
 from .schemas import OrderSchema
 from .services import OrderService
 
-orders_router = APIRouter(prefix="/orders", tags=["Order"])
+router = APIRouter(prefix="/orders", tags=["Order"])
 
 
-@orders_router.post(
+@router.post(
     "/",
     status_code=status.HTTP_201_CREATED,
     response_model=OrderSchema,
@@ -18,7 +18,7 @@ async def create_order(order: OrderSchema):
     return created_order
 
 
-@orders_router.get(
+@router.get(
     "/{order_id}",
     status_code=status.HTTP_200_OK,
     response_model=OrderSchema,
@@ -34,7 +34,7 @@ async def retrieve_order(order_id: int):
     return order
 
 
-@orders_router.get(
+@router.get(
     "/",
     status_code=status.HTTP_200_OK,
     response_model=list[OrderSchema],
