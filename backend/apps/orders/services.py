@@ -1,9 +1,7 @@
 from typing import List
 
-from apps.orders.models import ( 
-    Order, OrderItem)
-from apps.products.services import \
-    ProductService 
+from apps.orders.models import Order, OrderItem
+from apps.products.services import ProductService
 
 
 class OrderService:
