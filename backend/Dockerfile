@@ -9,5 +9,5 @@ RUN test -f fast_store.db && rm fast_store.db || true
 COPY . .
 
 RUN python demo.py
-
+EXPOSE 8000
 CMD ["uvicorn", "apps.main:app","--port", "8000","--host", "0.0.0.0", "--forwarded-allow-ips", "*","--reload"]
