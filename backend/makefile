@@ -3,4 +3,4 @@ dev:
 format:
 	black . && isort .
 build:
-	docker build huongvietbe:latest .
+	docker build -t huongvietbe:latest .
