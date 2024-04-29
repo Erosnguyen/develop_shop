@@ -40,14 +40,7 @@ class OrderService:
         order.save()
         return order
     @classmethod
-    def list_products(cls, limit: int = 12):
-        # - if "default variant" is not set, first variant will be
-        # - on list of products, for price, get it from "default variant"
-        # - if price or stock of default variant is 0 then select first variant that is not 0
-        # - or for price, get it from "less price"
-        # do all of them with graphql and let the front devs decide witch query should be run.
-
-        # also can override the list `limit` in settings.py
+    def list_orders(cls, limit: int = 12):
         if hasattr(settings, "products_list_limit"):
             limit = settings.products_list_limit
 
