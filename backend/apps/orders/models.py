@@ -8,7 +8,7 @@ from config.database import FastModel
 class Order(FastModel):
     __tablename__ = "orders"
 
-    order_id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     customer_id = Column(Integer)
     total_price = Column(Numeric(10, 2))
     status = Column(String(50))
@@ -23,7 +23,7 @@ class OrderItem(FastModel):
     __tablename__ = "order_items"
 
     item_id = Column(Integer, primary_key=True)
-    order_id = Column(Integer, ForeignKey("orders.order_id"))
+    order_id = Column(Integer, ForeignKey("orders.id"))
     product_id = Column(Integer)
     quantity = Column(Integer)
 
