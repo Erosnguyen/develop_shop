@@ -1,8 +1,9 @@
 from typing import List
-
+from sqlalchemy import and_, or_, select
 from apps.orders.models import Order, OrderItem
 from apps.products.services import ProductService
-
+from config import settings
+from config.database import DatabaseManager
 
 class OrderService:
     @classmethod
@@ -38,3 +39,17 @@ class OrderService:
             order.items.append(order_item)
         order.save()
         return order
+    @classmethod
+    def list_orders(cls, limit: int = 12):
+        if hasattr(settings, "products_list_limit"):
+            limit = settings.products_list_limit
+
+        orders_list = []
+
+        with DatabaseManager.session as session:
+            orders = session.execute(select(Order.id).limit(limit))
+
+        for order in orders:
+            orders_list.append(cls.retrieve_product(order.id))
+
+        return orders_list
