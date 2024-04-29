@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, status  # type: ignore
 from .schemas import OrderSchema
 from .services import OrderService
 
-router = APIRouter(prefix="/orders", tags=["Order"])
+router = APIRouter(prefix="/orders", tags=["Orders"])
 
 
 @router.post(
