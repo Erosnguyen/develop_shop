@@ -1,6 +1,4 @@
-FROM python:3.12.2-alpine AS builder
-
-RUN apk add --no-cache gcc musl-dev
+FROM python:3 AS builder
 
 WORKDIR /app
 COPY requirements.txt .
@@ -10,5 +8,6 @@ RUN test -f fast_store.db && rm fast_store.db || true
 
 COPY . .
 
+RUN python demo.py
 EXPOSE 8000
-CMD ["uvicorn", "apps.main:app", "--host", "0.0.0.0", "--port", "8000", "--forwarded-allow-ips", "*"]
+CMD ["uvicorn", "apps.main:app","--port", "8000","--host", "0.0.0.0", "--forwarded-allow-ips", "*","--reload"]
