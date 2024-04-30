@@ -3,11 +3,11 @@ import { menu_list } from "../../assets/assets";
 
 const ExploreMenu = ({ category, setCategory }) => {
   return (
-    <div className="explore-menu flex flex-col gap-5 mt-10">
-      <h1 className="text-[#262626] font-semibold text-[30px]">
+    <div className="explore-menu flex flex-col gap-5 mt-10" id="explore-menu">
+      <h1 className="text-[#262626] font-semibold text-[30px] ">
         Explore out menu
       </h1>
-      <p className="explore-menu-text max-w-[60%] col-[#808080]">
+      <p className="explore-menu-text max-w-full col-[#808080]">
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. A ab libero
         aperiam necessitatibus quisquam accusamus
       </p>
@@ -21,18 +21,16 @@ const ExploreMenu = ({ category, setCategory }) => {
                 )
               }
               key={index}
-              className="explore-menu-list-item"
+              className="explore-menu-list-item max-sm:hidden max-md:hidden max-lg:hidden"
             >
               <img
                 src={item.menu_image}
                 alt=""
                 className={
-                  category === item.menu_name
-                    ? "active border-solid border-4 border-amber-700 p-[2px] rounded-full"
-                    : "cursor-pointer rounded-[50%]"
+                  category === item.menu_name ? "active" : "cursor-pointer"
                 }
               />
-              <p className="mt-[10px] text-[#747474] text-[20px] cursor-pointer">
+              <p className="mt-[10px] text-[#747474] text-[15px] cursor-pointer">
                 {item.menu_name}
               </p>
             </div>
