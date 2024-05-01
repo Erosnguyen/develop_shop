@@ -57,3 +57,8 @@ class OrderService:
             orders_list.append(cls.retrieve_product(order.id))
 
         return orders_list
+    @classmethod
+    def retrieve_order(cls, order_id: int):
+        with DatabaseManager.session as session:
+            order = session.query(Order).filter(Order.id == order_id).first()
+        return order
