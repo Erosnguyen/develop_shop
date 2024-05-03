@@ -1,27 +1,93 @@
 import React, { useContext, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
-  const { cartItems, products, removeFromCart } = useContext(StoreContext);
+  const {
+    cartItems,
+    removeFromCart,
+    increaseCartQuantity,
+    decreaseCartQuantity,
+  } = useContext(StoreContext);
+  console.log("Cart Items: ", cartItems);
+
+  const handleDeleteProductInCart = (data) => {
+    removeFromCart(data);
+  };
 
   return (
-    <div className="cart">
-      <div className="cart-items">
-        <div className="cart-items-title">
-          <p>Items</p>
-          <p>Title</p>
-          <p>Price</p>
-          <p>Quantity</p>
-          <p>Total</p>
-          <p>remove</p>
-        </div>
-        <br />
-        <hr />
-        {products.map((item, index) => {
-          if (cartItems[item._id] > 0) {
-            return <div></div>;
-          }
-        })}
+    <div className="cart mt-10 w-full">
+      <table className="table-fixed w-full">
+        <thead>
+          <tr className="text-[#49557e]">
+            <th className="border divide-solid border-amber-700">ID</th>
+            <th className="border divide-solid border-amber-700">PRODUCT</th>
+            <th className="border divide-solid border-amber-700">IMAGE</th>
+            <th className="border divide-solid border-amber-700">QUANTILY</th>
+            <th className="border divide-solid border-amber-700">PRICE</th>
+            <th className="border divide-solid border-amber-700">REMOVE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr className="text-center">
+            <td className="border divide-solid border-amber-700">
+              {cartItems?.map((item) => (
+                <div>{item.data.product_id}</div>
+              ))}
+            </td>
+            <td className="border divide-solid border-amber-700">
+              {cartItems?.map((item) => (
+                <div>{item.data.product_name}</div>
+              ))}
+            </td>
+            <td className="border divide-solid border-amber-700 bg-no-repeat bg-center px-6 py-6">
+              {cartItems?.map((item) => (
+                <img
+                  className="w-full h-40 "
+                  src={item.data.media[0]?.src}
+                  alt=""
+                />
+              ))}
+            </td>
+            <td className="border divide-solid border-amber-700">
+              {cartItems?.map((item) => (
+                <div className="flex justify-center">
+                  <button
+                    className="font-bold text-[25px]"
+                    onClick={() => decreaseCartQuantity(item.data)}
+                  >
+                    -
+                  </button>
+                  <div className="pl-5 pr-5 text-[25px]">{item.quantity}</div>
+                  <button
+                    className="font-bold text-[25px]"
+                    onClick={() => increaseCartQuantity(item.data)}
+                  >
+                    +
+                  </button>
+                </div>
+              ))}
+            </td>
+            <td className="border divide-solid border-amber-700">$19</td>
+            <td className="border divide-solid border-amber-700">
+              {cartItems?.map((item) => (
+                <button
+                  className="text-red-700 font-bold"
+                  onClick={() => handleDeleteProductInCart(item.data)}
+                >
+                  Delete
+                </button>
+              ))}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div className="flex justify-end mt-10">
+        <Link to="/Bill">
+          <button className="bg-amber-700 px-5 py-4 text-white">
+            PURCHASE
+          </button>
+        </Link>
       </div>
     </div>
   );
