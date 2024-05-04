@@ -1,6 +1,19 @@
-import React from "react";
+import React, { useContext } from "react";
+import { StoreContext } from "../../context/StoreContext";
 
 const Bill = () => {
+  const {
+    cartItems,
+    removeFromCart,
+    increaseCartQuantity,
+    decreaseCartQuantity,
+  } = useContext(StoreContext);
+  console.log("Cart Items: ", cartItems);
+
+  const handleDeleteProductInCart = (data) => {
+    removeFromCart(data);
+  };
+
   return (
     <div className="bill mt-10 grid grid-cols-2 gap-20">
       <div className="bill-left">
@@ -53,7 +66,11 @@ const Bill = () => {
 
       <div className="bill-right">
         <h2 className="font-semibold text-[40px] mb-5">Your order</h2>
-        <div></div>
+        <div>
+          {cartItems?.map((item) => (
+            <div>{item.data.product_name}</div>
+          ))}
+        </div>
       </div>
     </div>
   );

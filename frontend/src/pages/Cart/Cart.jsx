@@ -20,7 +20,6 @@ const Cart = () => {
       <table className="table-fixed w-full">
         <thead>
           <tr className="text-[#49557e]">
-            <th className="border divide-solid border-amber-700">ID</th>
             <th className="border divide-solid border-amber-700">PRODUCT</th>
             <th className="border divide-solid border-amber-700">IMAGE</th>
             <th className="border divide-solid border-amber-700">QUANTILY</th>
@@ -28,29 +27,21 @@ const Cart = () => {
             <th className="border divide-solid border-amber-700">REMOVE</th>
           </tr>
         </thead>
-        <tbody>
-          <tr className="text-center">
-            <td className="border divide-solid border-amber-700">
-              {cartItems?.map((item) => (
-                <div>{item.data.product_id}</div>
-              ))}
-            </td>
-            <td className="border divide-solid border-amber-700">
-              {cartItems?.map((item) => (
+
+        <tbody className="">
+          {cartItems?.map((item) => (
+            <tr className="text-center">
+              <td className="border divide-solid border-amber-700">
                 <div>{item.data.product_name}</div>
-              ))}
-            </td>
-            <td className="border divide-solid border-amber-700 bg-no-repeat bg-center px-6 py-6">
-              {cartItems?.map((item) => (
+              </td>
+              <td className="border divide-solid border-amber-700 bg-no-repeat bg-center px-6 py-6">
                 <img
                   className="w-full h-40 "
                   src={item.data.media[0]?.src}
                   alt=""
                 />
-              ))}
-            </td>
-            <td className="border divide-solid border-amber-700">
-              {cartItems?.map((item) => (
+              </td>
+              <td className="border divide-solid border-amber-700">
                 <div className="flex justify-center">
                   <button
                     className="font-bold text-[25px]"
@@ -66,20 +57,20 @@ const Cart = () => {
                     +
                   </button>
                 </div>
-              ))}
-            </td>
-            <td className="border divide-solid border-amber-700">$19</td>
-            <td className="border divide-solid border-amber-700">
-              {cartItems?.map((item) => (
-                <button
-                  className="text-red-700 font-bold"
-                  onClick={() => handleDeleteProductInCart(item.data)}
-                >
-                  Delete
-                </button>
-              ))}
-            </td>
-          </tr>
+              </td>
+              <td className="border divide-solid border-amber-700">$19</td>
+              <td className="border divide-solid border-amber-700">
+                <div>
+                  <button
+                    className="text-red-700 font-bold"
+                    onClick={() => handleDeleteProductInCart(item.data)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
       <div className="flex justify-end mt-10">
