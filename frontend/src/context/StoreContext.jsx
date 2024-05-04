@@ -1,5 +1,4 @@
 import { createContext, useEffect, useState } from "react";
-import { food_list } from "../assets/assets";
 import { fetchApiConfig } from "../config";
 
 export const StoreContext = createContext(null);
@@ -7,8 +6,7 @@ export const StoreContext = createContext(null);
 const StoreContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
-
-  console.log("context", cartItems);
+  const [order, setOrder] = useState([]);
 
   function getItemQuantity(data) {
     return (
@@ -83,14 +81,20 @@ const StoreContextProvider = (props) => {
       setProducts(response.products);
     };
     getProducts();
+
+    const getOrder = async () => {
+      const response = await fetchApiConfig("order");
+      setOrder(response.order);
+    };
+    getOrder();
   }, []);
 
   return (
     <StoreContext.Provider
       value={{
         products,
-        food_list,
         cartItems,
+        order,
         getItemQuantity,
         increaseCartQuantity,
         decreaseCartQuantity,
