@@ -63,3 +63,30 @@ class OrderService:
         with DatabaseManager.session as session:
             order = session.query(Order).filter(Order.id == order_id).first()
         return order
+    @classmethod
+    def update_order(cls, order_id: int, updated_order_data: dict):
+        with DatabaseManager.session as session:
+            order = session.query(Order).filter(Order.id == order_id).first()
+            if order:
+                if 'items' in updated_order_data:
+                    order.items.clear()
+                    for item_data in updated_order_data['items']:
+                        product_id = item_data.get('product_id')
+                        quantity = item_data.get('quantity')
+                        product = ProductService.retrieve_product(product_id)
+                        if product:
+                            order_item = OrderItem(product_id=product_id, quantity=quantity)
+                            order.items.append(order_item)
+                session.commit()
+                return order
+            return None
+
+    @classmethod
+    def delete_order(cls, order_id: int):
+        with DatabaseManager.session as session:
+            order = session.query(Order).filter(Order.id == order_id).first()
+            if order:
+                session.delete(order)
+                session.commit()
+                return True
+            return False

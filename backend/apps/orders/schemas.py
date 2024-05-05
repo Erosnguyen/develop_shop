@@ -30,9 +30,9 @@ class OrderCreateSchema(BaseModel):
 
 
 class OrderUpdateSchema(BaseModel):
-    customer_id: int
-    total_price: float
-    status: str
+    # customer_id: int
+    # total_price: float
+    # status: str
     items: List[OrderItemSchema]
 
 

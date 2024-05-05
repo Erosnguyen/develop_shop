@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from apps.accounts.services.authenticate import AccountService
 from apps.accounts.services.user import User
 
-from .schemas import OrderCreateSchema, OrderSchema
+from .schemas import OrderCreateSchema, OrderSchema,OrderUpdateSchema
 from .services import OrderService
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
@@ -50,3 +50,31 @@ async def retrieve_order(order_id: int):
 async def list_orders():
     orders = OrderService.list_orders()
     return orders
+@router.put(
+    "/{order_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=OrderSchema,
+    summary="Update an existing order",
+    description="Update an existing order by its ID.",
+)
+async def update_order(order_id: int, order: OrderUpdateSchema):
+    updated_order = OrderService.update_order(order_id, order)
+    if updated_order is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Order not found"
+        )
+    return updated_order
+
+@router.delete(
+    "/{order_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete an existing order",
+    description="Delete an existing order by its ID.",
+)
+async def delete_order(order_id: int):
+    deleted_order = OrderService.delete_order(order_id)
+    if not deleted_order:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Order not found"
+        )
+    return
