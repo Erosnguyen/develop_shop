@@ -2,6 +2,12 @@ from typing import List
 
 from pydantic import BaseModel
 
+"""
+---------------------------------------
+--------------- Orders ---------------
+---------------------------------------
+"""
+
 
 class OrderItemSchema(BaseModel):
     product_id: int
@@ -20,7 +26,6 @@ class OrderSchema(BaseModel):
 
 
 class OrderCreateSchema(BaseModel):
-    customer_id: int
     items: List[OrderItemSchema]
 
 
@@ -29,3 +34,10 @@ class OrderUpdateSchema(BaseModel):
     total_price: float
     status: str
     items: List[OrderItemSchema]
+
+
+"""
+---------------------------------------
+--------------- Payment ---------------
+---------------------------------------
+"""

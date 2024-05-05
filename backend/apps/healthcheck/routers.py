@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from .schemas import HealthResponseSchema
 
-router = APIRouter(prefix="/health", tags=["Healthcheck"])
+router = APIRouter(prefix="", tags=["Healthcheck"])
 
 
 @router.get("/")
