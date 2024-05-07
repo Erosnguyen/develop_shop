@@ -6,7 +6,8 @@ export const StoreContext = createContext(null);
 const StoreContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
-  const [order, setOrder] = useState([]);
+
+  console.log(cartItems);
 
   function getItemQuantity(data) {
     return (
@@ -14,44 +15,49 @@ const StoreContextProvider = (props) => {
         ?.quantity || 0
     );
   }
+  function checkExistingCartItem(data, checkedVariant) {
+    const { color, material, size } = checkedVariant;
+    const item = cartItems.find(
+      (item) =>
+        item.data.product_id === data.product_id &&
+        item.data.checkedVariant.color === color &&
+        item.data.checkedVariant.material === material &&
+        item.data.checkedVariant.size === size
+    );
+    return item != null;
+  }
 
-  function increaseCartQuantity(data) {
+  function increaseCartQuantity(data, checkedVariant) {
     setCartItems((currItems) => {
-      if (
-        currItems.find((item) => item.data.product_id === data.product_id) ==
-        null
-      ) {
-        return [...currItems, { data, quantity: 1 }];
-      } else {
+      const existingItem = checkExistingCartItem(data, checkedVariant);
+      if (existingItem) {
         return currItems.map((item) => {
-          if (item.data.product_id === data.product_id) {
-            return { ...item, quantity: item.quantity + 1 };
-          } else {
-            return item;
-          }
+          return { ...item, quantity: item.quantity + 1 };
         });
+      } else {
+        return [
+          ...currItems,
+          { data: { ...data, checkedVariant }, quantity: 1 },
+        ];
       }
     });
   }
 
-  function decreaseCartQuantity(data) {
+  function decreaseCartQuantity(data, checkedVariant) {
+    const { variants, ...rest } = data;
+    const existingItem = checkExistingCartItem(data, checkedVariant);
     setCartItems((currItems) => {
-      if (
-        currItems.find((item) => item.data.product_id === data.product_id)
-          ?.quantity === 1
-      ) {
-        return currItems.filter(
-          (item) => item.data.product_id !== data.product_id
-        );
-      } else {
-        return currItems.map((item) => {
-          if (item.data.product_id === data.product_id) {
+      return currItems.map((item) => {
+        if (existingItem) {
+          if (item.quantity > 1) {
             return { ...item, quantity: item.quantity - 1 };
           } else {
-            return item;
+            return { ...item, quantity: 0 };
           }
-        });
-      }
+        } else {
+          return item;
+        }
+      });
     });
   }
   function removeFromCart(data) {
@@ -62,18 +68,6 @@ const StoreContextProvider = (props) => {
     });
   }
 
-  // const removeFromCart = (itemId) => {
-  //   setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
-  // };
-
-  // const contextValues = {
-  //   food_list,
-  //   cartItems,
-  //   setCartItems,
-  //   addToCart,
-  //   removeFromCart,
-  // };
-
   useEffect(() => {
     // code to run when the component mounts
     const getProducts = async () => {
@@ -81,12 +75,6 @@ const StoreContextProvider = (props) => {
       setProducts(response.products);
     };
     getProducts();
-
-    const getOrder = async () => {
-      const response = await fetchApiConfig("order");
-      setOrder(response.order);
-    };
-    getOrder();
   }, []);
 
   return (
@@ -94,7 +82,6 @@ const StoreContextProvider = (props) => {
       value={{
         products,
         cartItems,
-        order,
         getItemQuantity,
         increaseCartQuantity,
         decreaseCartQuantity,
