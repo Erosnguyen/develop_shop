@@ -28,6 +28,6 @@ class OrderItem(FastModel):
     quantity = Column(Integer)
 
     order = relationship("Order", back_populates="items")
-
+    product = relationship("Product")
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
