@@ -45,7 +45,7 @@ Build backend
 ```
 docker build -t huongvietbe:latest . 
 ```
-Build backend
+Run docker
 ```
 docker run -p 8000:8000 huongvietbe:latest
 ```
