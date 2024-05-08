@@ -41,6 +41,14 @@ Start development server
 make dev
 ```
 
+Build backend
+```
+docker build -t huongvietbe:latest . 
+```
+Build backend
+```
+docker run -p 8000:8000 huongvietbe:latest
+```
 Check api endpoint:
 
 * localhost:8000/docs
