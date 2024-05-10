@@ -24,10 +24,9 @@ class OrderItem(FastModel):
 
     item_id = Column(Integer, primary_key=True)
     order_id = Column(Integer, ForeignKey("orders.id"))
-    product_id = Column(Integer, ForeignKey("products.id"))
+    product_id = Column(Integer)
     quantity = Column(Integer)
 
     order = relationship("Order", back_populates="items")
-    product = relationship("Product")
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
