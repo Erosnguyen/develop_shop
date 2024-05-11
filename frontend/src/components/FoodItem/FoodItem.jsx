@@ -23,7 +23,7 @@ const FoodItem = ({
       <div className="food-item-img-container relative">
         <img
           className="food-item-image rounded-xl max-sm:w-full max-sm:h-auto max-md:w-full max-md:h-80 max-lg:size-60 max-xl:size-60 2xl:size-80"
-          src={media[0]?.src}
+          src={media?.length ? media[0]?.src : ""}
           alt=""
           onClick={() => handleClick(product_id)}
         />

@@ -7,13 +7,16 @@ import PlaceOrder from "./pages/PlaceOrder/PlaceOrder";
 import Footer from "./components/Footer/Footer";
 import { useState } from "react";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
+import MessagePopup from "./components/MessagePopup/MessagePopup";
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
+  const [showMessage, setShowMessage] = useState({});
 
   return (
     <>
-      {showLogin ? <LoginPopup setShowLogin={setShowLogin} /> : <></>}
+      {showLogin ? <LoginPopup setShowLogin={setShowLogin} setShowMessage={setShowMessage} /> : <></>}
+      {showMessage?.open && <MessagePopup showMessage={showMessage} />}
       <div className="app">
         <NavBar setShowLogin={setShowLogin} />
         <Routes>
