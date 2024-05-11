@@ -2,6 +2,7 @@ from typing import List
 
 from sqlalchemy import and_, or_, select
 from sqlalchemy.orm import joinedload
+
 from apps.orders.models import Order, OrderItem
 from apps.products.services import ProductService
 from config import settings
@@ -79,3 +80,17 @@ class OrderService:
                 .first()
             )
         return order
+
+    @classmethod
+    def list_orders_by_customer_id(cls, customer_id: int):
+        orders_by_customer = []
+        with DatabaseManager.session as session:
+            orders = (
+                session.query(Order)
+                .options(joinedload(Order.items))
+                .filter(Order.customer_id == customer_id)
+                .all()
+            )
+        for order in orders:
+            orders_by_customer.append(order)
+        return orders_by_customer

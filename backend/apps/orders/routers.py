@@ -50,3 +50,22 @@ async def retrieve_order(order_id: int):
 async def list_orders():
     orders = OrderService.list_orders()
     return orders
+
+
+@router.get(
+    "/{customer_id}",
+    status_code=status.HTTP_200_OK,
+    # response_model=List[OrderSchema],
+    summary="Retrieve a list of orders by customer ID",
+    description="Retrieve a list of orders placed by a specific customer.",
+)
+async def list_orders_by_customer_id(
+    customer_id: int, current_user: User = Depends(AccountService.current_user)
+):
+    if current_user.id != customer_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to access orders for this customer",
+        )
+    orders = OrderService.list_orders_by_customer_id(customer_id)
+    return orders

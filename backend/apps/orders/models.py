@@ -1,4 +1,5 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, Numeric, String, func
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer, Numeric, String,
+                        func)
 from sqlalchemy.orm import relationship
 
 from config.database import FastModel
