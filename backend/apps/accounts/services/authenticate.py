@@ -19,7 +19,7 @@ class AccountService:
         return user
 
     @classmethod
-    def register(cls, email: str, password: str):
+    def register(cls, email: str, password: str, role:str):
         """
         Create a new user and send an email with OTP code.
         """
@@ -29,7 +29,7 @@ class AccountService:
                 detail="This email has already been taken.",
             )
 
-        new_user = UserManager.create_user(email=email, password=password)
+        new_user = UserManager.create_user(email=email, password=password,role=role)
         TokenService(new_user.id).request_is_register()
         EmailService.register_send_verification_email(new_user.email)
 
