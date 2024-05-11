@@ -24,7 +24,7 @@ class OrderItem(FastModel):
 
     item_id = Column(Integer, primary_key=True)
     order_id = Column(Integer, ForeignKey("orders.id"))
-    product_id = Column(Integer)
+    product_id = Column(Integer, ForeignKey("products.id"))
     quantity = Column(Integer)
 
     order = relationship("Order", back_populates="items")
