@@ -8,7 +8,7 @@ import Footer from "./components/Footer/Footer";
 import { useState } from "react";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
 import Bill from "./pages/Bill/Bill";
-import MessagePopup from "./components/MessagePopup/MessagePopup";
+import ProductDetail from "./pages/ProductDetail/ProductDetail";
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -25,6 +25,7 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/order" element={<PlaceOrder />} />
           <Route path="/bill" element={<Bill />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
         </Routes>
       </div>
       <Footer />

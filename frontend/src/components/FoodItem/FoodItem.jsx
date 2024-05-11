@@ -1,18 +1,65 @@
-import React, { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { assets } from "../../assets/assets";
 import { StoreContext } from "../../context/StoreContext";
 import { Link } from "react-router-dom";
+import { getVariantPrice } from "../../lib/utils";
 
 const FoodItem = (props) => {
-  const { description, product_name, media, variants, product_id } = props;
+  const { description, product_name, media, product_id, product } = props;
   const { handleClick, ...rest } = props;
-  // const [itemCount, setItemCount] = useState(0);
   const {
     cartItems,
     increaseCartQuantity,
     decreaseCartQuantity,
     getItemQuantity,
   } = useContext(StoreContext);
+
+  const variants = product?.variants;
+  const options = product?.options;
+
+  const [quantity, setQuantity] = useState(1);
+
+  const [checkedVariant, setCheckedVariant] = useState({
+    color: variants?.[0]?.option1,
+    material: variants?.[0]?.option2,
+    size: variants?.[0]?.option3,
+  });
+
+  useEffect(() => {
+    setCheckedVariant({
+      color: variants?.[0]?.option1,
+      material: variants?.[0]?.option2,
+      size: variants?.[0]?.option3,
+    });
+  }, [product]);
+
+  const updateVariant = (optionName, itemId) => {
+    setCheckedVariant((prevVariant) => ({
+      ...prevVariant,
+      [optionName]: itemId,
+    }));
+  };
+
+  const handleChecked = (itemId, optionName) => {
+    updateVariant(optionName, itemId);
+  };
+
+  //lấy giá tiền của variant theo màu, hình thức, kiểu
+
+  const priceProduct = getVariantPrice(
+    variants,
+    checkedVariant.color,
+    checkedVariant.material,
+    checkedVariant.size
+  );
+
+  const incrementQuantity = () => {
+    setQuantity((prev) => prev + 1);
+  };
+
+  const decrementQuantity = () => {
+    setQuantity((prev) => Math.max(prev - 1, 1));
+  };
 
   return (
     <div className="food-item">
@@ -23,29 +70,17 @@ const FoodItem = (props) => {
           alt=""
           onClick={() => handleClick(product_id)}
         />
-        {getItemQuantity(rest) === 0 ? (
+        <div className="food-item-counter absolute bottom-[15px] right-[15px] cursor-pointer rounded-full flex justify-between items-center gap-[10px] p-[6px] bg-white">
           <img
-            className="add w-[35px] absolute bottom-[15px] right-[15px] cursor-pointer rounded-full"
-            onClick={() => increaseCartQuantity(rest)}
-            src={assets.add_icon_white}
+            onClick={decrementQuantity}
+            className=""
+            src={assets.remove_icon_red}
             alt=""
           />
-        ) : (
-          <div className="food-item-counter absolute bottom-[15px] right-[15px] cursor-pointer rounded-full flex justify-between items-center gap-[10px] p-[6px] bg-white">
-            <img
-              onClick={() => decreaseCartQuantity(rest)}
-              className=""
-              src={assets.remove_icon_red}
-              alt=""
-            />
-            <p>{getItemQuantity(rest)}</p>
-            <img
-              onClick={() => increaseCartQuantity(rest)}
-              src={assets.add_icon_green}
-              alt=""
-            />
-          </div>
-        )}
+          <p>{quantity}</p>
+          <img onClick={incrementQuantity} src={assets.add_icon_green} alt="" />
+        </div>
+        {/* )} */}
       </div>
       <div className="food-item-info p-3">
         <div className="food-item-name-rating mb-[10px]">
@@ -62,13 +97,15 @@ const FoodItem = (props) => {
         </p>
         <div className="flex justify-between items-center">
           <p className="food-item-price mt-3 text-amber-700 font-bold text-[22px]">
-            ${19}
+            {priceProduct}
           </p>
-          <Link to="/Cart">
-            <button className="bg-amber-700 text-white mt-3 px-3 py-2 hover:bg-amber-800">
-              Add to cart
-            </button>
-          </Link>
+
+          <button
+            className="bg-amber-700 text-white mt-3 px-3 py-2 hover:bg-amber-800"
+            onClick={() => handleClick(product_id)}
+          >
+            Add to cart
+          </button>
         </div>
       </div>
     </div>

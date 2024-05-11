@@ -2,14 +2,25 @@ import React, { useContext, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import { Link } from "react-router-dom";
 
-const Cart = () => {
+const Cart = ({ product }) => {
   const {
     cartItems,
     removeFromCart,
     increaseCartQuantity,
     decreaseCartQuantity,
   } = useContext(StoreContext);
+
   console.log("Cart Items: ", cartItems);
+
+  const [quantity, setQuantity] = useState(1);
+
+  const incrementQuantity = () => {
+    setQuantity((prev) => prev + 1);
+  };
+
+  const decrementQuantity = () => {
+    setQuantity((prev) => Math.max(prev - 1, 1));
+  };
 
   const handleDeleteProductInCart = (data) => {
     removeFromCart(data);
@@ -45,20 +56,20 @@ const Cart = () => {
                 <div className="flex justify-center">
                   <button
                     className="font-bold text-[25px]"
-                    onClick={() => decreaseCartQuantity(item.data)}
+                    onClick={decrementQuantity}
                   >
                     -
                   </button>
-                  <div className="pl-5 pr-5 text-[25px]">{item.quantity}</div>
+                  <div className="pl-5 pr-5 text-[25px]">{quantity}</div>
                   <button
                     className="font-bold text-[25px]"
-                    onClick={() => increaseCartQuantity(item.data)}
+                    onClick={incrementQuantity}
                   >
                     +
                   </button>
                 </div>
               </td>
-              <td className="border divide-solid border-amber-700">$19</td>
+              <td className="border divide-solid border-amber-700">{61.17}$</td>
               <td className="border divide-solid border-amber-700">
                 <div>
                   <button
