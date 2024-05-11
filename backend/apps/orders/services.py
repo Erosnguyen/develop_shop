@@ -12,7 +12,7 @@ from .schemas import OrderCreateSchema, OrderItemSchema, OrderSchema
 
 class OrderService:
     @classmethod
-    async def create_order(cls, customer_id: int, variant_id: int, quantity: int):
+    async def create_order(cls, customer_id: int, items: List[OrderItemSchema]):
         """
         Create a new order.
 
@@ -26,14 +26,14 @@ class OrderService:
         """
         total_price = 0
         order_items = []
-
-        variant_id = variant_id
-        quantity = quantity
-        variant = ProductService.retrieve_variant(variant_id)
-        price = variant["price"]
-        total_price += price * quantity
-        order_item = OrderItem(product_id=variant_id, quantity=quantity)
-        order_items.append(order_item)
+        for item in items:
+            variant_id = item.variant_product_id
+            quantity = item.quantity
+            variant = ProductService.retrieve_variant(variant_id)
+            price = variant["price"]
+            total_price += price * quantity
+            order_item = OrderItem(product_id=variant_id, quantity=quantity)
+            order_items.append(order_item)
 
         with DatabaseManager.session as session:
             order = Order(

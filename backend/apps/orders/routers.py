@@ -17,11 +17,11 @@ router = APIRouter(prefix="/orders", tags=["Orders"])
     description="Create a new order. Order should be a list include variant_product_id and quantity.",
 )
 async def create_order(
-    order: OrderItemSchema, current_user: User = Depends(AccountService.current_user)
+    order: OrderCreateSchema, current_user: User = Depends(AccountService.current_user)
 ):
     user_id = current_user.id
     created_order = await OrderService.create_order(
-        user_id, variant_id=order.variant_product_id, quantity=order.quantity
+        user_id, order.items
     )
     return created_order
 
