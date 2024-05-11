@@ -7,6 +7,7 @@ import PlaceOrder from "./pages/PlaceOrder/PlaceOrder";
 import Footer from "./components/Footer/Footer";
 import { useState } from "react";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
+import Bill from "./pages/Bill/Bill";
 import MessagePopup from "./components/MessagePopup/MessagePopup";
 
 function App() {
@@ -23,7 +24,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/order" element={<PlaceOrder />} />
-          <Route path="/product/:id" element={<Cart />} />
+          <Route path="/bill" element={<Bill />} />
         </Routes>
       </div>
       <Footer />

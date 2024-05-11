@@ -1,15 +1,11 @@
 import React, { useContext } from "react";
 import { assets } from "../../assets/assets";
 import { StoreContext } from "../../context/StoreContext";
+import { Link } from "react-router-dom";
 
-const FoodItem = ({
-  description,
-  product_name,
-  media,
-  variants,
-  product_id,
-  handleClick,
-}) => {
+const FoodItem = (props) => {
+  const { description, product_name, media, variants, product_id } = props;
+  const { handleClick, ...rest } = props;
   // const [itemCount, setItemCount] = useState(0);
   const {
     cartItems,
@@ -27,24 +23,24 @@ const FoodItem = ({
           alt=""
           onClick={() => handleClick(product_id)}
         />
-        {getItemQuantity(product_id) === 0 ? (
+        {getItemQuantity(rest) === 0 ? (
           <img
             className="add w-[35px] absolute bottom-[15px] right-[15px] cursor-pointer rounded-full"
-            onClick={() => increaseCartQuantity(product_id)}
+            onClick={() => increaseCartQuantity(rest)}
             src={assets.add_icon_white}
             alt=""
           />
         ) : (
           <div className="food-item-counter absolute bottom-[15px] right-[15px] cursor-pointer rounded-full flex justify-between items-center gap-[10px] p-[6px] bg-white">
             <img
-              onClick={() => decreaseCartQuantity(product_id)}
+              onClick={() => decreaseCartQuantity(rest)}
               className=""
               src={assets.remove_icon_red}
               alt=""
             />
-            <p>{getItemQuantity(product_id)}</p>
+            <p>{getItemQuantity(rest)}</p>
             <img
-              onClick={() => increaseCartQuantity(product_id)}
+              onClick={() => increaseCartQuantity(rest)}
               src={assets.add_icon_green}
               alt=""
             />
@@ -64,9 +60,16 @@ const FoodItem = ({
         <p className="food-item-desc line-clamp-4 text-sm pt-1">
           {description}
         </p>
-        <p className="food-item-price mt-3 text-amber-700 font-bold text-[22px]">
-          ${19}
-        </p>
+        <div className="flex justify-between items-center">
+          <p className="food-item-price mt-3 text-amber-700 font-bold text-[22px]">
+            ${19}
+          </p>
+          <Link to="/Cart">
+            <button className="bg-amber-700 text-white mt-3 px-3 py-2 hover:bg-amber-800">
+              Add to cart
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
   );
