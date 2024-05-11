@@ -71,7 +71,50 @@ export default function ManageBookDialog(props) {
                     ]
                 };
             }
-            return i; // Trả về i nếu không thỏa điều kiện
+            return i;
+        });
+
+        setState(prevState => ({
+            ...prevState,
+            listOption: updatedListOption
+        }));
+    }
+
+    const handleChangeOptionName = (value, id) => {
+        let updatedListOption = state.listOption.map(i => {
+            if (i.option_id === id) {
+                return {
+                    ...i,
+                    option_name: value
+                };
+            }
+            return i;
+        });
+
+        setState(prevState => ({
+            ...prevState,
+            listOption: updatedListOption
+        }))
+    }
+
+    const handleChangeItemName = (value, id, idParent) => {
+        let updatedListOption = state.listOption.map(option => {
+            if (option.option_id === idParent) {
+                let updatedItems = option.items.map(item => {
+                    if (item.item_id === id) {
+                        return {
+                            ...item,
+                            item_name: value
+                        };
+                    }
+                    return item;
+                });
+                return {
+                    ...option,
+                    items: updatedItems
+                };
+            }
+            return option;
         });
 
         setState(prevState => ({
@@ -179,12 +222,12 @@ export default function ManageBookDialog(props) {
                                     <TextField
                                         required
                                         margin="dense"
-                                        name="description"
-                                        label="description"
+                                        name="option_name"
+                                        label="Option name"
                                         fullWidth
                                         variant="standard"
-                                        value={state?.description}
-                                        onChange={(e) => handleChange(e.target.value, "description")}
+                                        value={i?.option_name}
+                                        onChange={(e) => handleChangeOptionName(e.target.value, i?.option_id)}
                                     />
                                 </Grid>
                                 <Grid item md={1} sm={1} xs={1}>
@@ -196,12 +239,12 @@ export default function ManageBookDialog(props) {
                                             <TextField
                                                 required
                                                 margin="dense"
-                                                name="name"
-                                                label="name"
+                                                name="item_name"
+                                                label="Item name"
                                                 fullWidth
                                                 variant="standard"
-                                                value={state?.name}
-                                                onChange={(e) => handleChange(e.target.value, "name")}
+                                                value={item?.item_name}
+                                                onChange={(e) => handleChangeItemName(e.target.value, item?.item_id, i?.option_id)}
                                             />
 
                                             <Button sx={{ minWidth: 0, mt: 3 }} variant='contained' size='small'><IconTrash size="1.3rem" /></Button>
