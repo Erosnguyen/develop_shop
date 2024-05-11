@@ -5,8 +5,13 @@ from sqlalchemy import and_, or_, select
 
 from apps.core.date_time import DateTime
 from apps.core.services.media import MediaService
-from apps.products.models import (Product, ProductMedia, ProductOption,
-                                  ProductOptionItem, ProductVariant)
+from apps.products.models import (
+    Product,
+    ProductMedia,
+    ProductOption,
+    ProductOptionItem,
+    ProductVariant,
+)
 from config import settings
 from config.database import DatabaseManager
 
