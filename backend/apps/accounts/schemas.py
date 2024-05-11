@@ -27,6 +27,7 @@ class ValidatePasswordInSchema(BaseModel):
 class RegisterIn(ValidatePasswordInSchema):
     email: EmailStr
     role: str
+
     @staticmethod
     def examples():
         examples = {

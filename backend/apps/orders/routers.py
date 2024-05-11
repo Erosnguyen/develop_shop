@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from apps.accounts.services.authenticate import AccountService
 from apps.accounts.services.user import User
 
-from .schemas import OrderCreateSchema, OrderSchema
+from .schemas import OrderCreateSchema, OrderItemSchema, OrderSchema
 from .services import OrderService
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
@@ -12,15 +12,17 @@ router = APIRouter(prefix="/orders", tags=["Orders"])
 @router.post(
     "/",
     status_code=status.HTTP_201_CREATED,
-    response_model=OrderSchema,
+    # response_model=OrderSchema,
     summary="Create a new order",
-    description="Create a new order. Order should be a list include product_id and quantity.",
+    description="Create a new order. Order should be a list include variant_product_id and quantity.",
 )
 async def create_order(
     order: OrderCreateSchema, current_user: User = Depends(AccountService.current_user)
 ):
     user_id = current_user.id
-    created_order = OrderService.create_order(user_id, order)
+    created_order = await OrderService.create_order(
+        user_id, order.items
+    )
     return created_order
 
 
