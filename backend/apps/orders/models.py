@@ -9,7 +9,7 @@ class Order(FastModel):
     __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True)
-    customer_id = Column(Integer,ForeignKey("users.id"))
+    customer_id = Column(Integer, ForeignKey("users.id"))
     total_price = Column(Numeric(10, 2))
     status = Column(String(50))
 
@@ -28,6 +28,6 @@ class OrderItem(FastModel):
     quantity = Column(Integer)
 
     order = relationship("Order", back_populates="items")
-
+    product = relationship("Product")
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
