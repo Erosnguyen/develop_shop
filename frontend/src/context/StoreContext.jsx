@@ -8,17 +8,25 @@ const StoreContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
 
-  function getItemQuantity(id) {
-    return cartItems.find((item) => item.id === id)?.quantity || 0;
+  console.log("context", cartItems);
+
+  function getItemQuantity(data) {
+    return (
+      cartItems.find((item) => item.data.product_id === data.product_id)
+        ?.quantity || 0
+    );
   }
 
-  function increaseCartQuantity(id) {
+  function increaseCartQuantity(data) {
     setCartItems((currItems) => {
-      if (currItems.find((item) => item.id === id) == null) {
-        return [...currItems, { id, quantity: 1 }];
+      if (
+        currItems.find((item) => item.data.product_id === data.product_id) ==
+        null
+      ) {
+        return [...currItems, { data, quantity: 1 }];
       } else {
         return currItems.map((item) => {
-          if (item.id === id) {
+          if (item.data.product_id === data.product_id) {
             return { ...item, quantity: item.quantity + 1 };
           } else {
             return item;
@@ -28,13 +36,18 @@ const StoreContextProvider = (props) => {
     });
   }
 
-  function decreaseCartQuantity(id) {
+  function decreaseCartQuantity(data) {
     setCartItems((currItems) => {
-      if (currItems.find((item) => item.id === id)?.quantity === 1) {
-        return currItems.filter((item) => item.id !== id);
+      if (
+        currItems.find((item) => item.data.product_id === data.product_id)
+          ?.quantity === 1
+      ) {
+        return currItems.filter(
+          (item) => item.data.product_id !== data.product_id
+        );
       } else {
         return currItems.map((item) => {
-          if (item.id === id) {
+          if (item.data.product_id === data.product_id) {
             return { ...item, quantity: item.quantity - 1 };
           } else {
             return item;
@@ -43,9 +56,11 @@ const StoreContextProvider = (props) => {
       }
     });
   }
-  function removeFromCart(id) {
+  function removeFromCart(data) {
     setCartItems((currItems) => {
-      return currItems.filter((item) => item.id !== id);
+      return currItems.filter(
+        (item) => item.data.product_id !== data.product_id
+      );
     });
   }
 
