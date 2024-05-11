@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { insertBook, updateBook } from './ManageBookServices';
 import { getListGenre } from '../ManageGenre/ManageGenreServices';
 import { toast } from 'react-toastify';
+import { IconTrash } from '@tabler/icons';
 
 export default function ManageBookDialog(props) {
     let {
@@ -19,7 +20,6 @@ export default function ManageBookDialog(props) {
         handleClose
     } = props;
     const [state, setState] = useState({});
-    const [option, setOption] = useState([]);
 
     const handleChange = (value, name) => {
         setState((pre) => ({ ...pre, [name]: value }));
@@ -54,20 +54,36 @@ export default function ManageBookDialog(props) {
         }
     }
 
-    const getListGenres = async () => {
-        try {
-            const data = await getListGenre();
-            if (data?.status === 200) {
-                setOption(data?.data);
-            }
-        } catch (error) {
-
-        }
+    const handleAddOption = () => {
+        setState((pre) => ({ ...pre, listOption: [...state.listOption, { option_id: Math.random(), items: [] }] }));
     }
+
+    const handleAddDetailOption = (idParent) => {
+        let updatedListOption = state.listOption.map(i => {
+            if (i.option_id === idParent) {
+                return {
+                    ...i,
+                    items: [
+                        ...i.items,
+                        {
+                            item_id: Math.random(),
+                        }
+                    ]
+                };
+            }
+            return i; // Trả về i nếu không thỏa điều kiện
+        });
+
+        setState(prevState => ({
+            ...prevState,
+            listOption: updatedListOption
+        }));
+    }
+
     useEffect(() => {
-        getListGenres();
         setState({
-            ...item
+            ...item,
+            listOption: []
         })
     }, [item])
     return (
@@ -127,60 +143,77 @@ export default function ManageBookDialog(props) {
                                 onChange={(e) => handleChange(e.target.value, "stock")}
                             />
                         </Grid>
-                        <Grid item md={4} sm={6} xs={12} sx={{ mt: "8px" }}>
-                            <Autocomplete
-                                options={["active", "no active"]}
+                        <Grid item md={4} sm={6} xs={12}>
+                            <TextField
+                                required
+                                margin="dense"
+                                name="status"
+                                label="status"
                                 fullWidth
+                                variant="standard"
                                 value={state?.status}
-                                defaultValue={item?.status}
-                                onChange={(e, value) => handleChange(value, 'status')}
-                                renderInput={(params) => <TextField
-                                    {...params}
-                                    required
-                                    label="Status"
-                                    variant="standard"
-                                    value={state?.name}
-                                />}
+                                onChange={(e) => handleChange(e.target.value, "status")}
                             />
                         </Grid>
-                        <Grid item md={8} sm={8} xs={12} sx={{ mt: "8px" }}>
-                            <Autocomplete
-                                multiple
-                                id="tags-standard"
-                                options={[
-                                    {
-                                        option_name: "string",
-                                        items: [
-                                            "string"
-                                        ]
-                                    }
-                                ]}
-                                getOptionLabel={(option) => option.option_name}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        variant="standard"
-                                        label="options"
-                                        placeholder="Favorites"
-                                    />
-                                )}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sx={{ mt: "8px" }}>
+                        <Grid item md={8} sm={8} xs={12}>
                             <TextField
                                 multiline
                                 required
                                 margin="dense"
                                 name="description"
                                 label="description"
-                                type='number'
                                 fullWidth
                                 variant="standard"
                                 value={state?.description}
                                 onChange={(e) => handleChange(e.target.value, "description")}
                             />
                         </Grid>
+                        <Grid item xs={12} >
+                            <Button variant='contained' size='small' onClick={() => handleAddOption()}>Add option</Button>
+                        </Grid>
                     </Grid>
+                    {state?.listOption?.map(i => {
+                        return (
+                            <Grid container spacing={2}>
+                                <Grid item md={11} sm={11} xs={11}>
+                                    <TextField
+                                        required
+                                        margin="dense"
+                                        name="description"
+                                        label="description"
+                                        fullWidth
+                                        variant="standard"
+                                        value={state?.description}
+                                        onChange={(e) => handleChange(e.target.value, "description")}
+                                    />
+                                </Grid>
+                                <Grid item md={1} sm={1} xs={1}>
+                                    <Button sx={{ minWidth: 0, mt: 3 }} variant='contained' size='small'><IconTrash size="1.3rem" /></Button>
+                                </Grid>
+                                {i?.items?.map(item => {
+                                    return (
+                                        <Grid item md={10} sm={10} xs={10} sx={{ display: "flex" }}>
+                                            <TextField
+                                                required
+                                                margin="dense"
+                                                name="name"
+                                                label="name"
+                                                fullWidth
+                                                variant="standard"
+                                                value={state?.name}
+                                                onChange={(e) => handleChange(e.target.value, "name")}
+                                            />
+
+                                            <Button sx={{ minWidth: 0, mt: 3 }} variant='contained' size='small'><IconTrash size="1.3rem" /></Button>
+                                        </Grid>
+                                    )
+                                })}
+                                <Grid item md={2} sm={2} xs={2}>
+                                    <Button sx={{ mt: 3 }} variant='contained' size='small' onClick={() => handleAddDetailOption(i?.option_id)}>Add detail</Button>
+                                </Grid>
+                            </Grid>
+                        )
+                    })}
                 </DialogContent>
 
                 <DialogActions>

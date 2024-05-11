@@ -16,5 +16,5 @@ export const handleRegister = (data) => {
 
 export const handleVerify = (data) => {
   let url = API_PATH + "/register/verify";
-  return axios.post(url, data);
+  return axios.patch(url, data);
 };

@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { StoreContext } from "../../context/StoreContext";
+import { handleAddOrder } from "./billServices";
 
 const Bill = () => {
   const {
@@ -14,13 +15,33 @@ const Bill = () => {
     removeFromCart(data);
   };
 
+  const convertDataSubmit = (data = []) => {
+    return {
+      items: data?.map(i => {
+        return {
+          product_id: i?.data?.product_id,
+          quantity: i?.quantity
+        }
+      })
+    }
+  }
+  const handleAddBill = async (e) => {
+    e.preventDefault();
+    try {
+      let dataSubmit = convertDataSubmit(cartItems);
+      const data = await handleAddOrder(dataSubmit);
+      console.log(data)
+    } catch (error) {
+
+    }
+  }
   return (
     <div className="bill mt-10 grid grid-cols-2 gap-20">
       <div className="bill-left">
         <h2 className="bill-title font-semibold text-[40px] mb-5">
           Billing Information
         </h2>
-        <form action="">
+        <form onSubmit={handleAddBill} >
           <div className="">
             <input
               type="text"
@@ -60,6 +81,11 @@ const Bill = () => {
               id=""
               placeholder="Notes about orders"
             ></textarea>
+          </div>
+          <div className=" mt-8">
+            <button type="submit" className="bg-amber-700 text-white mt-3 px-3 py-2 hover:bg-amber-800">
+              Buy
+            </button>
           </div>
         </form>
       </div>

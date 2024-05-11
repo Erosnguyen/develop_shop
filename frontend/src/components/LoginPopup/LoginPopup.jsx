@@ -11,10 +11,10 @@ const LoginPopup = ({ setShowLogin, setShowMessage }) => {
     try {
       if (state?.isSentOtp) {
 
-        const formData = new FormData();
-        formData.append("email", state?.email)
-        formData.append("otp", state?.otp)
-
+        const formData = {
+          email: state?.email,
+          otp: state?.otp
+        }
         const data = await handleVerify(formData);
 
         if (data?.status === 200) {
@@ -30,14 +30,15 @@ const LoginPopup = ({ setShowLogin, setShowMessage }) => {
 
       } else if (currState === "Sign Up") {
 
-        const formData = new FormData();
-        formData.append("email", state?.email)
-        formData.append("password", state?.password)
-        formData.append("password_confirm", state?.password_confirm);
+        const formData = {
+          email: state?.email,
+          password: state?.password,
+          password_confirm: state?.password_confirm,
+        }
 
         const data = await handleRegister(formData);
-
-        if (data?.status === 200) {
+        console.log(data)
+        if (data?.status === 201) {
           setState((pre) => ({ ...pre, isSentOtp: true }))
         }
 
