@@ -1,7 +1,7 @@
 from typing import List
 
 from sqlalchemy import and_, or_, select
-
+from sqlalchemy.orm import joinedload
 from apps.orders.models import Order, OrderItem
 from apps.products.services import ProductService
 from config import settings
@@ -56,8 +56,8 @@ class OrderService:
 
     @classmethod
     def list_orders(cls, limit: int = 12):
-        if hasattr(settings, "products_list_limit"):
-            limit = settings.products_list_limit
+        if hasattr(settings, "orders_list_limit"):
+            limit = settings.orders_list_limit
 
         orders_list = []
 
@@ -65,12 +65,17 @@ class OrderService:
             orders = session.execute(select(Order.id).limit(limit))
 
         for order in orders:
-            orders_list.append(cls.retrieve_product(order.id))
+            orders_list.append(cls.retrieve_order(order.id))
 
         return orders_list
 
     @classmethod
     def retrieve_order(cls, order_id: int):
         with DatabaseManager.session as session:
-            order = session.query(Order).filter(Order.id == order_id).first()
+            order = (
+                session.query(Order)
+                .options(joinedload(Order.items))
+                .filter(Order.id == order_id)
+                .first()
+            )
         return order
