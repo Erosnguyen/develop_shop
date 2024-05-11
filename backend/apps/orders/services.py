@@ -7,40 +7,51 @@ from apps.products.services import ProductService
 from config import settings
 from config.database import DatabaseManager
 
+from .schemas import OrderCreateSchema, OrderItemSchema, OrderSchema
+
 
 class OrderService:
     @classmethod
-    async def create_order(cls, customer_id: int, items: List[dict]):
+    async def create_order(cls, customer_id: int, variant_id: int, quantity: int):
         """
         Create a new order.
 
         Args:
         - customer_id (int): The ID of the customer placing the order.
-        - items (List[dict]): A list of dictionaries representing the order items. Each dictionary should contain the product_id and quantity.
+        - items (List[OrderItemSchema]): A list of OrderItemSchema objects representing the order items.
+          Each object should contain the variant_product_id and quantity.
 
         Returns:
         - Order: The created order object.
         """
         total_price = 0
         order_items = []
-        for item in items:
-            product_id = item.get("product_id")
-            quantity = item.get("quantity")
-            # if product_id is None or quantity is None:
-            #     raise CustomException("Invalid order item data")
-            product = await ProductService.retrieve_product(product_id)
-            # if product is None:
-            #     raise CustomException(f"Product with ID {product_id} not found")
-            total_price += product.price * quantity
-            order_items.append(OrderItem(product_id=product_id, quantity=quantity))
 
-        order = Order(
-            customer_id=customer_id, total_price=total_price, status="pending"
-        )
-        order.save()
-        for order_item in order_items:
-            order.items.append(order_item)
-        order.save()
+        variant_id = variant_id
+        quantity = quantity
+        variant = ProductService.retrieve_variant(variant_id)
+        price = variant["price"]
+        total_price += price * quantity
+        order_item = OrderItem(product_id=variant_id, quantity=quantity)
+        order_items.append(order_item)
+
+        with DatabaseManager.session as session:
+            order = Order(
+                customer_id=customer_id, total_price=total_price, status="pending"
+            )
+            session.add(order)
+            session.flush()
+
+            for order_item in order_items:
+                order_item.order_id = order.id
+                session.add(order_item)
+
+            session.commit()
+
+            session.refresh(order)
+
+            order.items
+
         return order
 
     @classmethod
