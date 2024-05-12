@@ -20,3 +20,7 @@ export const updateProduct = (id, payload) => {
 export const deleteProduct = (id) => {
   return axios.delete(API_PATH + '/products/' + id);
 };
+
+export const getById = (id) => {
+  return axios.get(API_PATH + '/products/' + id);
+};

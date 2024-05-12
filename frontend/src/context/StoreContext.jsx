@@ -63,7 +63,7 @@ const StoreContextProvider = (props) => {
   function removeFromCart(data) {
     setCartItems((currItems) => {
       return currItems.filter(
-        (item) => item.data.product_id !== data.product_id
+        (item) => item.data.product_id !== (data.product_id || data?.data?.product_id)
       );
     });
   }

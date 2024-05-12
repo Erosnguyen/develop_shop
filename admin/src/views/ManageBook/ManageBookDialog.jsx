@@ -204,6 +204,7 @@ export default function ManageBookDialog(props) {
                         </Grid>
                         <Grid item md={4} sm={6} xs={12}>
                             <TextField
+                                disabled={state?.product_id}
                                 margin="dense"
                                 name="price"
                                 label="Price"
@@ -216,6 +217,7 @@ export default function ManageBookDialog(props) {
                         </Grid>
                         <Grid item md={4} sm={6} xs={12}>
                             <TextField
+                                disabled={state?.product_id}
                                 margin="dense"
                                 name="stock"
                                 label="Stock"
@@ -260,6 +262,7 @@ export default function ManageBookDialog(props) {
                             <Grid container spacing={2}>
                                 <Grid item md={11} sm={11} xs={11} sx={{ mt: 1 }}>
                                     <TextField
+                                        disabled={state?.product_id}
                                         required
                                         margin="dense"
                                         name="option_name"
@@ -277,6 +280,7 @@ export default function ManageBookDialog(props) {
                                     return (
                                         <Grid item md={10} sm={10} xs={10} sx={{ display: "flex" }}>
                                             <TextField
+                                                disabled={state?.product_id}
                                                 required
                                                 margin="dense"
                                                 name="item_name"

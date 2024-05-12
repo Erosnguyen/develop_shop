@@ -4,7 +4,7 @@ import PageContainer from 'src/components/container/PageContainer';
 import ManageBookTable from './ManageBookTable';
 import ManageBookDialog from './ManageBookDialog';
 import ConfirmDialog from '../components/ConfirmDialog';
-import { deleteProduct, getAllProducts } from './ManageBookServices';
+import { deleteProduct, getAllProducts, getById } from './ManageBookServices';
 import { toast } from 'react-toastify';
 
 const ManageBook = () => {
@@ -23,9 +23,19 @@ const ManageBook = () => {
         setOpenDelete(false);
     };
 
-    const handleEdit = (value) => {
-        setOpen(true);
-        setItem(value);
+    const handleEdit = async (value) => {
+        try {
+            const data = await getById(value?.product_id);
+            console.log()
+            setOpen(true);
+            setItem({
+                ...data?.data?.product,
+                price: data?.data?.product?.variants?.reduce((total, item) => total + item?.price, 0),
+                stock: data?.data?.product?.variants?.reduce((total, item) => total + item?.stock, 0),
+            });
+        } catch (error) {
+
+        }
     }
 
     const handleOpenDelete = (value) => {
