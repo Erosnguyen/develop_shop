@@ -25,8 +25,8 @@ const Router = [
     children: [
       { path: '/', element: <Navigate to="/dashboard" /> },
       { path: '/dashboard', exact: true, element: <Dashboard /> },
-      { path: '/manage-book', exact: true, element: <ManageBook /> },
-      { path: '/manage-genre', exact: true, element: <ManageGenre /> },
+      { path: '/manage-food', exact: true, element: <ManageBook /> },
+      { path: '/manage-orders', exact: true, element: <ManageGenre /> },
       { path: '/manage-user', exact: true, element: <ManageUser /> },
       { path: '/manage-staff', exact: true, element: <ManageStaff /> },
       { path: '/manage-card', exact: true, element: <ManageCard /> },

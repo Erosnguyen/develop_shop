@@ -68,11 +68,11 @@ function ManageBookTable(props) {
                                     Create date
                                 </Typography>
                             </TableCell>
-                            {/* <TableCell align="center">
+                            <TableCell align="center">
                                 <Typography variant="subtitle2" fontWeight={600} color={"white"}>
-                                    Số lượng có sẵn
+                                    Updated at
                                 </Typography>
-                            </TableCell> */}
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -129,7 +129,7 @@ function ManageBookTable(props) {
                                 </TableCell>
                                 <TableCell align="center">
                                     <Typography color="textSecondary" variant="subtitle2" fontWeight={600}>
-                                        {product?.availableQuantity}
+                                        {product?.updated_at ? convertDateFormat(product?.updated_at) : ""}
                                     </Typography>
                                 </TableCell>
                             </TableRow>

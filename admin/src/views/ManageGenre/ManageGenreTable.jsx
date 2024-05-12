@@ -42,14 +42,24 @@ function ManageGenreTable(props) {
                                     STT
                                 </Typography>
                             </TableCell>
-                            <TableCell sx={{ w: 10 }}>
+                            <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600} color={"white"}>
-                                    Thao tác
+                                    Order id
                                 </Typography>
                             </TableCell>
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600} color={"white"}>
-                                    Loại sách
+                                    Status
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600} color={"white"}>
+                                    Created at
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600} color={"white"}>
+                                    Total price
                                 </Typography>
                             </TableCell>
                         </TableRow>
@@ -69,23 +79,25 @@ function ManageGenreTable(props) {
                                         {index + 1}
                                     </Typography>
                                 </TableCell>
-                                <TableCell sx={{ cursor: "pointer", w: 10 }}>
-                                    <Button onClick={() => handleEdit(product)} sx={{ minWidth: 0, mr: 1 }} variant='contained' size='small'><IconEdit size="1.3rem" /></Button>
-                                    <Button onClick={() => handleOpenDelete(product)} sx={{ minWidth: 0 }} variant='contained' size='small'><IconTrash size="1.3rem" /></Button>
+                                <TableCell>
+                                    <Typography variant="subtitle2">
+                                        {product?.id}
+                                    </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <Box>
-                                            <Typography variant="subtitle2" fontWeight={600}>
-                                                {product?.genreName}
-                                            </Typography>
-                                        </Box>
-                                    </Box>
+                                    <Typography variant="subtitle2">
+                                        {product?.status}
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography variant="subtitle2">
+                                        {product?.created_at}
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography variant="subtitle2">
+                                        {product?.total_price || 0} $
+                                    </Typography>
                                 </TableCell>
                             </TableRow>
                         ))}

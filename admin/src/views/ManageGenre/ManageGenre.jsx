@@ -4,7 +4,7 @@ import PageContainer from 'src/components/container/PageContainer';
 import ManageGenreTable from './ManageGenreTable';
 import ManageGenreDialog from './ManageGenreDialog';
 import ConfirmDialog from '../components/ConfirmDialog';
-import { deleteGenre, getListGenre } from './ManageGenreServices';
+import { deleteGenre, getListOrders } from './ManageGenreServices';
 import { toast } from 'react-toastify';
 
 const ManageGenre = () => {
@@ -49,7 +49,7 @@ const ManageGenre = () => {
 
     const search = async () => {
         try {
-            const data = await getListGenre();
+            const data = await getListOrders();
             if (data?.status === 200) {
                 setListItem(data?.data)
             }
@@ -62,9 +62,8 @@ const ManageGenre = () => {
         search();
     }, []);
     return (
-        <PageContainer title="Quản lý loại sách">
+        <PageContainer title="Orders">
             <Card sx={{ p: 1, minHeight: "screen" }}>
-                <Button variant='contained' size='small' onClick={handleClickOpen}>Thêm mới</Button>
                 <ManageGenreTable data={listitem} handleEdit={handleEdit} handleOpenDelete={handleOpenDelete} />
             </Card>
             {open && <ManageGenreDialog
