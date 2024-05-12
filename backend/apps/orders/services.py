@@ -83,6 +83,7 @@ class OrderService:
 
     @classmethod
     def list_orders_by_customer_id(cls, customer_id: int):
+        print("Customer ID:", customer_id)
         orders_by_customer = []
         with DatabaseManager.session as session:
             orders = (
@@ -91,6 +92,8 @@ class OrderService:
                 .filter(Order.customer_id == customer_id)
                 .all()
             )
-        for order in orders:
-            orders_by_customer.append(order)
+            for order in orders:
+                orders_by_customer.append(order)
         return orders_by_customer
+
+
