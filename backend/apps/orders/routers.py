@@ -52,20 +52,18 @@ async def list_orders():
     return orders
 
 
-@router.get(
-    "/{customer_id}",
+@router.post(
+    "/customer_id",
     status_code=status.HTTP_200_OK,
     # response_model=List[OrderSchema],
     summary="Retrieve a list of orders by customer ID",
-    description="Retrieve a list of orders placed by a specific customer.",
+    description="Retrieve a list of orders placed by the authenticated customer.",
 )
 async def list_orders_by_customer_id(
-    customer_id: int, current_user: User = Depends(AccountService.current_user)
+    current_user: User = Depends(AccountService.current_user)
 ):
-    if current_user.id != customer_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not authorized to access orders for this customer",
-        )
+    customer_id = int(current_user.id)
     orders = OrderService.list_orders_by_customer_id(customer_id)
     return orders
+
+
