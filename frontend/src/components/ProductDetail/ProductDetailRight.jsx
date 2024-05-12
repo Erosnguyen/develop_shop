@@ -21,16 +21,16 @@ const ProductDetailRight = ({ product }) => {
   } = useContext(StoreContext);
 
   const [checkedVariant, setCheckedVariant] = useState({
-    color: variants?.[0]?.option1,
-    material: variants?.[0]?.option2,
-    size: variants?.[0]?.option3,
+    option1: variants?.[0]?.option1,
+    option2: variants?.[0]?.option2,
+    option3: variants?.[0]?.option3,
   });
 
   useEffect(() => {
     setCheckedVariant({
-      color: variants?.[0]?.option1,
-      material: variants?.[0]?.option2,
-      size: variants?.[0]?.option3,
+      option1: variants?.[0]?.option1,
+      option2: variants?.[0]?.option2,
+      option3: variants?.[0]?.option3,
     });
   }, [product]);
 
@@ -68,6 +68,8 @@ const ProductDetailRight = ({ product }) => {
 
   }
 
+  console.log(checkedVariant)
+
   return (
     <div>
       <div className="text-[30px]">{product.product_name}</div>
@@ -75,21 +77,21 @@ const ProductDetailRight = ({ product }) => {
         {priceProduct}
       </div>
       <div className="flex mt-10 flex-col gap-2">
-        {options?.map((option) => (
+        {options?.map((option, idx) => (
           <div className="flex gap-2 items-center" key={option.options_id}>
             <div className="">{option.option_name}:</div>
             <div className="flex items-center gap-2">
-              {option.items.map((item) => (
+              {option.items.map((item, index) => (
                 <button
-                  className={`border border-gray-300 px-4 hover:border-amber-700 ${item.item_id === checkedVariant.color ||
-                    item.item_id === checkedVariant.size ||
-                    item.item_id === checkedVariant.material
+                  className={`border border-gray-300 px-4 hover:border-amber-700 ${item.item_id === checkedVariant.option1 ||
+                    item.item_id === checkedVariant.option2 ||
+                    item.item_id === checkedVariant.option3
                     ? "text-red-500"
                     : ""
                     }`}
                   key={item.item_id}
                   onClick={() =>
-                    handleChecked(item.item_id, option.option_name)
+                    handleChecked(item.item_id, "option" +(idx+1))
                   }
                 >
                   {item.item_name}

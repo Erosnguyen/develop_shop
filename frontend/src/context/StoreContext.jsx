@@ -16,13 +16,13 @@ const StoreContextProvider = (props) => {
     );
   }
   function checkExistingCartItem(data, checkedVariant) {
-    const { color, material, size } = checkedVariant;
+    const { option1, option2, option3 } = checkedVariant;
     const item = cartItems.find(
       (item) =>
         item.data.product_id === data.product_id &&
-        item.data.checkedVariant.color === color &&
-        item.data.checkedVariant.material === material &&
-        item.data.checkedVariant.size === size
+        item.data.checkedVariant.option1 === option1 &&
+        item.data.checkedVariant.option2 === option2 &&
+        item.data.checkedVariant.option3 === option3
     );
     return item != null;
   }
@@ -43,27 +43,54 @@ const StoreContextProvider = (props) => {
     });
   }
 
+
+  // function decreaseCartQuantity(data, checkedVariant) {
+  //   const { variants, ...rest } = data;
+  //   const existingItem = checkExistingCartItem(data, checkedVariant);
+  //   setCartItems((currItems) => {
+  //     return currItems.map((item) => {
+  //       if (existingItem) {
+  //         if (item.quantity > 1) {
+  //           return { ...item, quantity: item.quantity - 1 };
+  //         } else {
+  //           return { ...item, quantity: 0 };
+  //         }
+  //       } else {
+  //         return item;
+  //       }
+  //     });
+  //   });
+  // }
   function decreaseCartQuantity(data, checkedVariant) {
     const { variants, ...rest } = data;
     const existingItem = checkExistingCartItem(data, checkedVariant);
     setCartItems((currItems) => {
       return currItems.map((item) => {
-        if (existingItem) {
-          if (item.quantity > 1) {
-            return { ...item, quantity: item.quantity - 1 };
-          } else {
-            return { ...item, quantity: 0 };
-          }
+        if (
+          existingItem &&
+          item.data.product_id === existingItem.data.product_id &&
+          item.data.checkedVariant.option1 === existingItem.data.checkedVariant.option1 &&
+          item.data.checkedVariant.option2 === existingItem.data.checkedVariant.option2 &&
+          item.data.checkedVariant.option3 === existingItem.data.checkedVariant.option3 &&
+          item.quantity > 1
+        ) {
+          return { ...item, quantity: item.quantity - 1 };
         } else {
           return item;
         }
       });
     });
   }
-  function removeFromCart(data) {
+
+  function removeFromCart(data, checkedVariant) {
     setCartItems((currItems) => {
       return currItems.filter(
-        (item) => item.data.product_id !== (data.product_id || data?.data?.product_id)
+        (item) =>
+          item.data.product_id !==
+            (data.product_id || data?.data?.product_id) ||
+          item.data.checkedVariant.option1 !== checkedVariant.option1 ||
+          item.data.checkedVariant.option2 !== checkedVariant.option2 ||
+          item.data.checkedVariant.option3 !== checkedVariant.option3
       );
     });
   }
@@ -73,7 +100,17 @@ const StoreContextProvider = (props) => {
       const existingItem = checkExistingCartItem(data, checkedVariant);
       if (existingItem) {
         return currItems.map((item) => {
-          return { ...item, quantity: item.quantity + quantity };
+          if (
+            item.data.product_id === existingItem.data.product_id &&
+            item.data.checkedVariant.color ===
+              existingItem.data.checkedVariant.color &&
+            item.data.checkedVariant.size ===
+              existingItem.data.checkedVariant.size
+          ) {
+            return { ...item, quantity: item.quantity + quantity };
+          } else {
+            return item;
+          }
         });
       } else {
         return [

@@ -19,5 +19,5 @@ export const getVariantPrice = (
       variant.option3 === variantSize
   );
 
-  return selectedVariant ? `${selectedVariant.price * quantity}$` : "0$";
+  return selectedVariant ? `${Number((selectedVariant.price * quantity).toFixed(2))}$` : "0$";
 };
