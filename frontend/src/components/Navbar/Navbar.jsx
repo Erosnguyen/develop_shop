@@ -210,7 +210,7 @@ const NavBar = ({ setShowLogin }) => {
             </Dropdown>
           ) : (
             <Link to="/login">
-              <Button color="primary" variant="flat">
+              <Button color="warning" variant="flat">
                 Đăng nhập
               </Button>
             </Link>

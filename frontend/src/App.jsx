@@ -9,7 +9,8 @@ import { useState } from "react";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
 import Bill from "./pages/Bill/Bill";
 import ProductDetail from "./pages/ProductDetail/ProductDetail";
-import MessagePopup from "./components/MessagePopup/MessagePopup"
+import MessagePopup from "./components/MessagePopup/MessagePopup";
+import { NextUIProvider } from "@nextui-org/system";
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -17,17 +18,26 @@ function App() {
 
   return (
     <>
-      {showLogin ? <LoginPopup setShowLogin={setShowLogin} setShowMessage={setShowMessage} /> : <></>}
+      {showLogin ? (
+        <LoginPopup
+          setShowLogin={setShowLogin}
+          setShowMessage={setShowMessage}
+        />
+      ) : (
+        <></>
+      )}
       {showMessage?.open && <MessagePopup showMessage={showMessage} />}
       <div className="app">
-        <NavBar setShowLogin={setShowLogin} />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/order" element={<PlaceOrder />} />
-          <Route path="/bill" element={<Bill />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-        </Routes>
+        <NextUIProvider>
+          <NavBar setShowLogin={setShowLogin} />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/order" element={<PlaceOrder />} />
+            <Route path="/bill" element={<Bill />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+          </Routes>
+        </NextUIProvider>
       </div>
       <Footer />
     </>
