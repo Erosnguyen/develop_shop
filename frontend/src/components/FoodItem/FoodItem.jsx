@@ -92,7 +92,7 @@ const FoodItem = (props) => {
           </p>
           <img src={assets.rating_starts} alt="" />
         </div>
-        <p className="food-item-desc line-clamp-4 text-sm pt-1">
+        <p className="food-item-desc line-clamp-4 text-sm pt-1 line-clamp-2">
           {description}
         </p>
         <div className="flex justify-between items-center">
@@ -104,7 +104,7 @@ const FoodItem = (props) => {
             className="bg-amber-700 text-white mt-3 px-3 py-2 hover:bg-amber-800"
             onClick={() => handleClick(product_id)}
           >
-            Add to cart
+            Thêm vào giỏ hàng
           </button>
         </div>
       </div>
