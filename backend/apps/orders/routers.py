@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from apps.accounts.services.authenticate import AccountService
+from apps.accounts.services.permissions import Permission
 from apps.accounts.services.user import User
 
 from .schemas import OrderCreateSchema, OrderItemSchema, OrderSchema
@@ -46,6 +47,7 @@ async def retrieve_order(order_id: int):
     # response_model=list[OrderSchema],
     summary="Retrieve a list of orders",
     description="Retrieve a list of orders.",
+    dependencies=[Depends(Permission.is_admin)],
 )
 async def list_orders():
     orders = OrderService.list_orders()
