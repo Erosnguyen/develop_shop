@@ -1,8 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import { getVariantPrice } from "../../lib/utils";
+import { handleAddOrder } from "./billServices";
+import MessagePopup from "../../components/MessagePopup/MessagePopup";
 
 const Bill = ({ product }) => {
+
+  const [showMessage, setShowMessage] = useState({});
   const variants = product?.variants;
 
   const {
@@ -51,114 +55,147 @@ const Bill = ({ product }) => {
     checkedVariant.size
   );
 
+  const convertDataSubmit = (data = []) => {
+    return {
+      items: data?.map(i => {
+        return {
+          variant_product_id: i?.data?.variants?.length ? i?.data?.variants[0]?.variant_id : null,
+          quantity: i?.quantity
+        }
+      })
+    }
+  }
+  const handleAddBill = async (e) => {
+    e.preventDefault();
+    try {
+      let dataSubmit = convertDataSubmit(cartItems);
+      const data = await handleAddOrder(dataSubmit);
+      if (data?.status === 201) {
+        cartItems?.forEach(i => {
+          handleDeleteProductInCart(i)
+        })
+      }
+      setShowMessage((pre) => ({ ...pre, open: true, text: "Đặt hàng thành công!" }))
+
+      setTimeout(() => {
+        setShowMessage((pre) => ({ ...pre, open: false, text: "" }))
+      }, 2000)
+    } catch (error) {
+
+    }
+  }
   return (
-    <div className="bill mt-10 grid grid-cols-2 gap-20">
-      <div className="bill-left">
-        <h2 className="bill-title font-semibold text-[40px] mb-5">
-          Billing Information
-        </h2>
-        <form action="">
-          <div className="">
-            <input
-              type="text"
-              className="border divide-solid border-gray-500 leading-10 w-full"
-              placeholder="Name"
-            />
-          </div>
+    <>
+      {showMessage?.open && <MessagePopup showMessage={showMessage} />}
+      <div className="bill mt-10 grid grid-cols-2 gap-20">
 
-          <div className=" mt-8">
-            <input
-              type="text"
-              className="border divide-solid border-gray-500 leading-10 w-full"
-              placeholder="Address"
-            />
-          </div>
+        <div className="bill-left">
+          <h2 className="bill-title font-semibold text-[40px] mb-5">
+            Billing Information
+          </h2>
+          <form action="">
+            <div className="">
+              <input
+                type="text"
+                className="border divide-solid border-gray-500 leading-10 w-full"
+                placeholder="Name"
+              />
+            </div>
 
-          <div className=" mt-8">
-            <input
-              type="text"
-              className="border divide-solid border-gray-500 leading-10 w-full"
-              placeholder="Enter your phone number"
-            />
-          </div>
+            <div className=" mt-8">
+              <input
+                type="text"
+                className="border divide-solid border-gray-500 leading-10 w-full"
+                placeholder="Address"
+              />
+            </div>
 
-          <div className=" mt-8">
-            <input
-              type="text"
-              className="border divide-solid border-gray-500 leading-10 w-full"
-              placeholder="Enter your email address"
-            />
-          </div>
+            <div className=" mt-8">
+              <input
+                type="text"
+                className="border divide-solid border-gray-500 leading-10 w-full"
+                placeholder="Enter your phone number"
+              />
+            </div>
 
-          <div className=" mt-8">
-            <textarea
-              className="border divide-solid border-gray-500 leading-10 w-full"
-              name="Notes about orders"
-              id=""
-              placeholder="Notes about orders"
-            ></textarea>
-          </div>
-        </form>
-      </div>
+            <div className=" mt-8">
+              <input
+                type="text"
+                className="border divide-solid border-gray-500 leading-10 w-full"
+                placeholder="Enter your email address"
+              />
+            </div>
 
-      <div className="bill-right">
-        <h2 className="font-semibold text-[40px] mb-5">Your order</h2>
-        <div>
-          {cartItems?.map((item) => (
-            <div>
-              <div className="flex justify-between mt-10">
-                <div>
-                  <p className="font-semibold">PRODUCT</p>
+            <div className=" mt-8">
+              <textarea
+                className="border divide-solid border-gray-500 leading-10 w-full"
+                name="Notes about orders"
+                id=""
+                placeholder="Notes about orders"
+              ></textarea>
+            </div>
+          </form>
+        </div>
+
+        <div className="bill-right">
+          <h2 className="font-semibold text-[40px] mb-5">Your order</h2>
+          <div>
+            {cartItems?.map((item) => (
+              <div>
+                <div className="flex justify-between mt-10">
                   <div>
-                    {item.data.product_name} x {item.quantity}
+                    <p className="font-semibold">PRODUCT</p>
+                    <div>
+                      {item.data.product_name} x {item.quantity}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="font-semibold">PROVISIONAL</p>
+                    <div className="font-semibold">{priceProduct}</div>
                   </div>
                 </div>
-                <div>
-                  <p className="font-semibold">PROVISIONAL</p>
+                <div className="flex justify-between mt-10">
+                  <div>
+                    <p className="font-semibold">Total</p>
+                  </div>
                   <div className="font-semibold">{priceProduct}</div>
                 </div>
-              </div>
-              <div className="flex justify-between mt-10">
                 <div>
-                  <p className="font-semibold">Total</p>
+                  <div class="flex items-center mb-4">
+                    <input
+                      id="default-radio-1"
+                      type="radio"
+                      value=""
+                      name="default-radio"
+                      class="mr-3"
+                    />
+                    <label for="default-radio-1" class="">
+                      Bank transfer
+                    </label>
+                  </div>
+                  <div class="flex items-center">
+                    <input
+                      checked
+                      id="default-radio-2"
+                      type="radio"
+                      value=""
+                      name="default-radio"
+                      class="mr-3"
+                    />
+                    <label for="default-radio-2" class="">
+                      Pay cash upon delivery
+                    </label>
+                  </div>
                 </div>
-                <div className="font-semibold">{priceProduct}</div>
+                <button className="bg-amber-700 px-6 py-4 text-white mt-10" onClick={handleAddBill}>
+                  Order
+                </button>
               </div>
-              <div>
-                <div class="flex items-center mb-4">
-                  <input
-                    id="default-radio-1"
-                    type="radio"
-                    value=""
-                    name="default-radio"
-                    class="mr-3"
-                  />
-                  <label for="default-radio-1" class="">
-                    Bank transfer
-                  </label>
-                </div>
-                <div class="flex items-center">
-                  <input
-                    checked
-                    id="default-radio-2"
-                    type="radio"
-                    value=""
-                    name="default-radio"
-                    class="mr-3"
-                  />
-                  <label for="default-radio-2" class="">
-                    Pay cash upon delivery
-                  </label>
-                </div>
-              </div>
-              <button className="bg-amber-700 px-6 py-4 text-white mt-10">
-                Order
-              </button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

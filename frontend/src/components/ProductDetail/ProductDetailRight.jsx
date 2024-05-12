@@ -8,6 +8,8 @@ const ProductDetailRight = ({ product }) => {
   const variants = product?.variants;
   const options = product?.options;
 
+  const [quantity, setQuantity] = useState(1);
+
   const {
     products,
     cartItems,
@@ -15,6 +17,7 @@ const ProductDetailRight = ({ product }) => {
     increaseCartQuantity,
     decreaseCartQuantity,
     removeFromCart,
+    addCart
   } = useContext(StoreContext);
 
   const [checkedVariant, setCheckedVariant] = useState({
@@ -48,8 +51,22 @@ const ProductDetailRight = ({ product }) => {
     variants,
     checkedVariant.color,
     checkedVariant.material,
-    checkedVariant.size
+    checkedVariant.size,
+    quantity
   );
+
+  const incrementQuantity = () => {
+    setQuantity((prev) => prev + 1);
+  };
+
+  const decrementQuantity = () => {
+    setQuantity((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleAddToCart = async () => {
+    addCart(product, checkedVariant, quantity)
+
+  }
 
   return (
     <div>
@@ -64,13 +81,12 @@ const ProductDetailRight = ({ product }) => {
             <div className="flex items-center gap-2">
               {option.items.map((item) => (
                 <button
-                  className={`border border-gray-300 px-4 hover:border-amber-700 ${
-                    item.item_id === checkedVariant.color ||
+                  className={`border border-gray-300 px-4 hover:border-amber-700 ${item.item_id === checkedVariant.color ||
                     item.item_id === checkedVariant.size ||
                     item.item_id === checkedVariant.material
-                      ? "text-red-500"
-                      : ""
-                  }`}
+                    ? "text-red-500"
+                    : ""
+                    }`}
                   key={item.item_id}
                   onClick={() =>
                     handleChecked(item.item_id, option.option_name)
@@ -84,21 +100,15 @@ const ProductDetailRight = ({ product }) => {
         ))}
       </div>
 
-      <ChangeCount />
+      <ChangeCount quantity={quantity} incrementQuantity={incrementQuantity} decrementQuantity={decrementQuantity} />
 
       <div className="pt-10">
-        <Link to="/Bill">
+        <Link to="/cart">
           <button
             className="bg-amber-700 text-white mt-3 px-4 py-3 hover:bg-amber-800"
-            onClick={() => increaseCartQuantity(product, checkedVariant)}
+            onClick={() => handleAddToCart()}
           >
-            tang
-          </button>
-          <button
-            className="bg-amber-700 text-white mt-3 px-4 py-3 hover:bg-amber-800"
-            onClick={() => decreaseCartQuantity(product, checkedVariant)}
-          >
-            giam
+            Add to cart
           </button>
         </Link>
       </div>

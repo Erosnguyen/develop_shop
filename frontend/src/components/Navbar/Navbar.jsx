@@ -1,11 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { assets } from "../../assets/assets";
 import "../../index.css";
 import { Link } from "react-router-dom";
 
 const NavBar = ({ setShowLogin }) => {
   const [menu, setMenu] = useState("home");
+  const token = localStorage.getItem("access_token")
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
+  const handleLogout = () => {
+    localStorage.removeItem("access_token")
+    setIsLoggedIn(false);
+  }
+
+  useEffect(() => {
+    if (token) {
+      setIsLoggedIn(true)
+    } else {
+      setIsLoggedIn(false)
+    }
+  }, [token])
   return (
     <div className="navbar pt-5 justify-between flex items-center">
       {/* <img src={assets.logo} alt="" className="w-[150px]" /> */}
@@ -72,12 +86,21 @@ const NavBar = ({ setShowLogin }) => {
           </Link>
           <div className="dot absolute min-w-[10px] min-h-[10px] bg-amber-700 rounded-[5px] -top-2 -right-2"></div>
         </div>
-        <button
-          onClick={() => setShowLogin(true)}
-          className="bg-transparent text-base text-[#49557e] border border-solid border-amber-700  rounded-[50px] cursor-pointer hover:bg-[#fff4f2] text-center px-[30px] py-[10px] max-xl:py-[8px] max-xl:px-[25px] max-lg:px-[20px] max-lg:py-[7px] lg:text-[15px]"
-        >
-          sign in
-        </button>
+        {
+          isLoggedIn ?
+            <button
+              onClick={() => handleLogout()}
+              className="bg-transparent text-base text-[#49557e] border border-solid border-amber-700  rounded-[50px] cursor-pointer hover:bg-[#fff4f2] text-center px-[30px] py-[10px] max-xl:py-[8px] max-xl:px-[25px] max-lg:px-[20px] max-lg:py-[7px] lg:text-[15px]"
+            >
+              Logout
+            </button> :
+            <button
+              onClick={() => setShowLogin(true)}
+              className="bg-transparent text-base text-[#49557e] border border-solid border-amber-700  rounded-[50px] cursor-pointer hover:bg-[#fff4f2] text-center px-[30px] py-[10px] max-xl:py-[8px] max-xl:px-[25px] max-lg:px-[20px] max-lg:py-[7px] lg:text-[15px]"
+            >
+              sign in
+            </button>
+        }
       </div>
     </div>
   );

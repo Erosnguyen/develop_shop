@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import { Link } from "react-router-dom";
+import { getVariantPrice } from "../../lib/utils";
 
 const Cart = ({ product }) => {
   const {
@@ -54,22 +55,28 @@ const Cart = ({ product }) => {
               </td>
               <td className="border divide-solid border-amber-700">
                 <div className="flex justify-center">
-                  <button
+                  {/* <button
                     className="font-bold text-[25px]"
                     onClick={decrementQuantity}
                   >
                     -
-                  </button>
-                  <div className="pl-5 pr-5 text-[25px]">{quantity}</div>
-                  <button
+                  </button> */}
+                  <div className="pl-5 pr-5 text-[25px]">{item?.quantity}</div>
+                  {/* <button
                     className="font-bold text-[25px]"
                     onClick={incrementQuantity}
                   >
                     +
-                  </button>
+                  </button> */}
                 </div>
               </td>
-              <td className="border divide-solid border-amber-700">{61.17}$</td>
+              <td className="border divide-solid border-amber-700">{getVariantPrice(
+                item?.data?.variants,
+                item?.data?.checkedVariant.color,
+                item?.data?.checkedVariant.material,
+                item?.data?.checkedVariant.size,
+                item?.quantity
+              )}$</td>
               <td className="border divide-solid border-amber-700">
                 <div>
                   <button

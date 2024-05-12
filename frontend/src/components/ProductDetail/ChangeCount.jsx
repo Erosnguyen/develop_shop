@@ -1,16 +1,12 @@
 import { useState } from "react";
 
-const ChangeCount = () => {
-  const [quantity, setQuantity] = useState(1);
+const ChangeCount = (props) => {
 
-  const incrementQuantity = () => {
-    setQuantity((prev) => prev + 1);
-  };
-
-  const decrementQuantity = () => {
-    setQuantity((prev) => Math.max(prev - 1, 1));
-  };
-
+  let {
+    decrementQuantity,
+    quantity,
+    incrementQuantity
+  } = props;
   return (
     <div className="flex mt-10 justify-start items-center">
       <p className="font-bold">Quantity:</p>

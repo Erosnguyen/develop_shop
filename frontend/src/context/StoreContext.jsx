@@ -63,8 +63,24 @@ const StoreContextProvider = (props) => {
   function removeFromCart(data) {
     setCartItems((currItems) => {
       return currItems.filter(
-        (item) => item.data.product_id !== data.product_id
+        (item) => item.data.product_id !== (data.product_id || data?.data?.product_id)
       );
+    });
+  }
+
+  function addCart(data, checkedVariant, quantity) {
+    setCartItems((currItems) => {
+      const existingItem = checkExistingCartItem(data, checkedVariant);
+      if (existingItem) {
+        return currItems.map((item) => {
+          return { ...item, quantity: item.quantity + quantity };
+        });
+      } else {
+        return [
+          ...currItems,
+          { data: { ...data, checkedVariant }, quantity: quantity },
+        ];
+      }
     });
   }
 
@@ -82,6 +98,7 @@ const StoreContextProvider = (props) => {
       value={{
         products,
         cartItems,
+        addCart,
         getItemQuantity,
         increaseCartQuantity,
         decreaseCartQuantity,

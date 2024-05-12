@@ -9,7 +9,8 @@ export const getVariantPrice = (
   variants,
   variantColor,
   variantMaterial,
-  variantSize
+  variantSize,
+  quantity = 1
 ) => {
   const selectedVariant = variants?.find(
     (variant) =>
@@ -18,5 +19,5 @@ export const getVariantPrice = (
       variant.option3 === variantSize
   );
 
-  return selectedVariant ? `${selectedVariant.price}$` : "0$";
+  return selectedVariant ? `${selectedVariant.price * quantity}$` : "0$";
 };
