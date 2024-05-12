@@ -10,7 +10,7 @@ from pydantic import BaseModel
 
 
 class OrderItemSchema(BaseModel):
-    product_id: int
+    variant_product_id: int
     quantity: int
 
 
