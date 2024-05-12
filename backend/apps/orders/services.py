@@ -63,7 +63,7 @@ class OrderService:
         orders_list = []
 
         with DatabaseManager.session as session:
-            orders = session.execute(select(Order.id).limit(limit))
+            orders = session.execute(select(Order.id))
 
         for order in orders:
             orders_list.append(cls.retrieve_order(order.id))
