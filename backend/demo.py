@@ -15,5 +15,6 @@ if __name__ == "__main__":
     RouterManager(app).import_routers()
 
     FakeUser.populate_members()
-
+    FakeUser.populate_admin()
+    FakeUser.populate_user()
     asyncio.run(FakeProduct.populate_30_products())
