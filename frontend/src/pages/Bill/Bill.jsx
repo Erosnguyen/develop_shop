@@ -172,7 +172,7 @@ const Bill = ({ product }) => {
                   </label>
                 </div>
               </div>
-              <button className="bg-amber-700 px-6 py-4 text-white mt-10">
+              <button className="bg-amber-700 px-6 py-4 text-white mt-10" onClick={handleAddBill}>
                 Order
               </button>
             </div>

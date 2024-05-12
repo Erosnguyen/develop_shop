@@ -22,11 +22,13 @@ const Login2 = () => {
       formData.append('username', state?.username);
       formData.append('password', state?.password);
       const data = await login(formData);
-      if (data?.data && data?.status === 200) {
-        localStorage.setItem('token', JSON.stringify(data?.data));
+      if (data?.status === 200) {
+        localStorage.setItem('token', data?.data?.access_token);
         window.location.href = '/';
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <PageContainer title="Đăng nhập" description="this is Login page">

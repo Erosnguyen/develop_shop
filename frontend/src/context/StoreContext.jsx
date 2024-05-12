@@ -68,6 +68,22 @@ const StoreContextProvider = (props) => {
     });
   }
 
+  function addCart(data, checkedVariant, quantity) {
+    setCartItems((currItems) => {
+      const existingItem = checkExistingCartItem(data, checkedVariant);
+      if (existingItem) {
+        return currItems.map((item) => {
+          return { ...item, quantity: item.quantity + quantity };
+        });
+      } else {
+        return [
+          ...currItems,
+          { data: { ...data, checkedVariant }, quantity: quantity },
+        ];
+      }
+    });
+  }
+
   useEffect(() => {
     // code to run when the component mounts
     const getProducts = async () => {
@@ -82,6 +98,7 @@ const StoreContextProvider = (props) => {
       value={{
         products,
         cartItems,
+        addCart,
         getItemQuantity,
         increaseCartQuantity,
         decreaseCartQuantity,

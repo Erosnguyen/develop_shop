@@ -12,13 +12,13 @@ function App() {
   const theme = baselightTheme;
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem('token');
-  //   if (token) {
-  //   } else {
-  //     navigate('/auth/login');
-  //   }
-  // }, [navigate]);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+    } else {
+      navigate('/auth/login');
+    }
+  }, [navigate]);
 
   return (
     <ThemeProvider theme={theme}>

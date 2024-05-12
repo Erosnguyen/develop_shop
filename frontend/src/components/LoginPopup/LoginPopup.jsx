@@ -32,6 +32,7 @@ const LoginPopup = ({ setShowLogin, setShowMessage }) => {
 
         const formData = {
           email: state?.email,
+          role: state?.role,
           password: state?.password,
           password_confirm: state?.password_confirm,
         }
@@ -70,7 +71,6 @@ const LoginPopup = ({ setShowLogin, setShowMessage }) => {
 
   const handleChange = (e) => {
     let { name, value } = e.target;
-
     setState((pre) => ({
       ...pre,
       [name]: value
@@ -125,15 +125,23 @@ const LoginPopup = ({ setShowLogin, setShowMessage }) => {
               {currState === "Login" ? (
                 <></>
               ) : (
-                <input
-                  className="outline-none border-solid border-2 rounded-[4px] py-[10px] pl-[8px]"
-                  type="password"
-                  placeholder="Confirm password"
-                  required
-                  name="password_confirm"
-                  value={state.password_confirm}
-                  onChange={handleChange}
-                />
+                <>
+                  <input
+                    className="outline-none border-solid border-2 rounded-[4px] py-[10px] pl-[8px]"
+                    type="password"
+                    placeholder="Confirm password"
+                    required
+                    name="password_confirm"
+                    value={state.password_confirm}
+                    onChange={handleChange}
+                  />
+
+                  <label for="cars">Role</label>
+                  <select onChange={handleChange} name="role" value={state.role} id="cars" className="outline-none border-solid border-2 rounded-[4px] py-[10px] pl-[8px]">
+                    <option value="admin">admin</option>
+                    <option value="user">user</option>
+                  </select>
+                </>
               )}
             </>}
         </div>

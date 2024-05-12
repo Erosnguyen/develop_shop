@@ -7,7 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
 import Autocomplete from '@mui/material/Autocomplete';
 import { useEffect, useState } from 'react';
-import { insertBook, updateBook } from './ManageBookServices';
+import { addProduct, updateProduct } from './ManageBookServices';
 import { getListGenre } from '../ManageGenre/ManageGenreServices';
 import { toast } from 'react-toastify';
 import { IconTrash } from '@tabler/icons';
@@ -27,27 +27,46 @@ export default function ManageBookDialog(props) {
 
     const convertData = (value) => {
         return {
-            idBook: value?.book_id,
-            title: value?.title,
-            author: value?.author,
-            idGenre: value?.genre?.genre_id,
-            quantity: value?.quantity,
-            availableQuantity: value?.availableQuantity,
+            product_name: value?.product_name,
+            product_id: value?.product_id,
+            price: value?.price,
+            stock: value?.stock,
+            status: value?.status,
+            description: value?.description,
+            options: value?.listOption?.map(i => {
+                return {
+                    option_name: i?.option_name,
+                    items: i?.items?.map(item => {
+                        return item?.item_name
+                    })
+                }
+            })
+
+
+        }
+    }
+    const convertDataUpdate = (value) => {
+        return {
+            product_name: value?.product_name,
+            status: value?.status,
+            description: value?.description,
         }
     }
 
     const handleSubmit = async () => {
         try {
             const dataSubmit = convertData(state);
-            if (state?.book_id) {
-                await updateBook(dataSubmit);
+            const dataSubmitUpdate = convertDataUpdate(state);
+            if (state?.product_id) {
+                await updateProduct(state?.product_id, dataSubmitUpdate);
                 toast.success("Cập nhật thành công")
             } else {
-                await insertBook(dataSubmit);
+                await addProduct(dataSubmit);
                 toast.success("Thêm mới thành công")
             }
         } catch (error) {
 
+            console.log(error)
         } finally {
             handleClose();
             search();
@@ -123,10 +142,33 @@ export default function ManageBookDialog(props) {
         }));
     }
 
+    const handleDeleteOptionItem = (itemId) => {
+        let updatedListOption = state.listOption.map(option => {
+            let updatedItems = option.items.filter(item => item.item_id !== itemId);
+            return {
+                ...option,
+                items: updatedItems
+            };
+        });
+
+        setState(prevState => ({
+            ...prevState,
+            listOption: updatedListOption
+        }));
+    }
+
+    const handleDeleteOption = (opId) => {
+        let updatedListOption = state.listOption.filter(option => option.option_id !== opId);
+        setState(prevState => ({
+            ...prevState,
+            listOption: updatedListOption
+        }));
+    }
+
     useEffect(() => {
         setState({
             ...item,
-            listOption: []
+            listOption: item?.options || []
         })
     }, [item])
     return (
@@ -153,7 +195,7 @@ export default function ManageBookDialog(props) {
                                 required
                                 margin="dense"
                                 name="product_name"
-                                label="product_name"
+                                label="Product name"
                                 fullWidth
                                 variant="standard"
                                 value={state?.product_name}
@@ -162,10 +204,9 @@ export default function ManageBookDialog(props) {
                         </Grid>
                         <Grid item md={4} sm={6} xs={12}>
                             <TextField
-                                required
                                 margin="dense"
                                 name="price"
-                                label="price"
+                                label="Price"
                                 type='number'
                                 fullWidth
                                 variant="standard"
@@ -175,10 +216,9 @@ export default function ManageBookDialog(props) {
                         </Grid>
                         <Grid item md={4} sm={6} xs={12}>
                             <TextField
-                                required
                                 margin="dense"
                                 name="stock"
-                                label="stock"
+                                label="Stock"
                                 type='number'
                                 fullWidth
                                 variant="standard"
@@ -191,7 +231,7 @@ export default function ManageBookDialog(props) {
                                 required
                                 margin="dense"
                                 name="status"
-                                label="status"
+                                label="Status"
                                 fullWidth
                                 variant="standard"
                                 value={state?.status}
@@ -204,26 +244,26 @@ export default function ManageBookDialog(props) {
                                 required
                                 margin="dense"
                                 name="description"
-                                label="description"
+                                label="Description"
                                 fullWidth
                                 variant="standard"
                                 value={state?.description}
                                 onChange={(e) => handleChange(e.target.value, "description")}
                             />
                         </Grid>
-                        <Grid item xs={12} >
+                        {!state?.product_id && <Grid item xs={12} >
                             <Button variant='contained' size='small' onClick={() => handleAddOption()}>Add option</Button>
-                        </Grid>
+                        </Grid>}
                     </Grid>
                     {state?.listOption?.map(i => {
                         return (
                             <Grid container spacing={2}>
-                                <Grid item md={11} sm={11} xs={11}>
+                                <Grid item md={11} sm={11} xs={11} sx={{ mt: 1 }}>
                                     <TextField
                                         required
                                         margin="dense"
                                         name="option_name"
-                                        label="Option name"
+                                        label={"Option name"}
                                         fullWidth
                                         variant="standard"
                                         value={i?.option_name}
@@ -231,7 +271,7 @@ export default function ManageBookDialog(props) {
                                     />
                                 </Grid>
                                 <Grid item md={1} sm={1} xs={1}>
-                                    <Button sx={{ minWidth: 0, mt: 3 }} variant='contained' size='small'><IconTrash size="1.3rem" /></Button>
+                                    {!state?.product_id && <Button onClick={() => handleDeleteOption(i?.option_id)} sx={{ minWidth: 0, mt: 3 }} variant='contained' size='small'><IconTrash size="1.3rem" /></Button>}
                                 </Grid>
                                 {i?.items?.map(item => {
                                     return (
@@ -247,12 +287,12 @@ export default function ManageBookDialog(props) {
                                                 onChange={(e) => handleChangeItemName(e.target.value, item?.item_id, i?.option_id)}
                                             />
 
-                                            <Button sx={{ minWidth: 0, mt: 3 }} variant='contained' size='small'><IconTrash size="1.3rem" /></Button>
+                                            {!state?.product_id && <Button onClick={() => handleDeleteOptionItem(item?.item_id)} sx={{ minWidth: 0, mt: 3 }} variant='contained' size='small'><IconTrash size="1.3rem" /></Button>}
                                         </Grid>
                                     )
                                 })}
                                 <Grid item md={2} sm={2} xs={2}>
-                                    <Button sx={{ mt: 3 }} variant='contained' size='small' onClick={() => handleAddDetailOption(i?.option_id)}>Add detail</Button>
+                                    {!state?.product_id && <Button sx={{ mt: 3 }} variant='contained' size='small' onClick={() => handleAddDetailOption(i?.option_id)}>Add detail</Button>}
                                 </Grid>
                             </Grid>
                         )

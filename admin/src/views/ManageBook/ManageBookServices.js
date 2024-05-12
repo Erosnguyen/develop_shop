@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../../utils/axios-custom.js';
 import { API_PATH } from 'src/AppConst';
 
 export const getAllProducts = () => {
@@ -9,12 +9,12 @@ export const getAllBook = () => {
   return axios.get(API_PATH + '/getAllBook');
 };
 
-export const insertBook = (payload) => {
-  return axios.post(API_PATH + '/insertBook', payload);
+export const addProduct = (payload) => {
+  return axios.post(API_PATH + '/products', payload);
 };
 
-export const updateBook = (payload) => {
-  return axios.put(API_PATH + '/updateBook', payload);
+export const updateProduct = (id, payload) => {
+  return axios.put(API_PATH + '/products/' + id, payload);
 };
 
 export const deleteProduct = (id) => {

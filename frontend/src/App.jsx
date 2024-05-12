@@ -9,6 +9,7 @@ import { useState } from "react";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
 import Bill from "./pages/Bill/Bill";
 import ProductDetail from "./pages/ProductDetail/ProductDetail";
+import MessagePopup from "./components/MessagePopup/MessagePopup"
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
