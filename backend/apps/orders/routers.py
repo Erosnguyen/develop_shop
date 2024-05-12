@@ -60,10 +60,8 @@ async def list_orders():
     description="Retrieve a list of orders placed by the authenticated customer.",
 )
 async def list_orders_by_customer_id(
-    current_user: User = Depends(AccountService.current_user)
+    current_user: User = Depends(AccountService.current_user),
 ):
     customer_id = int(current_user.id)
     orders = OrderService.list_orders_by_customer_id(customer_id)
     return orders
-
-
