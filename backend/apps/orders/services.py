@@ -95,5 +95,3 @@ class OrderService:
             for order in orders:
                 orders_by_customer.append(order)
         return orders_by_customer
-
-
