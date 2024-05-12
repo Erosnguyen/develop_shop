@@ -138,6 +138,7 @@ class UserManager:
         _dict = {
             "user_id": user.id,
             "email": user.email,
+            "role": user.role,
             "first_name": user.first_name,
             "last_name": user.last_name,
             "is_verified_email": user.is_verified_email,
