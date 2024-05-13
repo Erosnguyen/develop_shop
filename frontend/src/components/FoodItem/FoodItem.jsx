@@ -3,9 +3,11 @@ import { assets } from "../../assets/assets";
 import { StoreContext } from "../../context/StoreContext";
 import { Link } from "react-router-dom";
 import { getVariantPrice } from "../../lib/utils";
+import { Button } from "@nextui-org/react";
+import { AddIcon } from "../../assets/AddIcon";
 
 const FoodItem = (props) => {
-  const { description, product_name, media, product_id, product } = props;
+  const { description, product_name, media, product_id, product, options, variants } = props;
   const { handleClick, ...rest } = props;
   const {
     cartItems,
@@ -14,43 +16,40 @@ const FoodItem = (props) => {
     getItemQuantity,
   } = useContext(StoreContext);
 
-  const variants = product?.variants;
-  const options = product?.options;
-
   const [quantity, setQuantity] = useState(1);
 
-  const [checkedVariant, setCheckedVariant] = useState({
-    color: variants?.[0]?.option1,
-    material: variants?.[0]?.option2,
-    size: variants?.[0]?.option3,
-  });
+  // const [checkedVariant, setCheckedVariant] = useState({
+  //   option1: variants?.[0]?.option1,
+  //   option2: variants?.[0]?.option2,
+  //   option3: variants?.[0]?.option3,
+  // });
 
-  useEffect(() => {
-    setCheckedVariant({
-      color: variants?.[0]?.option1,
-      material: variants?.[0]?.option2,
-      size: variants?.[0]?.option3,
-    });
-  }, [product]);
+  // useEffect(() => {
+  //   setCheckedVariant({
+  //     option1: variants?.[0]?.option1,
+  //     option2: variants?.[0]?.option2,
+  //     option3: variants?.[0]?.option3,
+  //   });
+  // }, [product]);
 
-  const updateVariant = (optionName, itemId) => {
-    setCheckedVariant((prevVariant) => ({
-      ...prevVariant,
-      [optionName]: itemId,
-    }));
-  };
+  // const updateVariant = (optionName, itemId) => {
+  //   setCheckedVariant((prevVariant) => ({
+  //     ...prevVariant,
+  //     [optionName]: itemId,
+  //   }));
+  // };
 
-  const handleChecked = (itemId, optionName) => {
-    updateVariant(optionName, itemId);
-  };
+  // const handleChecked = (itemId, optionName) => {
+  //   updateVariant(optionName, itemId);
+  // };
 
   //lấy giá tiền của variant theo màu, hình thức, kiểu
 
   const priceProduct = getVariantPrice(
     variants,
-    checkedVariant.color,
-    checkedVariant.material,
-    checkedVariant.size
+    options ? options[0]?.items[0]?.item_id : "",
+    options ? options[1]?.items[0]?.item_id : "",
+    options ? options[2]?.items[0]?.item_id : ""
   );
 
   const incrementQuantity = () => {
@@ -61,12 +60,14 @@ const FoodItem = (props) => {
     setQuantity((prev) => Math.max(prev - 1, 1));
   };
 
+  console.log(media)
+
   return (
     <div className="food-item">
       <div className="food-item-img-container relative">
         <img
           className="food-item-image rounded-xl max-sm:w-full max-sm:h-auto max-md:w-full max-md:h-80 max-lg:size-60 max-xl:size-60 2xl:size-80"
-          src={media?.length ? media[0]?.src : ""}
+          src={media ? media[0]?.src : "/src/assets/No_Image.png"}
           alt=""
           onClick={() => handleClick(product_id)}
         />
@@ -92,7 +93,7 @@ const FoodItem = (props) => {
           </p>
           <img src={assets.rating_starts} alt="" />
         </div>
-        <p className="food-item-desc line-clamp-4 text-sm pt-1 line-clamp-2">
+        <p className="food-item-desc text-sm pt-1 line-clamp-2">
           {description}
         </p>
         <div className="flex justify-between items-center">
@@ -100,12 +101,14 @@ const FoodItem = (props) => {
             {priceProduct}
           </p>
 
-          <button
-            className="bg-amber-700 text-white mt-3 px-3 py-2 hover:bg-amber-800"
+          <Button
+            color="warning" 
+            startContent={<AddIcon/>}
+            className="bg-amber-700 text-white"
             onClick={() => handleClick(product_id)}
           >
-            Thêm vào giỏ hàng
-          </button>
+            Giỏ hàng
+          </Button>
         </div>
       </div>
     </div>

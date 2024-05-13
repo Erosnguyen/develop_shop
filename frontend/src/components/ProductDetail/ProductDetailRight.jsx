@@ -49,9 +49,9 @@ const ProductDetailRight = ({ product }) => {
 
   const priceProduct = getVariantPrice(
     variants,
-    checkedVariant.color,
-    checkedVariant.material,
-    checkedVariant.size,
+    checkedVariant.option1,
+    checkedVariant.option2,
+    checkedVariant.option3,
     quantity
   );
 

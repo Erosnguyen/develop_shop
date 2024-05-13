@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import "../../index.css";
 import { Link } from "react-router-dom";
+import { StoreContext } from "../../context/StoreContext";
 import {
   Navbar,
   NavbarBrand,
@@ -23,13 +24,22 @@ const NavBar = ({ setShowLogin }) => {
   const location = useLocation();
   const currentPath = location.pathname;
 
+  const {
+    cartItems
+  } = useContext(StoreContext);
+
   const token = localStorage.getItem("access_token");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [cart, setCart] = useState(0);
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     setIsLoggedIn(false);
   };
+
+  useEffect(() => {
+    setCart(cartItems.length);
+  },[cartItems])
 
   const menus = [
     {
@@ -173,7 +183,7 @@ const NavBar = ({ setShowLogin }) => {
             type="search"
           />
           <Link to={"/cart"}>
-              <Badge color="danger" content={5} isInvisible={false} shape="circle">
+              <Badge color="danger" content={cart} isInvisible={false} shape="circle">
                 <CartIcon size={24} />
               </Badge>
           </Link>
