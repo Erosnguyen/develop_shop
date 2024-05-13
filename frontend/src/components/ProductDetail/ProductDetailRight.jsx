@@ -5,6 +5,7 @@ import { StoreContext } from "../../context/StoreContext";
 import { getVariantPrice } from "../../lib/utils";
 import { Button } from "@nextui-org/react";
 import { AddIcon } from "../../assets/AddIcon";
+import { toast } from "react-toastify";
 
 const ProductDetailRight = ({ product }) => {
   const variants = product?.variants;
@@ -67,7 +68,7 @@ const ProductDetailRight = ({ product }) => {
 
   const handleAddToCart = async () => {
     addCart(product, checkedVariant, quantity)
-
+    toast.success("Thêm vào giỏ hàng thành công")
   }
 
   return (

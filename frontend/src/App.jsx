@@ -12,6 +12,10 @@ import ProductDetail from "./pages/ProductDetail/ProductDetail";
 import MessagePopup from "./components/MessagePopup/MessagePopup";
 import { NextUIProvider } from "@nextui-org/system";
 import Shop from "./pages/Shop/Shop";
+import { Login } from "./pages/Authentication/Login";
+import { Register } from "./pages/Authentication/Register";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -29,6 +33,7 @@ function App() {
       )}
       {showMessage?.open && <MessagePopup showMessage={showMessage} />}
       <div className="app">
+        
         <NextUIProvider>
           <NavBar setShowLogin={setShowLogin} />
           <Routes>
@@ -37,11 +42,14 @@ function App() {
             <Route path="/order" element={<PlaceOrder />} />
             <Route path="/bill" element={<Bill />} />
             <Route path="/shop" element={<Shop />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/product/:id" element={<ProductDetail />} />
           </Routes>
         </NextUIProvider>
       </div>
       <Footer />
+      <ToastContainer autoClose={3000}/>
     </>
   );
 }
