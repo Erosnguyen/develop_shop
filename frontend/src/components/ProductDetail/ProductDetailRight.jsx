@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import ChangeCount from "./ChangeCount";
 import { StoreContext } from "../../context/StoreContext";
 import { getVariantPrice } from "../../lib/utils";
+import { Button } from "@nextui-org/react";
+import { AddIcon } from "../../assets/AddIcon";
 
 const ProductDetailRight = ({ product }) => {
   const variants = product?.variants;
@@ -68,8 +70,6 @@ const ProductDetailRight = ({ product }) => {
 
   }
 
-  console.log(checkedVariant)
-
   return (
     <div>
       <div className="text-[30px]">{product.product_name}</div>
@@ -107,10 +107,11 @@ const ProductDetailRight = ({ product }) => {
       <div className="pt-10">
         <Link to="/cart">
           <button
-            className="bg-amber-700 text-white mt-3 px-4 py-3 hover:bg-amber-800"
+            className="bg-amber-700 text-white flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-amber-800"
             onClick={() => handleAddToCart()}
           >
-            Add to cart
+            <AddIcon />
+            Giỏ hàng
           </button>
         </Link>
       </div>

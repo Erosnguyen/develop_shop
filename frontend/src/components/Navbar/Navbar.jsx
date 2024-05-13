@@ -49,7 +49,7 @@ const NavBar = ({ setShowLogin }) => {
     },
     {
       name: "Cửa Hàng",
-      link: "/products",
+      link: "/shop",
       id: 2,
     },
     {

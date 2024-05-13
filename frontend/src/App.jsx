@@ -11,6 +11,7 @@ import Bill from "./pages/Bill/Bill";
 import ProductDetail from "./pages/ProductDetail/ProductDetail";
 import MessagePopup from "./components/MessagePopup/MessagePopup";
 import { NextUIProvider } from "@nextui-org/system";
+import Shop from "./pages/Shop/Shop";
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
@@ -35,6 +36,7 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/order" element={<PlaceOrder />} />
             <Route path="/bill" element={<Bill />} />
+            <Route path="/shop" element={<Shop />} />
             <Route path="/product/:id" element={<ProductDetail />} />
           </Routes>
         </NextUIProvider>

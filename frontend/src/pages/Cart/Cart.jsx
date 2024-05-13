@@ -80,7 +80,7 @@ const Cart = ({ product }) => {
                 {item.data.checkedVariant.option1} - {item.data.checkedVariant.option2} - {item.data.checkedVariant.option3}
                 </TableCell>
               <TableCell>
-                <Image width={100} height={100} src={item.data.media ? item.data.media[0].src : ""} />
+                <Image width={100} height={100} src={item.data.media ? item.data.media[0].src : "src/assets/No_Image.png"} />
               </TableCell>
               <TableCell>
               <div className="relative flex items-center">
