@@ -26,59 +26,31 @@ const StoreContextProvider = (props) => {
   }
 
   function increaseCartQuantity(data, checkedVariant) {
-    setCartItems((currItems) => {
-      const existingItem = checkExistingCartItem(data, checkedVariant);
-      if (existingItem) {
-        return currItems.map((item) => {
-          return { ...item, quantity: item.quantity + 1 };
-        });
-      } else {
-        return [
-          ...currItems,
-          { data: { ...data, checkedVariant }, quantity: 1 },
-        ];
+    setCartItems((prevCart) => {
+      const newCart = [...prevCart];
+      const existingItemIndex = newCart.findIndex(product => product.data.product_id === data.product_id && product.data.checkedVariant.option1 === checkedVariant.option1 && product.data.checkedVariant.option2 === checkedVariant.option2 && product.data.checkedVariant.option3 === checkedVariant.option3);
+      if (existingItemIndex !== -1) {
+        newCart[existingItemIndex].quantity += 1;
       }
+      return newCart;
     });
   }
 
-
-  // function decreaseCartQuantity(data, checkedVariant) {
-  //   const { variants, ...rest } = data;
-  //   const existingItem = checkExistingCartItem(data, checkedVariant);
-  //   setCartItems((currItems) => {
-  //     return currItems.map((item) => {
-  //       if (existingItem) {
-  //         if (item.quantity > 1) {
-  //           return { ...item, quantity: item.quantity - 1 };
-  //         } else {
-  //           return { ...item, quantity: 0 };
-  //         }
-  //       } else {
-  //         return item;
-  //       }
-  //     });
-  //   });
-  // }
   function decreaseCartQuantity(data, checkedVariant) {
-    const { variants, ...rest } = data;
-    const existingItem = checkExistingCartItem(data, checkedVariant);
-    setCartItems((currItems) => {
-      return currItems.map((item) => {
-        if (
-          existingItem &&
-          item.data.product_id === existingItem.data.product_id &&
-          item.data.checkedVariant.option1 === existingItem.data.checkedVariant.option1 &&
-          item.data.checkedVariant.option2 === existingItem.data.checkedVariant.option2 &&
-          item.data.checkedVariant.option3 === existingItem.data.checkedVariant.option3 &&
-          item.quantity > 1
-        ) {
-          return { ...item, quantity: item.quantity - 1 };
+    setCartItems((prevCart) => {
+      const newCart = [...prevCart];
+      const existingItemIndex = newCart.findIndex(product => product.data.product_id === data.product_id && product.data.checkedVariant.option1 === checkedVariant.option1 && product.data.checkedVariant.option2 === checkedVariant.option2 && product.data.checkedVariant.option3 === checkedVariant.option3);
+      if (existingItemIndex !== -1) {
+        if (newCart[existingItemIndex].quantity > 1) {
+          newCart[existingItemIndex].quantity -= 1;
         } else {
-          return item;
+          newCart.splice(existingItemIndex, 1);
         }
-      });
+      }
+      return newCart;
     });
   }
+
 
   function removeFromCart(data, checkedVariant) {
     setCartItems((currItems) => {
