@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card } from '@mui/material';
 import PageContainer from 'src/components/container/PageContainer';
-import ManageFoodTable from './ManageFoodTable';
-import ManageFoodDialog from './ManageFoodDialog';
+import ManageBookTable from './ManageBookTable';
+import ManageBookDialog from './ManageBookDialog';
 import ConfirmDialog from '../components/ConfirmDialog';
-import { deleteProduct, getAllProducts, getById } from './ManageFoodServices';
+import { deleteProduct, getAllProducts, getById } from './ManageBookServices';
 import { toast } from 'react-toastify';
 
-const ManageFood = () => {
+const ManageBook = () => {
 
     const [item, setItem] = useState(null);
     const [listitem, setListItem] = useState([]);
@@ -26,6 +26,7 @@ const ManageFood = () => {
     const handleEdit = async (value) => {
         try {
             const data = await getById(value?.product_id);
+            console.log()
             setOpen(true);
             setItem({
                 ...data?.data?.product,
@@ -73,9 +74,9 @@ const ManageFood = () => {
         <PageContainer title="Manage food">
             <Card sx={{ p: 1, minHeight: "screen" }}>
                 <Button variant='contained' size='small' onClick={handleClickOpen}>Thêm mới</Button>
-                <ManageFoodTable data={listitem} handleEdit={handleEdit} handleOpenDelete={handleOpenDelete} />
+                <ManageBookTable data={listitem} handleEdit={handleEdit} handleOpenDelete={handleOpenDelete} />
             </Card>
-            {open && <ManageFoodDialog
+            {open && <ManageBookDialog
                 open={open}
                 item={item}
                 search={search}
@@ -90,4 +91,4 @@ const ManageFood = () => {
     );
 };
 
-export default ManageFood;
+export default ManageBook;

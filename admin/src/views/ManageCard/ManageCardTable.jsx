@@ -9,10 +9,14 @@ import {
     Card,
     Button
 } from '@mui/material';
+import { IconEdit, IconTrash } from '@tabler/icons';
+import { chuyenNgayThanhChuoi } from 'src/AppConst';
 
-function ManageOrdersTable(props) {
+function ManageCardTable(props) {
     let {
         data,
+        handleEdit,
+        handleOpenDelete
     } = props;
 
     return (
@@ -39,24 +43,24 @@ function ManageOrdersTable(props) {
                                     STT
                                 </Typography>
                             </TableCell>
-                            <TableCell>
+                            <TableCell sx={{ w: 10 }}>
                                 <Typography variant="subtitle2" fontWeight={600} color={"white"}>
-                                    Order id
+                                    Thao tác
                                 </Typography>
                             </TableCell>
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600} color={"white"}>
-                                    Status
+                                    Mã thẻ
                                 </Typography>
                             </TableCell>
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600} color={"white"}>
-                                    Created at
+                                    Ngày phát hành
                                 </Typography>
                             </TableCell>
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600} color={"white"}>
-                                    Total price
+                                    Ngày hết hạn
                                 </Typography>
                             </TableCell>
                         </TableRow>
@@ -76,24 +80,32 @@ function ManageOrdersTable(props) {
                                         {index + 1}
                                     </Typography>
                                 </TableCell>
+                                <TableCell sx={{ cursor: "pointer", w: 10 }}>
+                                    <Button onClick={() => handleEdit(product)} sx={{ minWidth: 0, mr: 1 }} variant='contained' size='small'><IconEdit size="1.3rem" /></Button>
+                                    <Button onClick={() => handleOpenDelete(product)} sx={{ minWidth: 0 }} variant='contained' size='small'><IconTrash size="1.3rem" /></Button>
+                                </TableCell>
                                 <TableCell>
-                                    <Typography variant="subtitle2">
-                                        {product?.id}
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <Box>
+                                            <Typography variant="subtitle2" fontWeight={600}>
+                                                {product?.code}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography color="textSecondary" variant="subtitle2" fontWeight={600}>
+                                        {product?.issueDate ? chuyenNgayThanhChuoi(product?.issueDate) : ""}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography variant="subtitle2">
-                                        {product?.status}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant="subtitle2">
-                                        {product?.created_at}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant="subtitle2">
-                                        {product?.total_price || 0} $
+                                    <Typography color="textSecondary" variant="subtitle2" fontWeight={600}>
+                                        {product?.expiryDate ? chuyenNgayThanhChuoi(product?.expiryDate) : ""}
                                     </Typography>
                                 </TableCell>
                             </TableRow>
@@ -105,4 +117,4 @@ function ManageOrdersTable(props) {
     )
 }
 
-export default ManageOrdersTable
+export default ManageCardTable

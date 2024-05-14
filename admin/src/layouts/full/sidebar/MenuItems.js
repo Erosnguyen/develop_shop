@@ -21,14 +21,14 @@ const Menuitems = [
     id: uniqueId(),
     title: 'Manage food',
     icon: IconBook,
-    href: '/manage-food',
+    href: '/manage-book',
   },
-  {
-    id: uniqueId(),
-    title: 'Orders',
-    icon: IconBookmark,
-    href: '/manage-orders',
-  },
+  // {
+  //   id: uniqueId(),
+  //   title: 'Loại sách',
+  //   icon: IconBookmark,
+  //   href: '/manage-genre',
+  // },
   // {
   //   id: uniqueId(),
   //   title: 'Mượn trả sách',
