@@ -19,6 +19,7 @@ import {
 import { SearchIcon } from "../../assets/SearchIcon";
 import { useLocation } from "react-router-dom";
 import { CartIcon } from "../../assets/CartIcon"
+import { Logo } from "../../assets/Logo";
 
 const NavBar = ({ setShowLogin }) => {
   const location = useLocation();
@@ -153,8 +154,9 @@ const NavBar = ({ setShowLogin }) => {
       <Navbar >
         <NavbarContent justify="start">
           <NavbarBrand className="mr-4">
-            <a href="/" className="hidden sm:block font-bold text-inherit">
-              HƯƠNG VIỆT
+            <a href="/" className="hidden sm:flex gap-2 items-center font-bold text-inherit">
+              <Logo/>
+              <p>HƯƠNG VIỆT</p>
             </a>
           </NavbarBrand>
           <NavbarContent className="hidden sm:flex gap-3">

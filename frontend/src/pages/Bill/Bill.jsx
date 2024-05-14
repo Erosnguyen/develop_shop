@@ -3,9 +3,10 @@ import { StoreContext } from "../../context/StoreContext";
 import { getVariantPrice } from "../../lib/utils";
 import { getUserOrder, handleAddOrder } from "./billServices";
 import MessagePopup from "../../components/MessagePopup/MessagePopup";
+import { Button, Divider, Image, Input, Radio, RadioGroup, Tab, Table, TableHeader, TableColumn, TableCell, TableRow, TableBody, Chip } from "@nextui-org/react";
+import { toast } from "react-toastify";
 
 const Bill = ({ product }) => {
-
   const [showMessage, setShowMessage] = useState({});
   const [listYourOrders, setListYourOrders] = useState([]);
   const variants = product?.variants;
@@ -18,23 +19,15 @@ const Bill = ({ product }) => {
   } = useContext(StoreContext);
   console.log("Cart Items: ", cartItems);
 
-  const handleDeleteProductInCart = (data) => {
-    removeFromCart(data);
+  const handleDeleteProductInCart = (data, checkedVariant) => {
+    removeFromCart(data, checkedVariant);
   };
 
-  const [checkedVariant, setCheckedVariant] = useState({
-    color: variants?.[0]?.option1,
-    material: variants?.[0]?.option2,
-    size: variants?.[0]?.option3,
-  });
-
-  useEffect(() => {
-    setCheckedVariant({
-      color: variants?.[0]?.option1,
-      material: variants?.[0]?.option2,
-      size: variants?.[0]?.option3,
-    });
-  }, [product]);
+  const statusColorMap = {
+    completed: "success",
+    cancel: "danger",
+    pending: "warning",
+  };
 
   const updateVariant = (optionName, itemId) => {
     setCheckedVariant((prevVariant) => ({
@@ -43,213 +36,186 @@ const Bill = ({ product }) => {
     }));
   };
 
-  const handleChecked = (itemId, optionName) => {
-    updateVariant(optionName, itemId);
+  const handlePriceProduct = (item) => {
+    return getVariantPrice(
+      item?.data?.variants,
+      item.data.checkedVariant.option1,
+      item.data.checkedVariant.option2,
+      item.data.checkedVariant.option3
+    );
   };
 
-  //lấy giá tiền của variant theo màu, hình thức, kiểu
-
-  const priceProduct = (data) => {
-    let currentVari = data?.data?.checkedVariant;
-    let exitItem = data?.data?.variants?.find(i => (i.option1 === currentVari?.color) && (i.option2 === currentVari?.material) && (i.option3 === currentVari?.size));
-    if (exitItem) {
-      return (exitItem?.price * data?.quantity) + "$";
-    } else {
-      return "0$";
-    }
+  const totalPrice = () => {
+    let total = 0;
+    cartItems?.forEach((i) => {
+      total += handlePriceProduct(i);
+    });
+    return total.toFixed(2);
   };
 
   const convertDataSubmit = (data = []) => {
     return {
-      items: data?.map(i => {
+      items: data?.map((i) => {
         return {
-          variant_product_id: i?.data?.variants?.length ? i?.data?.variants[0]?.variant_id : null,
-          quantity: i?.quantity
-        }
-      })
-    }
-  }
-  const handleAddBill = async (e) => {
+          variant_product_id: i?.data?.variants?.length
+            ? i?.data?.variants[0]?.variant_id
+            : null,
+          quantity: i?.quantity,
+        };
+      }),
+    };
+  };
+
+  const columns = [
+    {
+      key: "id",
+      label: "STT",
+    },
+    {
+      key: "status",
+      label: "Status",
+    },
+    {
+      key: "created_at",
+      label: "Time Ordered",
+    },
+    {
+      key: "total_price",
+      label: "Total Price",
+    },
+  ];
+
+  const handleOrder = async(e) => {
     e.preventDefault();
     try {
       let dataSubmit = convertDataSubmit(cartItems);
       const data = await handleAddOrder(dataSubmit);
       if (data?.status === 201) {
-        cartItems?.forEach(i => {
-          handleDeleteProductInCart(i)
-        })
+        cartItems?.forEach((i) => {
+          handleDeleteProductInCart(i.data, i.data.checkedVariant);
+        });
         handleGetUserOrder();
       }
-      setShowMessage((pre) => ({ ...pre, open: true, text: "Đặt hàng thành công!" }))
-
-      setTimeout(() => {
-        setShowMessage((pre) => ({ ...pre, open: false, text: "" }))
-      }, 2000)
+      toast.success("Order successfully!");
     } catch (error) {
-
+      toast.error("Order failed!");
+      console.log(error);
     }
   }
 
   const handleGetUserOrder = async () => {
     try {
       const data = await getUserOrder();
-      setListYourOrders(data?.data || [])
-    } catch (error) {
-
-    }
-  }
+      setListYourOrders(data?.data || []);
+    } catch (error) {}
+  };
 
   useEffect(() => {
-    handleGetUserOrder()
-  }, [])
+    handleGetUserOrder();
+  }, []);
+
   return (
     <>
       {showMessage?.open && <MessagePopup showMessage={showMessage} />}
       <div className="bill mt-10 grid grid-cols-2 gap-20">
-
         <div className="bill-left">
-          <h2 className="bill-title font-semibold text-[40px] mb-5">
+          <h2 className="bill-title font-semibold text-xl mb-5">
             Billing Information
           </h2>
-          <form action="">
-            <div className="">
-              <input
-                type="text"
-                className="border divide-solid border-gray-500 leading-10 w-full"
-                placeholder="Name"
-              />
-            </div>
-
-            <div className=" mt-8">
-              <input
-                type="text"
-                className="border divide-solid border-gray-500 leading-10 w-full"
-                placeholder="Address"
-              />
-            </div>
-
-            <div className=" mt-8">
-              <input
-                type="text"
-                className="border divide-solid border-gray-500 leading-10 w-full"
-                placeholder="Enter your phone number"
-              />
-            </div>
-
-            <div className=" mt-8">
-              <input
-                type="text"
-                className="border divide-solid border-gray-500 leading-10 w-full"
-                placeholder="Enter your email address"
-              />
-            </div>
-
-            <div className=" mt-8">
-              <textarea
-                className="border divide-solid border-gray-500 leading-10 w-full"
-                name="Notes about orders"
-                id=""
-                placeholder="Notes about orders"
-              ></textarea>
-            </div>
+          <form action="" className="flex flex-col gap-4">
+            <Input isRequired type="text" label="Fullname"/>
+            <Input isRequired type="text" label="Adress"/>            
+            <Input isRequired type="text" label="Phone number"/>
+            <Input type="text" label="Note"/>
+            <RadioGroup label="Payment Method">
+              <Radio value="bank">Bank Transfer</Radio>
+              <Radio value="cash">Pay cash upon delivery</Radio>
+            </RadioGroup>
           </form>
         </div>
 
         <div className="bill-right">
-          <h2 className="font-semibold text-[40px] mb-5">Your order</h2>
+          <h2 className="font-semibold text-xl mb-5">Your order</h2>
+          <Divider orientation="horzital" />
           <div>
-            {cartItems?.map((item) => (
-              <div>
-                <div className="flex justify-between mt-10">
+            {cartItems?.map((item, index) => (
+              <div key={index} className="flex flex-col gap-4 pt-4">
+                <div className="flex items-center gap-2 w-full">
+                  <div
+                    className={`bg-cover bg-center rounded-xl w-20 h-20 cursor-pointer`}
+                    style={{
+                      backgroundImage: `url(${
+                        item?.data?.media
+                          ? item?.data?.media[0]?.src
+                          : "/src/assets/No_Image.png"
+                      })`,
+                    }}
+                  />
                   <div>
-                    <p className="font-semibold">PRODUCT</p>
-                    <div>
-                      {item.data.product_name} x {item.quantity}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="font-semibold">PROVISIONAL</p>
-                    <div className="font-semibold">{priceProduct(item)}</div>
+                    <h3 className="font-medium text-foreground underline-offset-4 hover:underline hover:opacity-80 transition-opacity cursor-pointer">
+                      {item.data.product_name}
+                    </h3>
+                    <p>
+                      {item.data.checkedVariant.option1} -{" "}
+                      {item.data.checkedVariant.option2} -{" "}
+                      {item.data.checkedVariant.option3}
+                    </p>
+                    <p className="font-medium text-foreground">
+                      ${handlePriceProduct(item)}{" "}
+                      <span className="text-gray-400 font-normal">
+                        x {item.quantity}
+                      </span>{" "}
+                    </p>
                   </div>
                 </div>
-                <div className="flex justify-between mt-10">
-                  <div>
-                    <p className="font-semibold">Total</p>
-                  </div>
-                  <div className="font-semibold">{priceProduct(item)}</div>
-                </div>
-                <div>
-                  <div class="flex items-center mb-4">
-                    <input
-                      id="default-radio-1"
-                      type="radio"
-                      value=""
-                      name="default-radio"
-                      class="mr-3"
-                    />
-                    <label for="default-radio-1" class="">
-                      Bank transfer
-                    </label>
-                  </div>
-                  <div class="flex items-center">
-                    <input
-                      checked
-                      id="default-radio-2"
-                      type="radio"
-                      value=""
-                      name="default-radio"
-                      class="mr-3"
-                    />
-                    <label for="default-radio-2" class="">
-                      Pay cash upon delivery
-                    </label>
-                  </div>
-                </div>
-                <button className="bg-amber-700 px-6 py-4 text-white mt-10" onClick={handleAddBill}>
-                  Order
-                </button>
+                <Divider orientation="horzital" />
               </div>
             ))}
           </div>
+          {cartItems.length > 0 && (
+            <>
+              <div className="flex justify-between items-center font-medium text-foreground py-4">
+                <p>Total</p>
+                <p>${totalPrice()}</p>
+              </div>
+              <Button className="text-white" onClick={handleOrder} radius="sm" fullWidth color="warning">
+                Order
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
       <div className="cart mt-10 w-full">
-        <h2 className="bill-title font-semibold text-[40px] mb-5">
+        <h2 className="bill-title font-semibold text-xl mb-5">
           List your orders
         </h2>
-        <table className="table-fixed w-full">
-          <thead>
-            <tr className="text-[#49557e]">
-              <th className="border divide-solid border-amber-700" style={{ width: 100 }}>ORDER ID</th>
-              <th className="border divide-solid border-amber-700">STATUS</th>
-              <th className="border divide-solid border-amber-700">CREATED AT</th>
-              <th className="border divide-solid border-amber-700">TOTAL PRICE</th>
-            </tr>
-          </thead>
 
-          <tbody className="">
-            {listYourOrders?.map((i, x) => {
-              return (
-                <tr key={x} className="text-center">
-                  <td className="border divide-solid border-amber-700" style={{ width: 100 }} >
-                    {i?.id}
-                  </td>
-
-                  <td className="border divide-solid border-amber-700">
-                    {i?.status}
-                  </td>
-                  <td className="border divide-solid border-amber-700">
-                    {i?.created_at}
-                  </td>
-                  <td className="border divide-solid border-amber-700">
-                    {i?.total_price || 0}$
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+        <Table>
+          <TableHeader columns={columns}>
+            {(column) => (
+              <TableColumn key={column.key}>{column.label}</TableColumn>
+            )}
+          </TableHeader>
+          <TableBody items={cartItems} emptyContent={"Bạn chưa đặt hàng!"}>
+            {
+              listYourOrders?.map((i, x) => {
+                return (
+                  <TableRow key={x}>
+                    <TableCell>{x+1}</TableCell>
+                    <TableCell>
+                      <Chip className="capitalize" color={statusColorMap[i?.status]} size="sm" variant="flat">
+                        {i?.status}
+                      </Chip>
+                    </TableCell>
+                    <TableCell>{i?.created_at && new Date(i.created_at).toLocaleString()}</TableCell>
+                    <TableCell>${i?.total_price || 0}</TableCell>
+                  </TableRow>
+                );
+              })
+            }
+          </TableBody>
+        </Table>
       </div>
     </>
   );

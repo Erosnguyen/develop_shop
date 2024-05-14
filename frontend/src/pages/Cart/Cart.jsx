@@ -122,9 +122,9 @@ const Cart = ({ product }) => {
 
       <div className="flex justify-end mt-10">
         <Link to="/Bill">
-          <Button color="warning">
+          <button color="warning">
             Thanh Toán
-          </Button>
+          </button>
         </Link>
       </div>
     </div>
