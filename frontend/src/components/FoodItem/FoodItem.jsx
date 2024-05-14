@@ -60,8 +60,6 @@ const FoodItem = (props) => {
     setQuantity((prev) => Math.max(prev - 1, 1));
   };
 
-  console.log(media)
-
   return (
     <div className="food-item">
       <div className="food-item-img-container relative">

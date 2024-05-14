@@ -66,7 +66,7 @@ export const Register = () => {
     <div className="flex items-center justify-center">
       <div className="flex h-screen w-screen items-center justify-center p-2 sm:p-4 lg:p-8">
         <div className="flex w-full max-w-sm flex-col gap-4 rounded-large bg-content1 px-8 pb-10 pt-6 shadow-large">
-          <h2 className="text-2xl font-semibold">Đăng ký</h2>
+          <h2 className="text-2xl font-semibold">Đăng ký👋</h2>
           <form className="flex flex-col gap-3">
             <Input value={email} onValueChange={setEmail} type="email" variant="bordered" label="Email" />
             <Input
@@ -123,7 +123,7 @@ export const Register = () => {
                 <Checkbox size="sm" defaultSelected>By continuing, i agree to the terms of use & privacy policy.</Checkbox>
             </div>
 
-            <Button onClick={handleSignUp} color="primary" variant="solid" fullWidth>
+            <Button onClick={handleSignUp} color="warning" variant="solid" fullWidth>
               Đăng ký
             </Button>
             <div className="text-center text-sm">

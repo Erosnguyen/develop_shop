@@ -7,8 +7,6 @@ const StoreContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
 
-  console.log(cartItems);
-
   function getItemQuantity(data) {
     return (
       cartItems.find((item) => item.data.product_id === data.product_id)
