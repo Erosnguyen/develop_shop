@@ -281,7 +281,7 @@ async def update_media(
 
 @router.delete(
     "/{product_id}/media",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_200_OK,
     summary="Delete image from a product",
     description="Delete image from a product.",
     tags=["Product Image"],
@@ -289,7 +289,8 @@ async def update_media(
 )
 async def delete_product_media(product_id: int, media_ids: str = Query(...)):
     media_ids_list = list(map(int, media_ids.split(",")))
-    ProductService.delete_product_media(product_id, media_ids_list)
+    ProductService.delete_product_media(product_id, media_ids_list) 
+
 
 
 @router.delete(

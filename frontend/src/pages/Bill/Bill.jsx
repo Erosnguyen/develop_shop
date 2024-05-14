@@ -1,12 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import { getVariantPrice } from "../../lib/utils";
-import { handleAddOrder } from "./billServices";
+import { getUserOrder, handleAddOrder } from "./billServices";
 import MessagePopup from "../../components/MessagePopup/MessagePopup";
 
 const Bill = ({ product }) => {
 
   const [showMessage, setShowMessage] = useState({});
+  const [listYourOrders, setListYourOrders] = useState([]);
   const variants = product?.variants;
 
   const {
@@ -48,12 +49,15 @@ const Bill = ({ product }) => {
 
   //lấy giá tiền của variant theo màu, hình thức, kiểu
 
-  const priceProduct = getVariantPrice(
-    variants,
-    checkedVariant.color,
-    checkedVariant.material,
-    checkedVariant.size
-  );
+  const priceProduct = (data) => {
+    let currentVari = data?.data?.checkedVariant;
+    let exitItem = data?.data?.variants?.find(i => (i.option1 === currentVari?.color) && (i.option2 === currentVari?.material) && (i.option3 === currentVari?.size));
+    if (exitItem) {
+      return (exitItem?.price * data?.quantity) + "$";
+    } else {
+      return "0$";
+    }
+  };
 
   const convertDataSubmit = (data = []) => {
     return {
@@ -74,6 +78,7 @@ const Bill = ({ product }) => {
         cartItems?.forEach(i => {
           handleDeleteProductInCart(i)
         })
+        handleGetUserOrder();
       }
       setShowMessage((pre) => ({ ...pre, open: true, text: "Đặt hàng thành công!" }))
 
@@ -84,6 +89,19 @@ const Bill = ({ product }) => {
 
     }
   }
+
+  const handleGetUserOrder = async () => {
+    try {
+      const data = await getUserOrder();
+      setListYourOrders(data?.data || [])
+    } catch (error) {
+
+    }
+  }
+
+  useEffect(() => {
+    handleGetUserOrder()
+  }, [])
   return (
     <>
       {showMessage?.open && <MessagePopup showMessage={showMessage} />}
@@ -151,14 +169,14 @@ const Bill = ({ product }) => {
                   </div>
                   <div>
                     <p className="font-semibold">PROVISIONAL</p>
-                    <div className="font-semibold">{priceProduct}</div>
+                    <div className="font-semibold">{priceProduct(item)}</div>
                   </div>
                 </div>
                 <div className="flex justify-between mt-10">
                   <div>
                     <p className="font-semibold">Total</p>
                   </div>
-                  <div className="font-semibold">{priceProduct}</div>
+                  <div className="font-semibold">{priceProduct(item)}</div>
                 </div>
                 <div>
                   <div class="flex items-center mb-4">
@@ -194,6 +212,44 @@ const Bill = ({ product }) => {
             ))}
           </div>
         </div>
+      </div>
+
+      <div className="cart mt-10 w-full">
+        <h2 className="bill-title font-semibold text-[40px] mb-5">
+          List your orders
+        </h2>
+        <table className="table-fixed w-full">
+          <thead>
+            <tr className="text-[#49557e]">
+              <th className="border divide-solid border-amber-700" style={{ width: 100 }}>ORDER ID</th>
+              <th className="border divide-solid border-amber-700">STATUS</th>
+              <th className="border divide-solid border-amber-700">CREATED AT</th>
+              <th className="border divide-solid border-amber-700">TOTAL PRICE</th>
+            </tr>
+          </thead>
+
+          <tbody className="">
+            {listYourOrders?.map((i, x) => {
+              return (
+                <tr key={x} className="text-center">
+                  <td className="border divide-solid border-amber-700" style={{ width: 100 }} >
+                    {i?.id}
+                  </td>
+
+                  <td className="border divide-solid border-amber-700">
+                    {i?.status}
+                  </td>
+                  <td className="border divide-solid border-amber-700">
+                    {i?.created_at}
+                  </td>
+                  <td className="border divide-solid border-amber-700">
+                    {i?.total_price || 0}$
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
       </div>
     </>
   );

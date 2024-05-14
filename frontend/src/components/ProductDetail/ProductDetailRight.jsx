@@ -23,13 +23,11 @@ const ProductDetailRight = ({ product }) => {
     removeFromCart,
     addCart,
   } = useContext(StoreContext);
-
   const [checkedVariant, setCheckedVariant] = useState({
     option1: variants?.[0]?.option1,
     option2: variants?.[0]?.option2,
     option3: variants?.[0]?.option3,
   });
-
   useEffect(() => {
     setCheckedVariant({
       option1: variants?.[0]?.option1,
