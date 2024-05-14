@@ -9,6 +9,9 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        amber: "#B45309",
+      },
       backgroundImage: {
         header: "url('/header_img.png')",
       },
