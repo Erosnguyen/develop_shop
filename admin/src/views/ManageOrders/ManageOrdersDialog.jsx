@@ -6,10 +6,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
 import { useEffect, useState } from 'react';
-import { insertGenre, updateGenre } from './ManageGenreServices';
+import { insertGenre, updateGenre } from './ManageOrdersServices';
 import { toast } from 'react-toastify';
 
-export default function ManageGenreDialog(props) {
+export default function ManageOrdersDialog(props) {
     let {
         open,
         item,

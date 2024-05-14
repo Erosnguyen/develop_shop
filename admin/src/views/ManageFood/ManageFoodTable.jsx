@@ -12,7 +12,7 @@ import {
 import { IconEdit, IconTrash } from '@tabler/icons';
 import { convertDateFormat } from 'src/AppConst';
 
-function ManageBookTable(props) {
+function ManageFoodTable(props) {
     let {
         data,
         handleEdit,
@@ -141,4 +141,4 @@ function ManageBookTable(props) {
     )
 }
 
-export default ManageBookTable
+export default ManageFoodTable

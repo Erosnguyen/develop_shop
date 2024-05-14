@@ -24,3 +24,11 @@ export const deleteProduct = (id) => {
 export const getById = (id) => {
   return axios.get(API_PATH + '/products/' + id);
 };
+
+export const addProductImage = (id, payload) => {
+  return axios.post(API_PATH + `/products/${id}/media`, payload);
+};
+
+export const deleteProductImage = (id, productId) => {
+  return axios.delete(API_PATH + `/products/${productId}/media?media_ids=${id}`);
+};

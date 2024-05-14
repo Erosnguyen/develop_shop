@@ -5,14 +5,14 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
-import Autocomplete from '@mui/material/Autocomplete';
 import { useEffect, useState } from 'react';
-import { addProduct, updateProduct } from './ManageBookServices';
-import { getListGenre } from '../ManageGenre/ManageGenreServices';
+import { addProduct, addProductImage, deleteProductImage, updateProduct } from './ManageFoodServices';
 import { toast } from 'react-toastify';
 import { IconTrash } from '@tabler/icons';
+import { Avatar, ImageList, ImageListItem } from '@mui/material';
+import { RemoveCircle } from '@mui/icons-material';
 
-export default function ManageBookDialog(props) {
+export default function ManageFoodDialog(props) {
     let {
         open,
         item,
@@ -20,6 +20,8 @@ export default function ManageBookDialog(props) {
         handleClose
     } = props;
     const [state, setState] = useState({});
+    const [updatedImage, setUpdatedImage] = useState("");
+    const [imageData, setImageData] = useState(null);
 
     const handleChange = (value, name) => {
         setState((pre) => ({ ...pre, [name]: value }));
@@ -63,6 +65,14 @@ export default function ManageBookDialog(props) {
             } else {
                 await addProduct(dataSubmit);
                 toast.success("Thêm mới thành công")
+            }
+            if (updatedImage) {
+                const formData = new FormData();
+
+                formData.append("x_files", updatedImage)
+
+                await addProductImage(state?.product_id, formData);
+                toast.success("Cập nhật ảnh thành công")
             }
         } catch (error) {
 
@@ -165,6 +175,33 @@ export default function ManageBookDialog(props) {
         }));
     }
 
+    const handleRemove = async (mediaId) => {
+        try {
+            const data = await deleteProductImage(mediaId, state?.product_id);
+            if (data?.status === 200) {
+                let updateListMedia = state?.media.filter(i => i?.media_id !== mediaId)
+                setState((pre) => ({ ...pre, media: updateListMedia }))
+                toast.success("Xóa ảnh thành công");
+            } else {
+                toast.error("Xóa ảnh thất bại");
+            }
+        } catch (error) {
+
+        }
+    }
+
+
+    const handleImageChange = (e) => {
+        const newImage = e.target.files[0];
+        if (newImage) {
+            setUpdatedImage(newImage);
+            const reader = new FileReader();
+            reader.onload = () => {
+                setImageData(reader.result);
+            };
+            reader.readAsDataURL(newImage);
+        }
+    };
     useEffect(() => {
         setState({
             ...item,
@@ -301,6 +338,41 @@ export default function ManageBookDialog(props) {
                             </Grid>
                         )
                     })}
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <ImageList cols={3} >
+                                {state?.media?.map((item, x) => (
+                                    <ImageListItem key={x} sx={{ position: "relative" }}>
+                                        <img
+                                            srcSet={`${item.src}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+                                            src={`${item.src}?w=164&h=164&fit=crop&auto=format`}
+                                            alt={item.alt}
+                                            loading="lazy"
+                                        />
+                                        <div onClick={() => handleRemove(item?.media_id)} style={{ position: "absolute", top: 5, right: 5, color: "red" }}><RemoveCircle /></div>
+                                    </ImageListItem>
+                                ))}
+                            </ImageList>
+                        </Grid>
+                        {state?.product_id && <Grid item xs={12}>
+                            <Avatar
+                                style={{ width: 150, height: 150 }}
+                                sizes="large"
+                                variant="rounded"
+                                src={imageData}
+                            />
+                            <TextField
+                                type="file"
+                                id="avataImage"
+                                accept="image/*"
+                                style={{ display: "none" }}
+                                onChange={handleImageChange}
+                            />
+                            <Grid item xs={12} >
+                                <Button variant="contained" size='small' sx={{ mt: 2 }}><label for="avataImage">Upload image</label></Button>
+                            </Grid>
+                        </Grid>}
+                    </Grid>
                 </DialogContent>
 
                 <DialogActions>
