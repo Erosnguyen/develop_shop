@@ -9,7 +9,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { useEffect, useState } from 'react';
 import { muonsach, updateGenre } from './ManageBookBorrowServices';
 import { toast } from 'react-toastify';
-import { getAllBook } from '../ManageBook/ManageBookServices';
+import { getAllBook } from '../ManageFood/ManageFoodServices';
 
 export default function ManageBookBorrowDialog(props) {
     let {

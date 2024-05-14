@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card } from '@mui/material';
 import PageContainer from 'src/components/container/PageContainer';
-import ManageBookTable from './ManageBookTable';
-import ManageBookDialog from './ManageBookDialog';
+import ManageFoodTable from './ManageFoodTable';
+import ManageFoodDialog from './ManageFoodDialog';
 import ConfirmDialog from '../components/ConfirmDialog';
-import { deleteProduct, getAllProducts, getById } from './ManageBookServices';
+import { deleteProduct, getAllProducts, getById } from './ManageFoodServices';
 import { toast } from 'react-toastify';
 
 const ManageBook = () => {
@@ -74,9 +74,9 @@ const ManageBook = () => {
         <PageContainer title="Manage food">
             <Card sx={{ p: 1, minHeight: "screen" }}>
                 <Button variant='contained' size='small' onClick={handleClickOpen}>Thêm mới</Button>
-                <ManageBookTable data={listitem} handleEdit={handleEdit} handleOpenDelete={handleOpenDelete} />
+                <ManageFoodTable data={listitem} handleEdit={handleEdit} handleOpenDelete={handleOpenDelete} />
             </Card>
-            {open && <ManageBookDialog
+            {open && <ManageFoodDialog
                 open={open}
                 item={item}
                 search={search}
