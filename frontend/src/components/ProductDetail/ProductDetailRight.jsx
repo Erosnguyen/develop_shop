@@ -19,13 +19,11 @@ const ProductDetailRight = ({ product }) => {
     removeFromCart,
     addCart
   } = useContext(StoreContext);
-
   const [checkedVariant, setCheckedVariant] = useState({
     color: variants?.[0]?.option1,
     material: variants?.[0]?.option2,
     size: variants?.[0]?.option3,
   });
-
   useEffect(() => {
     setCheckedVariant({
       color: variants?.[0]?.option1,
@@ -79,12 +77,9 @@ const ProductDetailRight = ({ product }) => {
           <div className="flex gap-2 items-center" key={option.options_id}>
             <div className="">{option.option_name}:</div>
             <div className="flex items-center gap-2">
-              {option.items.map((item) => (
-                <button
-                  className={`border border-gray-300 px-4 hover:border-amber-700 ${item.item_id === checkedVariant.color ||
-                    item.item_id === checkedVariant.size ||
-                    item.item_id === checkedVariant.material
-                    ? "text-red-500"
+              {option.items.map((item) => {
+                return (<button
+                  className={`border border-gray-300 px-4 hover:border-amber-700 ${item.item_id === checkedVariant[option?.option_name] ? "text-red-500"
                     : ""
                     }`}
                   key={item.item_id}
@@ -93,8 +88,8 @@ const ProductDetailRight = ({ product }) => {
                   }
                 >
                   {item.item_name}
-                </button>
-              ))}
+                </button>)
+              })}
             </div>
           </div>
         ))}

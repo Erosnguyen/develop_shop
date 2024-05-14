@@ -9,13 +9,10 @@ import {
     Card,
     Button
 } from '@mui/material';
-import { IconEdit, IconTrash } from '@tabler/icons';
 
-function ManageGenreTable(props) {
+function ManageOrdersTable(props) {
     let {
         data,
-        handleEdit,
-        handleOpenDelete
     } = props;
 
     return (
@@ -108,4 +105,4 @@ function ManageGenreTable(props) {
     )
 }
 
-export default ManageGenreTable
+export default ManageOrdersTable

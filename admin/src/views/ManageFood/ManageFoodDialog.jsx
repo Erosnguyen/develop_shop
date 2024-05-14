@@ -5,16 +5,14 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
-import Autocomplete from '@mui/material/Autocomplete';
 import { useEffect, useState } from 'react';
-import { addProduct, addProductImage, deleteProductImage, updateProduct } from './ManageBookServices';
-import { getListGenre } from '../ManageGenre/ManageGenreServices';
+import { addProduct, addProductImage, deleteProductImage, updateProduct } from './ManageFoodServices';
 import { toast } from 'react-toastify';
 import { IconTrash } from '@tabler/icons';
-import { Avatar, Chip, ImageList, ImageListItem } from '@mui/material';
+import { Avatar, ImageList, ImageListItem } from '@mui/material';
 import { RemoveCircle } from '@mui/icons-material';
 
-export default function ManageBookDialog(props) {
+export default function ManageFoodDialog(props) {
     let {
         open,
         item,
@@ -179,13 +177,14 @@ export default function ManageBookDialog(props) {
 
     const handleRemove = async (mediaId) => {
         try {
-
-            let payload = {
-                "product_id": state?.product_id,
-                "media_ids": mediaId
+            const data = await deleteProductImage(mediaId, state?.product_id);
+            if (data?.status === 200) {
+                let updateListMedia = state?.media.filter(i => i?.media_id !== mediaId)
+                setState((pre) => ({ ...pre, media: updateListMedia }))
+                toast.success("Xóa ảnh thành công");
+            } else {
+                toast.error("Xóa ảnh thất bại");
             }
-            const data = await deleteProductImage(mediaId, payload);
-            console.log(data)
         } catch (error) {
 
         }
@@ -209,7 +208,6 @@ export default function ManageBookDialog(props) {
             listOption: item?.options || []
         })
     }, [item])
-
     return (
         <>
             <Dialog
@@ -356,7 +354,7 @@ export default function ManageBookDialog(props) {
                                 ))}
                             </ImageList>
                         </Grid>
-                        <Grid item xs={12}>
+                        {state?.product_id && <Grid item xs={12}>
 
                             <Avatar
                                 style={{ width: 150, height: 150 }}
@@ -371,10 +369,10 @@ export default function ManageBookDialog(props) {
                                 style={{ display: "none" }}
                                 onChange={handleImageChange}
                             />
-                            {state?.product_id && <Grid item xs={12} >
+                            <Grid item xs={12} >
                                 <Button variant="contained" size='small' sx={{ mt: 2 }}><label for="avataImage">Upload image</label></Button>
-                            </Grid>}
-                        </Grid>
+                            </Grid>
+                        </Grid>}
                     </Grid>
                 </DialogContent>
 

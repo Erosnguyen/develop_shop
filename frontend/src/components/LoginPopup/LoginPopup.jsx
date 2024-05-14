@@ -23,7 +23,6 @@ const LoginPopup = ({ setShowLogin, setShowMessage }) => {
           setTimeout(() => {
             setShowMessage((pre) => ({ ...pre, open: false, text: "" }))
             setState((pre) => ({ ...pre, isSentOtp: false }))
-            setCurrState("login")
           }, 2000)
 
         }
