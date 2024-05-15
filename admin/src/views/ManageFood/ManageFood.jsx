@@ -73,9 +73,7 @@ const ManageBook = () => {
     return (
         <PageContainer title="Manage food">
             <Card sx={{ p: 1, minHeight: "screen" }}>
-                <div style={{ display: 'flex' }}>
-                    <Button style={{ marginLeft: 'auto' }} variant='contained' size='small' onClick={handleClickOpen}>Thêm mới</Button>
-                </div>
+                <Button variant='contained' size='small' onClick={handleClickOpen}>Thêm mới</Button>
                 <ManageFoodTable data={listitem} handleEdit={handleEdit} handleOpenDelete={handleOpenDelete} />
             </Card>
             {open && <ManageFoodDialog

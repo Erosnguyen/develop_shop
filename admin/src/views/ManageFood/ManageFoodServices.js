@@ -5,6 +5,10 @@ export const getAllProducts = () => {
   return axios.get(API_PATH + '/products');
 };
 
+export const getAllBook = () => {
+  return axios.get(API_PATH + '/getAllBook');
+};
+
 export const addProduct = (payload) => {
   return axios.post(API_PATH + '/products', payload);
 };

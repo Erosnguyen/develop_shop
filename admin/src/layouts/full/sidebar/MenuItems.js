@@ -45,12 +45,12 @@ const Menuitems = [
   //   navlabel: true,
   //   subheader: 'Hệ thống',
   // },
-  {
-    id: uniqueId(),
-    title: 'User',
-    icon: IconUser,
-    href: '/manage-user',
-  },
+  // {
+  //   id: uniqueId(),
+  //   title: 'Nhân viên',
+  //   icon: IconUser,
+  //   href: '/manage-staff',
+  // },
   // {
   //   id: uniqueId(),
   //   title: 'Người dùng',
