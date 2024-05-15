@@ -8,7 +8,7 @@ from apps.products.services import ProductService
 from config import settings
 from config.database import DatabaseManager
 
-from .schemas import OrderItemSchema, OrderSchema, OrderUpdateSchema
+from .schemas import OrderCreateSchema, OrderItemSchema, OrderSchema
 
 
 class OrderService:
@@ -95,37 +95,3 @@ class OrderService:
             for order in orders:
                 orders_by_customer.append(order)
         return orders_by_customer
-
-    @classmethod
-    async def update_order(cls, order_id: int, update_data: OrderUpdateSchema):
-        """
-        Update an existing order.
-
-        Args:
-        - order_id (int): The ID of the order to update.
-        - update_data (OrderUpdateSchema): The data to update the order with.
-
-        Returns:
-        - dict: A dictionary representation of the updated order object.
-        """
-        with DatabaseManager.session as session:
-            order = (
-                session.query(Order)
-                .options(joinedload(Order.items))
-                .filter(Order.id == order_id)
-                .first()
-            )
-            if order is None:
-                return None
-            order.status = update_data.status
-            session.commit()
-            session.refresh(order)
-
-        updated_order = OrderSchema(
-            order_id=order.id,
-            customer_id=order.customer_id,
-            total_price=float(order.total_price),
-            status=order.status,
-            items=[],
-        )
-        return updated_order

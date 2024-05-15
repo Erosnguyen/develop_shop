@@ -63,19 +63,34 @@ export default function ManageFoodDialog(props) {
                 await updateProduct(state?.product_id, dataSubmitUpdate);
                 toast.success("Cập nhật thành công")
             } else {
-                await addProduct(dataSubmit);
-                toast.success("Thêm mới thành công")
+                const res = await addProduct(dataSubmit)
+                console.log(res)
+                if (res.status === 201) {
+                    const newProductId = res.data.product.product_id;
+                    console.log(newProductId)
+                    if (updatedImage) {
+                        const formData = new FormData();
+        
+                        formData.append("x_files", updatedImage)
+        
+                        await addProductImage(newProductId, formData);
+                        toast.success("Thêm sản phẩm thành công")
+                    }
+                    else {
+                        toast.success("Thêm sản phẩm thành công")
+                    }
+                }
             }
-            if (updatedImage) {
-                const formData = new FormData();
+            // if (updatedImage && state?.product_id) {
+            //     const formData = new FormData();
 
-                formData.append("x_files", updatedImage)
+            //     formData.append("x_files", updatedImage)
 
-                await addProductImage(state?.product_id, formData);
-                toast.success("Cập nhật ảnh thành công")
-            }
+            //     await addProductImage(state?.product_id, formData);
+            //     toast.success("Cập nhật ảnh thành công")
+            // }
         } catch (error) {
-
+            toast.error("Có lỗi xảy ra")
             console.log(error)
         } finally {
             handleClose();
@@ -208,6 +223,8 @@ export default function ManageFoodDialog(props) {
             listOption: item?.options || []
         })
     }, [item])
+
+
     return (
         <>
             <Dialog
@@ -354,7 +371,7 @@ export default function ManageFoodDialog(props) {
                                 ))}
                             </ImageList>
                         </Grid>
-                        {state?.product_id && <Grid item xs={12}>
+                        {true && <Grid item xs={12}>
                             <Avatar
                                 style={{ width: 150, height: 150 }}
                                 sizes="large"

@@ -13,6 +13,7 @@ const Register = Loadable(lazy(() => import('../views/authentication/Register'))
 const Login = Loadable(lazy(() => import('../views/authentication/Login')));
 const ManageFood = Loadable(lazy(() => import('../views/ManageFood/ManageFood')));
 const ManageOrders = Loadable(lazy(() => import('../views/ManageOrders/ManageOrders')));
+const ManageUser = Loadable(lazy(() => import('../views/ManageUser/ManageUser')))
 
 const Router = [
   {
@@ -23,6 +24,7 @@ const Router = [
       { path: '/dashboard', exact: true, element: <Dashboard /> },
       { path: '/manage-food', exact: true, element: <ManageFood /> },
       { path: '/manage-orders', exact: true, element: <ManageOrders /> },
+      { path: '/manage-user', exact: true, element: <ManageUser /> },
       { path: '*', element: <Navigate to="/auth/404" /> },
     ],
   },

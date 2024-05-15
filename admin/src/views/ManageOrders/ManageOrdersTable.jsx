@@ -7,13 +7,16 @@ import {
     TableHead,
     TableRow,
     Card,
-    Button
+    Button,
+    Chip
 } from '@mui/material';
 
 function ManageOrdersTable(props) {
     let {
         data,
     } = props;
+
+    console.log(data)
 
     return (
 
@@ -34,11 +37,7 @@ function ManageOrdersTable(props) {
                         color: "#fff",
                     }}>
                         <TableRow>
-                            <TableCell sx={{ width: 10, textAlign: "center" }}>
-                                <Typography variant="subtitle2" fontWeight={600} color={"white"}>
-                                    STT
-                                </Typography>
-                            </TableCell>
+                            
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600} color={"white"}>
                                     Order id
@@ -64,27 +63,14 @@ function ManageOrdersTable(props) {
                     <TableBody>
                         {data?.map((product, index) => (
                             <TableRow key={product.name}>
-                                <TableCell>
-                                    <Typography
-                                        sx={{
-                                            fontSize: "15px",
-                                            fontWeight: "500",
-                                            width: 10,
-                                            textAlign: "center"
-                                        }}
-                                    >
-                                        {index + 1}
-                                    </Typography>
-                                </TableCell>
+                                
                                 <TableCell>
                                     <Typography variant="subtitle2">
                                         {product?.id}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography variant="subtitle2">
-                                        {product?.status}
-                                    </Typography>
+                                    <Chip label={product?.status} size='small' color={product?.status === "pending" ? "warning" : "success"} />
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="subtitle2">

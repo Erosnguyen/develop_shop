@@ -1,6 +1,6 @@
 from typing import List
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
 
 """
 ---------------------------------------
@@ -30,14 +30,10 @@ class OrderCreateSchema(BaseModel):
 
 
 class OrderUpdateSchema(BaseModel):
+    customer_id: int
+    total_price: float
     status: str
-
-    @validator("status")
-    def validate_status(cls, value):
-        valid_statuses = ["pending", "processing", "shipped", "delivered", "cancelled"]
-        if value not in valid_statuses:
-            raise ValueError("Invalid status value")
-        return value
+    items: List[OrderItemSchema]
 
 
 """
