@@ -47,7 +47,11 @@ router = APIRouter(prefix="/products")
     summary="Create a new product",
     description="Create a new product.",
     tags=["Product"],
+<<<<<<< HEAD
     dependencies=[Depends(Permission.is_admin)], #For production use
+=======
+    dependencies=[Depends(Permission.is_admin)],
+>>>>>>> feature/front-end
 )
 async def create_product(request: Request, product: schemas.CreateProductIn):
     return {"product": ProductService(request).create_product(product.model_dump())}
@@ -94,7 +98,11 @@ async def list_produces(request: Request):
     summary="Updates a product",
     description="Updates a product.",
     tags=["Product"],
+<<<<<<< HEAD
     dependencies=[Depends(Permission.is_admin)], #For production use
+=======
+    dependencies=[Depends(Permission.is_admin)],
+>>>>>>> feature/front-end
 )
 async def update_product(
     request: Request, product_id: int, payload: schemas.UpdateProductIn
@@ -126,7 +134,11 @@ async def update_product(
     summary="Deletes an existing product",
     description="Deletes an existing product.",
     tags=["Product"],
+<<<<<<< HEAD
     dependencies=[Depends(Permission.is_admin)], #For production use
+=======
+    dependencies=[Depends(Permission.is_admin)],
+>>>>>>> feature/front-end
 )
 async def delete_product(product_id: int):
     ProductService.delete_product(product_id)
@@ -144,7 +156,11 @@ async def delete_product(product_id: int):
     summary="Updates an existing product variant",
     description="Modify an existing Product Variant.",
     tags=["Product Variant"],
+<<<<<<< HEAD
     dependencies=[Depends(Permission.is_admin)], #For production use
+=======
+    dependencies=[Depends(Permission.is_admin)],
+>>>>>>> feature/front-end
 )
 async def update_variant(variant_id: int, payload: schemas.UpdateVariantIn):
     update_data = {}
@@ -202,7 +218,11 @@ when updating a product, actions on product's images are:
     summary="Create a new product image",
     description="Create a new product image.",
     tags=["Product Image"],
+<<<<<<< HEAD
     dependencies=[Depends(Permission.is_admin)], #For production use
+=======
+    dependencies=[Depends(Permission.is_admin)],
+>>>>>>> feature/front-end
 )
 async def create_product_media(
     request: Request,
@@ -254,7 +274,11 @@ async def list_product_media(request: Request, product_id: int):
     summary="Updates an existing image",
     description="Updates an existing image.",
     tags=["Product Image"],
+<<<<<<< HEAD
     dependencies=[Depends(Permission.is_admin)], #For production use
+=======
+    dependencies=[Depends(Permission.is_admin)],
+>>>>>>> feature/front-end
 )
 async def update_media(
     request: Request,
@@ -281,15 +305,16 @@ async def update_media(
 
 @router.delete(
     "/{product_id}/media",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_200_OK,
     summary="Delete image from a product",
     description="Delete image from a product.",
     tags=["Product Image"],
-    dependencies=[Depends(Permission.is_admin)], #For production use
+    dependencies=[Depends(Permission.is_admin)],
 )
 async def delete_product_media(product_id: int, media_ids: str = Query(...)):
     media_ids_list = list(map(int, media_ids.split(",")))
-    ProductService.delete_product_media(product_id, media_ids_list)
+    ProductService.delete_product_media(product_id, media_ids_list) 
+
 
 
 @router.delete(
@@ -298,7 +323,7 @@ async def delete_product_media(product_id: int, media_ids: str = Query(...)):
     summary="Delete a media file",
     description="Delete a media file.",
     tags=["Product Image"],
-    dependencies=[Depends(Permission.is_admin)], #For production use
+    dependencies=[Depends(Permission.is_admin)],
 )
 async def delete_media_file(media_id: int):
     ProductService.delete_media_file(media_id)

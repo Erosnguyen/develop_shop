@@ -26,6 +26,7 @@ class ValidatePasswordInSchema(BaseModel):
 
 class RegisterIn(ValidatePasswordInSchema):
     email: EmailStr
+    role: str
 
     @staticmethod
     def examples():
@@ -35,6 +36,7 @@ class RegisterIn(ValidatePasswordInSchema):
                     "summary": "Default",
                     "value": {
                         "email": "user@example.com",
+                        "role": "user/admin",
                         "password": "string",
                         "password_confirm": "string",
                     },
@@ -207,6 +209,7 @@ class EmailChangeVerifyOut(BaseModel):
 class UserSchema(BaseModel):
     user_id: int
     email: EmailStr
+    role: str
     first_name: str | None
     last_name: str | None
     is_verified_email: bool

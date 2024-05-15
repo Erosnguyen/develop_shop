@@ -13,16 +13,22 @@ from apps.products.services import ProductService
 
 class FakeProduct:
     """
-    Populates the database with fake products.
+    Populates the database with fake products related to regional specialties in Vietnam.
     """
 
-    fake = Faker()
+    fake = Faker(locale="vi_VN")
 
-    options = ["color", "size", "material", "Style"]
-    option_color_items = ["red", "green", "black", "blue", "yellow"]
-    option_size_items = ["S", "M", "L", "XL", "XXL"]
-    option_material_items = ["Cotton", "Nylon", "Plastic", "Wool", "Leather"]
-    option_style_items = ["Casual", "Formal"]
+    # Define regional specialties options for Vietnam
+    options = ["Region", "Type", "Ingredient"]
+    option_region_items = ["North", "Central", "South"]
+    option_type_items = ["Pho", "Banh Mi", "Spring Rolls", "Bun Cha", "Com Tam"]
+    option_ingredient_items = [
+        "Nuoc Mam",
+        "Rice Noodles",
+        "Lemongrass",
+        "Pork",
+        "Fish Sauce",
+    ]
 
     def fill_products(self):
         """
@@ -49,9 +55,9 @@ class FakeProduct:
     @classmethod
     def generate_uniq_options(cls):
         return [
-            {"option_name": "color", "items": cls.option_color_items[:2]},
-            {"option_name": "size", "items": cls.option_size_items[:2]},
-            {"option_name": "material", "items": cls.option_material_items[:2]},
+            {"option_name": "Region", "items": cls.option_region_items},
+            {"option_name": "Type", "items": cls.option_type_items},
+            {"option_name": "Ingredient", "items": cls.option_ingredient_items},
         ]
 
     @classmethod
@@ -186,13 +192,12 @@ class FakeMedia:
                         filename=filename, file=open(file_path, "rb")
                     )
                     upload.append(for_upload)
-
         else:
-            raise FileNotFoundError(f"{DEMO_PRODUCTS_MEDIA_DIR}")
+            print(f"Directory path {directory_path} does not exist.")
 
         if upload_file:
             return upload
-        return file_paths
+        return []
 
     @classmethod
     def populate_docs_file(cls, upload_file=False):

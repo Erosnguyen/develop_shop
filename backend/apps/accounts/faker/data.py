@@ -1,3 +1,5 @@
+import random
+
 from faker import Faker
 
 from apps.accounts.services.authenticate import AccountService
@@ -13,6 +15,11 @@ class BaseFakeAccount:
     def random_email(cls):
         return cls.fake.email()
 
+    @classmethod
+    def random_role(cls):
+        roles = ["admin", "user"]
+        return random.choice(roles)
+
 
 class FakeAccount(BaseFakeAccount):
     """
@@ -24,7 +31,11 @@ class FakeAccount(BaseFakeAccount):
         """
         Register a new user and get the OTP code.
         """
-        register_payload = {"email": cls.random_email(), "password": cls.password}
+        register_payload = {
+            "email": cls.random_email(),
+            "password": cls.password,
+            "role": cls.random_role(),
+        }
         AccountService.register(**register_payload)
         user = UserManager.get_user(email=register_payload["email"])
 
@@ -35,7 +46,11 @@ class FakeAccount(BaseFakeAccount):
         """
         Registered a new user and verified their OTP code.
         """
-        register_payload = {"email": cls.random_email(), "password": cls.password}
+        register_payload = {
+            "email": cls.random_email(),
+            "password": cls.password,
+            "role": cls.random_role(),
+        }
         AccountService.register(**register_payload)
 
         user = UserManager.get_user(email=register_payload["email"])
