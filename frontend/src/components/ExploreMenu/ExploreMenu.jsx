@@ -3,14 +3,14 @@ import { menu_list } from "../../assets/assets";
 
 const ExploreMenu = ({ category, setCategory }) => {
   return (
-    <div className="explore-menu flex flex-col gap-5 mt-10" id="explore-menu">
+    <div className="explore-menu flex flex-col gap-2 mt-10 bg-yellow-100 rounded-3xl p-8" id="explore-menu">
       <h1 className="text-[#262626] font-semibold text-[30px] ">
-        Explore out menu
+        Khám phá đặc sản
       </h1>
-      <p className="explore-menu-text max-w-full col-[#808080]">
+      {/* <p className="explore-menu-text max-w-full col-[#808080]">
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. A ab libero
         aperiam necessitatibus quisquam accusamus
-      </p>
+      </p> */}
       <div className="explore-menu-list flex justify-between items-center gap-[30px] text-center mt-5">
         {menu_list.map((item, index) => {
           return (
@@ -30,14 +30,13 @@ const ExploreMenu = ({ category, setCategory }) => {
                   category === item.menu_name ? "active" : "cursor-pointer"
                 }
               />
-              <p className="mt-[10px] text-[#747474] text-[15px] cursor-pointer">
+              <p className="mt-[10px] text-foreground font-medium  text-[15px] cursor-pointer">
                 {item.menu_name}
               </p>
             </div>
           );
         })}
       </div>
-      <hr className="my-[10px] h-[2px] bg-[#e2e2e2] border-none" />
     </div>
   );
 };

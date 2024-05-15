@@ -7,3 +7,7 @@ const API_PATH = baseURL + "/orders";
 export const handleAddOrder = (payload) => {
   return axiosCuston.post(API_PATH, payload);
 };
+
+export const getUserOrder = () => {
+  return axiosCuston.post(API_PATH + "/customer_id");
+};

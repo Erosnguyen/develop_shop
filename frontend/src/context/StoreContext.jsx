@@ -7,8 +7,6 @@ const StoreContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
 
-  console.log(cartItems);
-
   function getItemQuantity(data) {
     return (
       cartItems.find((item) => item.data.product_id === data.product_id)
@@ -16,54 +14,53 @@ const StoreContextProvider = (props) => {
     );
   }
   function checkExistingCartItem(data, checkedVariant) {
-    const { color, material, size } = checkedVariant;
+    const { option1, option2, option3 } = checkedVariant;
     const item = cartItems.find(
       (item) =>
         item.data.product_id === data.product_id &&
-        item.data.checkedVariant.color === color &&
-        item.data.checkedVariant.material === material &&
-        item.data.checkedVariant.size === size
+        item.data.checkedVariant.option1 === option1 &&
+        item.data.checkedVariant.option2 === option2 &&
+        item.data.checkedVariant.option3 === option3
     );
     return item != null;
   }
 
   function increaseCartQuantity(data, checkedVariant) {
-    setCartItems((currItems) => {
-      const existingItem = checkExistingCartItem(data, checkedVariant);
-      if (existingItem) {
-        return currItems.map((item) => {
-          return { ...item, quantity: item.quantity + 1 };
-        });
-      } else {
-        return [
-          ...currItems,
-          { data: { ...data, checkedVariant }, quantity: 1 },
-        ];
+    setCartItems((prevCart) => {
+      const newCart = [...prevCart];
+      const existingItemIndex = newCart.findIndex(product => product.data.product_id === data.product_id && product.data.checkedVariant.option1 === checkedVariant.option1 && product.data.checkedVariant.option2 === checkedVariant.option2 && product.data.checkedVariant.option3 === checkedVariant.option3);
+      if (existingItemIndex !== -1) {
+        newCart[existingItemIndex].quantity += 1;
       }
+      return newCart;
     });
   }
 
   function decreaseCartQuantity(data, checkedVariant) {
-    const { variants, ...rest } = data;
-    const existingItem = checkExistingCartItem(data, checkedVariant);
-    setCartItems((currItems) => {
-      return currItems.map((item) => {
-        if (existingItem) {
-          if (item.quantity > 1) {
-            return { ...item, quantity: item.quantity - 1 };
-          } else {
-            return { ...item, quantity: 0 };
-          }
+    setCartItems((prevCart) => {
+      const newCart = [...prevCart];
+      const existingItemIndex = newCart.findIndex(product => product.data.product_id === data.product_id && product.data.checkedVariant.option1 === checkedVariant.option1 && product.data.checkedVariant.option2 === checkedVariant.option2 && product.data.checkedVariant.option3 === checkedVariant.option3);
+      if (existingItemIndex !== -1) {
+        if (newCart[existingItemIndex].quantity > 1) {
+          newCart[existingItemIndex].quantity -= 1;
         } else {
-          return item;
+          newCart.splice(existingItemIndex, 1);
         }
-      });
+      }
+      return newCart;
     });
   }
-  function removeFromCart(data) {
+
+
+  function removeFromCart(data, checkedVariant) {
     setCartItems((currItems) => {
       return currItems.filter(
-        (item) => item.data.product_id !== (data.product_id || data?.data?.product_id)
+        (item) =>
+          item.data.product_id !==
+            (data.product_id || data?.data?.product_id) ||
+          item.data.checkedVariant.option1 !== checkedVariant.option1 ||
+          item.data.checkedVariant.option2 !== checkedVariant.option2 ||
+          item.data.checkedVariant.option3 !== checkedVariant.option3
       );
     });
   }
@@ -73,7 +70,17 @@ const StoreContextProvider = (props) => {
       const existingItem = checkExistingCartItem(data, checkedVariant);
       if (existingItem) {
         return currItems.map((item) => {
-          return { ...item, quantity: item.quantity + quantity };
+          if (
+            item.data.product_id === existingItem.data.product_id &&
+            item.data.checkedVariant.color ===
+              existingItem.data.checkedVariant.color &&
+            item.data.checkedVariant.size ===
+              existingItem.data.checkedVariant.size
+          ) {
+            return { ...item, quantity: item.quantity + quantity };
+          } else {
+            return item;
+          }
         });
       } else {
         return [
