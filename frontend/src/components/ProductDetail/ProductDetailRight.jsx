@@ -3,6 +3,10 @@ import { Link } from "react-router-dom";
 import ChangeCount from "./ChangeCount";
 import { StoreContext } from "../../context/StoreContext";
 import { getVariantPrice } from "../../lib/utils";
+import { Button } from "@nextui-org/react";
+import { AddIcon } from "../../assets/AddIcon";
+import { toast } from "react-toastify";
+import { assets } from "../../assets/assets";
 
 const ProductDetailRight = ({ product }) => {
   const variants = product?.variants;
@@ -17,20 +21,18 @@ const ProductDetailRight = ({ product }) => {
     increaseCartQuantity,
     decreaseCartQuantity,
     removeFromCart,
-    addCart
+    addCart,
   } = useContext(StoreContext);
-
   const [checkedVariant, setCheckedVariant] = useState({
-    color: variants?.[0]?.option1,
-    material: variants?.[0]?.option2,
-    size: variants?.[0]?.option3,
+    option1: variants?.[0]?.option1,
+    option2: variants?.[0]?.option2,
+    option3: variants?.[0]?.option3,
   });
-
   useEffect(() => {
     setCheckedVariant({
-      color: variants?.[0]?.option1,
-      material: variants?.[0]?.option2,
-      size: variants?.[0]?.option3,
+      option1: variants?.[0]?.option1,
+      option2: variants?.[0]?.option2,
+      option3: variants?.[0]?.option3,
     });
   }, [product]);
 
@@ -49,10 +51,9 @@ const ProductDetailRight = ({ product }) => {
 
   const priceProduct = getVariantPrice(
     variants,
-    checkedVariant.color,
-    checkedVariant.material,
-    checkedVariant.size,
-    quantity
+    checkedVariant.option1,
+    checkedVariant.option2,
+    checkedVariant.option3
   );
 
   const incrementQuantity = () => {
@@ -64,51 +65,66 @@ const ProductDetailRight = ({ product }) => {
   };
 
   const handleAddToCart = async () => {
-    addCart(product, checkedVariant, quantity)
-
-  }
+    addCart(product, checkedVariant, quantity);
+    toast.success("Thêm vào giỏ hàng thành công");
+  };
 
   return (
-    <div>
-      <div className="text-[30px]">{product.product_name}</div>
-      <div className="divide-solid text-amber-700 mt-10 text-[30px]">
-        {priceProduct}
+    <div className="flex flex-col gap-4">
+      <div className="text-[30px] font-medium">{product.product_name}</div>
+      <div className="divide-solid text-amber-700 text-[25px] font-medium">
+        ${priceProduct}
       </div>
-      <div className="flex mt-10 flex-col gap-2">
-        {options?.map((option) => (
-          <div className="flex gap-2 items-center" key={option.options_id}>
+      <div className="text-sm line-clamp-3 font-normal text-gray-400">{product.description}</div>
+      <div className="flex flex-col gap-2">
+        {options?.map((option, idx) => (
+          <div className="flex gap-4 flex-wrap " key={option.options_id}>
             <div className="">{option.option_name}:</div>
-            <div className="flex items-center gap-2">
-              {option.items.map((item) => (
-                <button
-                  className={`border border-gray-300 px-4 hover:border-amber-700 ${item.item_id === checkedVariant.color ||
-                    item.item_id === checkedVariant.size ||
-                    item.item_id === checkedVariant.material
-                    ? "text-red-500"
-                    : ""
-                    }`}
+            <div className="flex items-center gap-4 flex-wrap">
+              {option.items.map((item, index) => (
+                <Button
+                  size="sm"
+                  variant={"solid"}
+                  color={
+                    item.item_id === checkedVariant.option1 ||
+                    item.item_id === checkedVariant.option2 ||
+                    item.item_id === checkedVariant.option3
+                    ? "amber" : "default"
+                  }
+                  className={`px-4 hover:border-amber-700 ${
+                    item.item_id === checkedVariant.option1 ||
+                    item.item_id === checkedVariant.option2 ||
+                    item.item_id === checkedVariant.option3
+                      ? "text-white bg-amber"
+                      : "text-gray-500 bg-gray-100"
+                  }`}
                   key={item.item_id}
                   onClick={() =>
-                    handleChecked(item.item_id, option.option_name)
+                    handleChecked(item.item_id, "option" + (idx + 1))
                   }
                 >
                   {item.item_name}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
         ))}
       </div>
 
-      <ChangeCount quantity={quantity} incrementQuantity={incrementQuantity} decrementQuantity={decrementQuantity} />
+      <ChangeCount
+        quantity={quantity}
+        incrementQuantity={incrementQuantity}
+        decrementQuantity={decrementQuantity}
+      />
 
-      <div className="pt-10">
+      <div className="">
         <Link to="/cart">
           <button
-            className="bg-amber-700 text-white mt-3 px-4 py-3 hover:bg-amber-800"
+            className="bg-amber text-white flex items-center space-x-2 px-6 py-3 rounded-lg hover:bg-amber-900"
             onClick={() => handleAddToCart()}
           >
-            Add to cart
+            <AddIcon />
+            <p>Giỏ hàng</p>
           </button>
         </Link>
       </div>
