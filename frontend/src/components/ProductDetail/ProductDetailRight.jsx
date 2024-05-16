@@ -6,7 +6,8 @@ import { getVariantPrice } from "../../lib/utils";
 import { Button } from "@nextui-org/react";
 import { AddIcon } from "../../assets/AddIcon";
 import { toast } from "react-toastify";
-import { assets } from "../../assets/assets";
+import { AddCart } from "../../context/CartStoreContext";
+
 
 const ProductDetailRight = ({ product }) => {
   const variants = product?.variants;
@@ -69,6 +70,10 @@ const ProductDetailRight = ({ product }) => {
     toast.success("Thêm vào giỏ hàng thành công");
   };
 
+  const handleAddCart = async() => {
+    AddCart(product, checkedVariant, quantity);
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <div className="text-[30px] font-medium">{product.product_name}</div>
@@ -118,10 +123,11 @@ const ProductDetailRight = ({ product }) => {
       />
 
       <div className="">
-        <Link to="/cart">
+        <Link to="#">
           <button
             className="bg-amber text-white flex items-center space-x-2 px-6 py-3 rounded-lg hover:bg-amber-900"
-            onClick={() => handleAddToCart()}
+            // onClick={() => handleAddToCart()}
+            onClick={() => handleAddCart()}
           >
             <AddIcon />
             <p>Giỏ hàng</p>
