@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     steps:
+    - name: Debug environment variables
+      run: |
+        echo "ACCESS_TOKEN_EXPIRE_MINUTES: $ACCESS_TOKEN_EXPIRE_MINUTES"
     - uses: actions/checkout@v4
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
