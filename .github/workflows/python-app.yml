@@ -19,6 +19,16 @@ jobs:
     environment: dev
     env:
       ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+      APP_NAME: ${{ secrets.APP_NAME }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      OTP_SECRET_KEY: ${{ secrets.OTP_SECRET_KEY }}
+      OTP_EXPIRE_SECONDS: ${{ secrets.OTP_EXPIRE_SECONDS }}
+      SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+      SMTP_PORT: ${{ secrets.SMTP_PORT }}
+      SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      USE_LOCAL_FALLBACK: ${{ secrets.USE_LOCAL_FALLBACK }}
+      
     steps:
     - name: Debug environment variables
       run: |
