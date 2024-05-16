@@ -3,10 +3,13 @@ import { Card } from '@mui/material';
 import PageContainer from 'src/components/container/PageContainer';
 import ManageOrdersTable from './ManageOrdersTable';
 import { getListOrders } from './ManageOrdersServices';
+import ManageOrdersDialog from './ManageOrdersDialog';
 
 const ManageOrders = () => {
 
     const [listitem, setListItem] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [item, setItem] = useState(null)
 
     const search = async () => {
         try {
@@ -19,14 +22,29 @@ const ManageOrders = () => {
         }
     }
 
+    const handleView = (value) => {
+        setOpen(true);
+        setItem(value);
+    }
+
+    const handleClose = () => {
+        setOpen(false);
+        setItem(null);
+    }
+
     useEffect(() => {
         search();
     }, []);
+
+    console.log(listitem)
     return (
         <PageContainer title="Orders">
             <Card sx={{ p: 1, minHeight: "screen" }}>
-                <ManageOrdersTable data={listitem} />
+                <ManageOrdersTable data={listitem} handleView={handleView} />
             </Card>
+            {
+                open && <ManageOrdersDialog open={open} handleClose={handleClose} item={item}/>
+            }
         </PageContainer>
     );
 };

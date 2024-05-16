@@ -26,7 +26,6 @@ const ManageBook = () => {
     const handleEdit = async (value) => {
         try {
             const data = await getById(value?.product_id);
-            console.log()
             setOpen(true);
             setItem({
                 ...data?.data?.product,

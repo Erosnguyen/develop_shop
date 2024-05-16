@@ -10,10 +10,12 @@ import {
     Button,
     Chip
 } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 function ManageOrdersTable(props) {
     let {
         data,
+        handleView
     } = props;
 
     console.log(data)
@@ -58,6 +60,11 @@ function ManageOrdersTable(props) {
                                     Total price
                                 </Typography>
                             </TableCell>
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600} color={"white"}>
+                                    Chi tiết
+                                </Typography>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -81,6 +88,11 @@ function ManageOrdersTable(props) {
                                     <Typography variant="subtitle2">
                                         {product?.total_price || 0} $
                                     </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Button variant='contained' size='small' onClick={()=>handleView(product)}>
+                                        <VisibilityIcon />
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
