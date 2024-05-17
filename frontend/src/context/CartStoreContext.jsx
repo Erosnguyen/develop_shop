@@ -34,3 +34,6 @@ const ConvertData = (data, checkedVariant, quantity) => {
      console.log(error)   
     }
  }
+
+
+ 

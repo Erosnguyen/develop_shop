@@ -105,7 +105,7 @@ const Shop = () => {
             <span className="text-gray-400">({productList.length})</span>
           </h3>
         </div>
-        <div className="flex items-center space-x-2 ">
+        {/* <div className="flex items-center space-x-2 ">
           <Dropdown>
             <DropdownTrigger>
               <Button variant="bordered">Giá tiền</Button>
@@ -186,8 +186,8 @@ const Shop = () => {
             <SelectItem key={1}>Mới nhất</SelectItem>
             <SelectItem key={2}>Giá từ thấp đến cao</SelectItem>
             <SelectItem key={3}>Giá từ cao đến thấp</SelectItem>
-          </Select>
-        </div>
+          </Select> 
+        </div>*/}
       </div>
       <div className="flex gap-2">
         {filter.map((item, index) => (

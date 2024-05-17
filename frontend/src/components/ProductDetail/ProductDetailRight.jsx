@@ -65,11 +65,6 @@ const ProductDetailRight = ({ product }) => {
     setQuantity((prev) => Math.max(prev - 1, 1));
   };
 
-  const handleAddToCart = async () => {
-    addCart(product, checkedVariant, quantity);
-    toast.success("Thêm vào giỏ hàng thành công");
-  };
-
   const handleAddCart = async() => {
     AddCart(product, checkedVariant, quantity);
   };
