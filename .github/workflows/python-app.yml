@@ -42,9 +42,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8 pytest
           if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
-      - name: Remove existing sqlite database
-        run: |
-          rm -rf backend/fast_store.db
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
