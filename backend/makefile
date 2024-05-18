@@ -9,3 +9,6 @@ build:
 
 run:
 	docker run -p 8000:8000 huongvietbe:latest
+
+requirement:
+	poetry export --without-hashes --format=requirements.txt > requirements.txt
