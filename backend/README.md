@@ -18,7 +18,7 @@ poetry install
 cp .env.template .env
 ```
 
-Config local database
+Config local database (run only onece at a time)
 
 ```
 python demo.py
