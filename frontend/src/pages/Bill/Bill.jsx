@@ -1,15 +1,32 @@
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import { getVariantPrice } from "../../lib/utils";
-import { getUserOrder, handleAddOrder } from "./billServices";
+import { getUserOrder, handleAddOrder, handleProcessingOrder, handleGetProductDetails } from "./billServices";
 import MessagePopup from "../../components/MessagePopup/MessagePopup";
-import { Button, Divider, Image, Input, Radio, RadioGroup, Tab, Table, TableHeader, TableColumn, TableCell, TableRow, TableBody, Chip } from "@nextui-org/react";
+import { fetchApiConfig } from "../../config";
+import {
+  Button,
+  Divider,
+  Image,
+  Input,
+  Radio,
+  RadioGroup,
+  Tab,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableCell,
+  TableRow,
+  TableBody,
+  Chip,
+} from "@nextui-org/react";
 import { toast } from "react-toastify";
 
 const Bill = ({ product }) => {
   const [showMessage, setShowMessage] = useState({});
   const [listYourOrders, setListYourOrders] = useState([]);
   const variants = product?.variants;
+  const [products, setProducts] = useState([]);
 
   const {
     cartItems,
@@ -17,7 +34,6 @@ const Bill = ({ product }) => {
     increaseCartQuantity,
     decreaseCartQuantity,
   } = useContext(StoreContext);
-  console.log("Cart Items: ", cartItems);
 
   const handleDeleteProductInCart = (data, checkedVariant) => {
     removeFromCart(data, checkedVariant);
@@ -26,15 +42,16 @@ const Bill = ({ product }) => {
   const statusColorMap = {
     completed: "success",
     cancel: "danger",
+    processing : "primary",
     pending: "warning",
   };
 
-  const updateVariant = (optionName, itemId) => {
-    setCheckedVariant((prevVariant) => ({
-      ...prevVariant,
-      [optionName]: itemId,
-    }));
-  };
+  // const updateVariant = (optionName, itemId) => {
+  //   setCheckedVariant((prevVariant) => ({
+  //     ...prevVariant,
+  //     [optionName]: itemId,
+  //   }));
+  // };
 
   const handlePriceProduct = (item) => {
     return getVariantPrice(
@@ -85,7 +102,7 @@ const Bill = ({ product }) => {
     },
   ];
 
-  const handleOrder = async(e) => {
+  const handleOrder = async (e) => {
     e.preventDefault();
     try {
       let dataSubmit = convertDataSubmit(cartItems);
@@ -101,7 +118,7 @@ const Bill = ({ product }) => {
       toast.error("Order failed!");
       console.log(error);
     }
-  }
+  };
 
   const handleGetUserOrder = async () => {
     try {
@@ -114,6 +131,43 @@ const Bill = ({ product }) => {
     handleGetUserOrder();
   }, []);
 
+  const getProductDetail = async (variant_id) => {
+    try {
+      const response = await handleGetProductDetails(variant_id);
+      return response;
+    } catch (error) {
+      // Xử lý lỗi nếu có
+      console.error("Error occurred:", error);
+      throw error; // Đưa lỗi ra ngoài để xử lý ở nơi gọi hàm
+    }
+  };
+
+  useEffect(() => { 
+    async function fetchData() {
+      const details = await Promise.all(listYourOrders.filter((it) => it.status === "pending").map((item) => getProductDetail(item.items[0].product_id)));
+      setProducts(details)
+      console.log(details)
+    }
+    fetchData();
+  }, [listYourOrders]);
+
+  const handleProcessing = async (id) => {
+    try {
+      const data = await handleProcessingOrder(id);
+      if (data?.status === 200) {
+        toast.success("Processing successfully!");
+        setProducts([]);
+        handleGetUserOrder();
+      }
+    } catch (error) {
+      toast.error("Processing failed!");
+      console.log(error);
+    }
+  };
+
+  console.log(products);
+  console.log(listYourOrders);
+
   return (
     <>
       {showMessage?.open && <MessagePopup showMessage={showMessage} />}
@@ -123,10 +177,10 @@ const Bill = ({ product }) => {
             Billing Information
           </h2>
           <form action="" className="flex flex-col gap-4">
-            <Input isRequired type="text" label="Fullname"/>
-            <Input isRequired type="text" label="Adress"/>            
-            <Input isRequired type="text" label="Phone number"/>
-            <Input type="text" label="Note"/>
+            <Input isRequired type="text" label="Fullname" />
+            <Input isRequired type="text" label="Adress" />
+            <Input isRequired type="text" label="Phone number" />
+            <Input type="text" label="Note" />
             <RadioGroup label="Payment Method">
               <Radio value="bank">Bank Transfer</Radio>
               <Radio value="cash">Pay cash upon delivery</Radio>
@@ -138,7 +192,7 @@ const Bill = ({ product }) => {
           <h2 className="font-semibold text-xl mb-5">Your order</h2>
           <Divider orientation="horzital" />
           <div>
-            {cartItems?.map((item, index) => (
+            {/* {cartItems?.map((item, index) => (
               <div key={index} className="flex flex-col gap-4 pt-4">
                 <div className="flex items-center gap-2 w-full">
                   <div
@@ -170,7 +224,57 @@ const Bill = ({ product }) => {
                 </div>
                 <Divider orientation="horzital" />
               </div>
-            ))}
+            ))} */}
+            {listYourOrders
+              ?.filter((it) => it.status === "pending")
+              .map((item, index) => (
+                <div key={index} className="flex flex-col gap-4 pt-4">
+                  <div className="flex items-center gap-2 w-full">
+                    <div
+                      className={`bg-cover bg-center rounded-xl w-20 h-20 cursor-pointer`}
+                      style={{
+                        backgroundImage: `url(${
+                          products[index]?.media ? products[index]?.media[0]?.src : "src/assets/No_Image.png"
+                        })`,
+                      }}
+                    />
+                    <div>
+                      <h3 className="font-medium text-foreground underline-offset-4 hover:underline hover:opacity-80 transition-opacity cursor-pointer">
+                        {products[index]?.product_name}
+                      </h3>
+                      <p>
+                        {/* {item.data.checkedVariant.option1} -{" "}
+                        {item.data.checkedVariant.option2} -{" "}
+                        {item.data.checkedVariant.option3} */}
+                      </p>
+                      <p className="font-medium text-foreground">
+                        {/* ${handlePriceProduct(item)}{" "} */}
+                        ${(item?.total_price / item?.items[0]?.quantity).toFixed(2)}{" "}
+                        <span className="text-gray-400 font-normal">
+                          x {item?.items[0]?.quantity}
+                        </span>{" "}
+                      </p>
+                    </div>
+                  </div>
+                  <Divider orientation="horzital" />
+                  <>
+                    <div className="flex justify-between items-center font-medium text-foreground py-2">
+                      <p>Total</p>
+                      <p> ${item?.total_price}</p>
+                    </div>
+                    <Button
+                      className="text-white"
+                      radius="sm"
+                      fullWidth
+                      color="warning"
+                      onClick={() => handleProcessing(item.id)}
+                    >
+                      Thanh Toán
+                    </Button>
+                  </>
+                  <Divider orientation="horzital" />
+                </div>
+              ))}
           </div>
           {cartItems.length > 0 && (
             <>
@@ -178,8 +282,14 @@ const Bill = ({ product }) => {
                 <p>Total</p>
                 <p>${totalPrice()}</p>
               </div>
-              <Button className="text-white" onClick={handleOrder} radius="sm" fullWidth color="warning">
-                Order
+              <Button
+                className="text-white"
+                onClick={handleOrder}
+                radius="sm"
+                fullWidth
+                color="warning"
+              >
+                Thanh Toán
               </Button>
             </>
           )}
@@ -198,22 +308,27 @@ const Bill = ({ product }) => {
             )}
           </TableHeader>
           <TableBody items={cartItems} emptyContent={"Bạn chưa đặt hàng!"}>
-            {
-              listYourOrders?.map((i, x) => {
-                return (
-                  <TableRow key={x}>
-                    <TableCell>{x+1}</TableCell>
-                    <TableCell>
-                      <Chip className="capitalize" color={statusColorMap[i?.status]} size="sm" variant="flat">
-                        {i?.status}
-                      </Chip>
-                    </TableCell>
-                    <TableCell>{i?.created_at && new Date(i.created_at).toLocaleString()}</TableCell>
-                    <TableCell>${i?.total_price || 0}</TableCell>
-                  </TableRow>
-                );
-              })
-            }
+            {listYourOrders?.filter((it) => it.status !== "pending").map((i, x) => {
+              return (
+                <TableRow key={x}>
+                  <TableCell>{x + 1}</TableCell>
+                  <TableCell>
+                    <Chip
+                      className="capitalize"
+                      color={statusColorMap[i?.status]}
+                      size="sm"
+                      variant="flat"
+                    >
+                      {i?.status}
+                    </Chip>
+                  </TableCell>
+                  <TableCell>
+                    {i?.created_at && new Date(i.created_at).toLocaleString()}
+                  </TableCell>
+                  <TableCell>${i?.total_price || 0}</TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>

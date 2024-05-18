@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import "../../index.css";
 import { Link } from "react-router-dom";
-import { StoreContext } from "../../context/StoreContext";
 import {
   Navbar,
   NavbarBrand,
@@ -20,27 +19,35 @@ import { SearchIcon } from "../../assets/SearchIcon";
 import { useLocation } from "react-router-dom";
 import { CartIcon } from "../../assets/CartIcon"
 import { Logo } from "../../assets/Logo";
+import { getUserOrder } from "../../pages/Bill/billServices";
+import { useNavigate } from "react-router-dom";
+
 
 const NavBar = () => {
   const location = useLocation();
+  let navigate = useNavigate();
   const currentPath = location.pathname;
-
-  const {
-    cartItems
-  } = useContext(StoreContext);
 
   const token = localStorage.getItem("access_token");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [cart, setCart] = useState(0);
+
+  const [orderCount, setOrderCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchOrderCount() {
+      const count = await getUserOrder(); 
+      setOrderCount(count.data.filter((it) => it.status === "pending").length);
+    }
+
+    fetchOrderCount();
+  }, [isLoggedIn]);
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     setIsLoggedIn(false);
+    setOrderCount(0);
+    navigate("/login");
   };
-
-  useEffect(() => {
-    setCart(cartItems.length);
-  },[cartItems])
 
   const menus = [
     {
@@ -67,6 +74,7 @@ const NavBar = () => {
       setIsLoggedIn(false);
     }
   }, [token]);
+
   return (
     <>
       <Navbar >
@@ -103,7 +111,7 @@ const NavBar = () => {
             type="search"
           />
           <Link to={"/cart"}>
-              <Badge color="danger" content={cart} isInvisible={false} shape="circle">
+              <Badge color="danger" content={orderCount} isInvisible={false} shape="circle">
                 <CartIcon size={24} />
               </Badge>
           </Link>

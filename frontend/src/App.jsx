@@ -18,16 +18,12 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
-  const [showMessage, setShowMessage] = useState({});
 
   return (
     <>
-      
-      {showMessage?.open && <MessagePopup showMessage={showMessage} />}
       <div className="app">
-        
         <NextUIProvider>
-          <NavBar setShowLogin={setShowLogin} />
+          <NavBar/>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/cart" element={<Cart />} />
