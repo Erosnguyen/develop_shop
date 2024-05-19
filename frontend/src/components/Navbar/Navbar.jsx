@@ -61,10 +61,16 @@ const NavBar = () => {
       id: 2,
     },
     {
-      name: "Liên hệ",
-      link: "/contact",
+      name: "Thanh Toán",
+      link: "/bill",
       id: 3,
     },
+    {
+      name: "Liên hệ",
+      link: "/contact",
+      id: 4,
+    },
+    
   ];
 
   useEffect(() => {
