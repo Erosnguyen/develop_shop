@@ -1,4 +1,5 @@
 from typing import List
+
 from fastapi import APIRouter, Body, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -233,9 +234,11 @@ async def verify_change_email(
 async def retrieve_user(user_id: int):
     return {"user": UserManager.to_dict(UserManager.get_user(user_id))}
 
+
 # ------------------------
 # --- List All Users ---
 # ------------------------
+
 
 @router.get(
     "/",
@@ -249,9 +252,11 @@ async def list_users():
     users = UserManager.get_all_users()
     return [{"user": UserManager.to_dict(user)} for user in users]
 
+
 # ------------------------
 # --- Delete a User ---
 # ------------------------
+
 
 @router.delete(
     "/{user_id}",
@@ -264,5 +269,7 @@ async def list_users():
 async def delete_user(user_id: int):
     UserManager.delete_user(user_id)
     return {"detail": "User deleted successfully"}
+
+
 # TODO DELETE /accounts/me
 # TODO add docs and examples to endpoints

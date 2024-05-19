@@ -289,8 +289,7 @@ async def update_media(
 )
 async def delete_product_media(product_id: int, media_ids: str = Query(...)):
     media_ids_list = list(map(int, media_ids.split(",")))
-    ProductService.delete_product_media(product_id, media_ids_list) 
-
+    ProductService.delete_product_media(product_id, media_ids_list)
 
 
 @router.delete(
