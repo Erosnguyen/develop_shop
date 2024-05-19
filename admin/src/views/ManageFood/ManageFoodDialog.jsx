@@ -61,13 +61,24 @@ export default function ManageFoodDialog(props) {
             const dataSubmitUpdate = convertDataUpdate(state);
             if (state?.product_id) {
                 await updateProduct(state?.product_id, dataSubmitUpdate);
-                toast.success("Cập nhật thành công")
+                if (updatedImage) {
+                    const formData = new FormData();
+    
+                    formData.append("x_files", updatedImage)
+    
+                    await addProductImage(state?.product_id, formData);
+                    toast.success("Cập nhật thành công")
+                    // toast.success("Cập nhật ảnh thành công")
+                }
+                else {
+                    toast.success("Cập nhật thành công")
+                }
+
             } else {
                 const res = await addProduct(dataSubmit)
                 console.log(res)
                 if (res.status === 201) {
                     const newProductId = res.data.product.product_id;
-                    console.log(newProductId)
                     if (updatedImage) {
                         const formData = new FormData();
         
@@ -81,14 +92,7 @@ export default function ManageFoodDialog(props) {
                     }
                 }
             }
-            // if (updatedImage && state?.product_id) {
-            //     const formData = new FormData();
-
-            //     formData.append("x_files", updatedImage)
-
-            //     await addProductImage(state?.product_id, formData);
-            //     toast.success("Cập nhật ảnh thành công")
-            // }
+            
         } catch (error) {
             toast.error("Có lỗi xảy ra")
             console.log(error)
