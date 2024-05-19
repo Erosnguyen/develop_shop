@@ -47,6 +47,11 @@ function ManageOrdersTable(props) {
                             </TableCell>
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600} color={"white"}>
+                                    Customer id
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600} color={"white"}>
                                     Status
                                 </Typography>
                             </TableCell>
@@ -74,6 +79,11 @@ function ManageOrdersTable(props) {
                                 <TableCell>
                                     <Typography variant="subtitle2">
                                         {product?.id}
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography variant="subtitle2">
+                                        {product?.customer_id}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
