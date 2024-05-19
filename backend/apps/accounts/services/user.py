@@ -1,3 +1,4 @@
+from config.database import DatabaseManager
 from fastapi import HTTPException
 from starlette import status
 
@@ -165,5 +166,22 @@ class UserManager:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Pleas verify your email address to continue.",
+            )
+    @staticmethod
+    def get_all_users():
+        session = DatabaseManager.session
+        users = session.query(User).all()
+        return [user for user in users]
+
+    @staticmethod
+    def delete_user(user_id: int):
+        session = DatabaseManager.session
+        user = session.query(User).filter(User.id == user_id).first()
+        if user:
+            session.delete(user)
+            session.commit()
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
             )
         # TODO guide user to follow the steps need to verify email address.
