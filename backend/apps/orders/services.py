@@ -129,3 +129,24 @@ class OrderService:
             items=[],
         )
         return updated_order
+
+    @classmethod
+    async def delete_order(cls, order_id: int):
+        """
+        Delete an existing order.
+
+        Args:
+        - order_id (int): The ID of the order to delete.
+
+        Returns:
+        - dict: A dictionary representation of the deleted order object, or None if the order was not found.
+        """
+        with DatabaseManager.session as session:
+            order = session.query(Order).filter(Order.id == order_id).first()
+            if order is None:
+                return None
+
+            session.delete(order)
+            session.commit()
+
+            return {"order_id": order.id, "status": "deleted"}

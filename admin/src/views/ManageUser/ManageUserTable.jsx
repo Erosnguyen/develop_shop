@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useReducer } from 'react'
 import {
     Typography, Box,
     Table,
@@ -7,15 +7,20 @@ import {
     TableHead,
     TableRow,
     Card,
-    Button
+    Button,
+    Chip
 } from '@mui/material';
 import { IconEye } from '@tabler/icons';
+import { IconEdit, IconTrash } from '@tabler/icons';
 
 function ManageGenreTable(props) {
     let {
         data,
-        handleEdit
+        handleEdit,
+        handleOpenDelete
     } = props;
+
+    console.log(data)
 
     return (
 
@@ -41,21 +46,42 @@ function ManageGenreTable(props) {
                                     STT
                                 </Typography>
                             </TableCell>
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600} color={"white"}>
+                                    First Name
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600} color={"white"}>
+                                    Lastname
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600} color={"white"}>
+                                    Email
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600} color={"white"}>
+                                    Role
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600} color={"white"}>
+                                    Verified
+                                </Typography>
+                            </TableCell>
                             <TableCell sx={{ w: 10 }}>
                                 <Typography variant="subtitle2" fontWeight={600} color={"white"}>
                                     Thao tác
                                 </Typography>
                             </TableCell>
-                            <TableCell>
-                                <Typography variant="subtitle2" fontWeight={600} color={"white"}>
-                                    Tên đăng nhập
-                                </Typography>
-                            </TableCell>
+                            
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data?.map((product, index) => (
-                            <TableRow key={product.name}>
+                        {data?.map((user, index) => (
+                            <TableRow key={useReducer.name}>
                                 <TableCell>
                                     <Typography
                                         sx={{
@@ -68,22 +94,66 @@ function ManageGenreTable(props) {
                                         {index + 1}
                                     </Typography>
                                 </TableCell>
-                                <TableCell sx={{ cursor: "pointer", w: 10 }}>
-                                    <Button onClick={() => handleEdit(product)} sx={{ minWidth: 0, mr: 1 }} variant='contained' size='small'><IconEye size="1.3rem" /></Button>
-                                </TableCell>
                                 <TableCell>
-                                    <Box
+                                    <Typography
                                         sx={{
-                                            display: "flex",
-                                            alignItems: "center",
+                                            fontSize: "15px",
+                                            fontWeight: "500",
                                         }}
                                     >
-                                        <Box>
-                                            <Typography variant="subtitle2" fontWeight={600}>
-                                                {product.userName}
-                                            </Typography>
-                                        </Box>
-                                    </Box>
+                                        {user?.user?.first_name}
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography
+                                        sx={{
+                                            fontSize: "15px",
+                                            fontWeight: "500",
+                                        }}
+                                    >
+                                        {user?.user?.last_name}
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography
+                                        sx={{
+                                            fontSize: "15px",
+                                            fontWeight: "500",
+                                        }}
+                                    >
+                                        {user?.user?.email}
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    {/* <Typography
+                                        sx={{
+                                            fontSize: "15px",
+                                            fontWeight: "500",
+                                        }}
+                                    >
+                                        {user?.user?.role}
+                                    </Typography> */}
+                                    <Chip size='small' label={user?.user?.role} color={user?.user?.role == "admin"  ? "warning" : "primary"} />
+                                </TableCell>
+                                <TableCell>
+                                    {/* <Typography
+                                        sx={{
+                                            fontSize: "15px",
+                                            fontWeight: "500",
+                                        }}
+                                    >
+                                        {user?.user?.is_verified_email ? "Đã xác thực" : "Chưa xác thực"}
+                                    </Typography> */}
+                                    <Chip size='small' label={user?.user?.is_verified_email ? "Đã xác thực" : "Chưa xác thực"} color={user?.user?.is_verified_email ? "success" : "error"} />
+                                </TableCell>
+                                <TableCell>
+                                    <Button
+                                        variant="contained"
+                                        sx={{ minWidth: 0, mr: 1 }}
+                                        onClick={() => handleOpenDelete(user)}
+                                    >
+                                        <IconTrash size="1.3rem" />
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
