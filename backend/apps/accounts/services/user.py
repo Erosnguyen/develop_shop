@@ -1,10 +1,10 @@
-from config.database import DatabaseManager
 from fastapi import HTTPException
 from starlette import status
 
 from apps.accounts.models import User
 from apps.accounts.services.password import PasswordManager
 from apps.core.date_time import DateTime
+from config.database import DatabaseManager
 
 
 class UserManager:
@@ -167,6 +167,7 @@ class UserManager:
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Pleas verify your email address to continue.",
             )
+
     @staticmethod
     def get_all_users():
         session = DatabaseManager.session
