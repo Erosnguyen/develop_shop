@@ -139,6 +139,10 @@ const NavBar = () => {
                   <p className="font-semibold">Signed in as</p>
                   <p className="font-semibold">user@example.com</p>
                 </DropdownItem>
+                <DropdownItem key="logout" >
+                  <a href="/information">User Information</a>
+                  
+                </DropdownItem>
                 <DropdownItem onClick={handleLogout} key="logout" color="danger">
                   Log Out
                 </DropdownItem>
