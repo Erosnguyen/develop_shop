@@ -36,3 +36,11 @@ export const handleUpdateEmail = (payload) => {
     });
 }
 
+export const handleVerifyOTP = (payload) => {
+    return axiosCuston.patch(API_PATH + "/me/email/verify", payload, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+    });
+}
+
