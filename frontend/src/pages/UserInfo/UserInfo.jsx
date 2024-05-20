@@ -50,6 +50,10 @@ export const UserInfo = () => {
                 <Input isDisabled className='cursor-not-allowed' value={userInfo?.email} type="email" label="Email" size='sm' />
                 <Button size='lg' className='text-sm text-white' color='warning' onClick={() => navigate("change-email")}>Change Email</Button>
             </div>
+            <div className='flex gap-4 items-center'>
+                <Input isDisabled className='cursor-not-allowed' value="*************" type="password" label="Password" size='sm' />
+                <Button size='lg' className='text-sm text-white' color='warning' onClick={() => navigate("change-password")}>Change Password</Button>
+            </div>
             <Button onClick={() => handleUpdateUserInfomation()} color='warning' className='text-white'>Save</Button>
           </form>
         </div>

@@ -21,7 +21,7 @@ export const handleUpdateUserInfo = (payload) => {
 }
 
 export const handleUpdatePassword = (payload) => {
-  return axiosCuston.put(API_PATH + "/me/password", payload, {
+  return axiosCuston.patch(API_PATH + "/me/password", payload, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
     },
