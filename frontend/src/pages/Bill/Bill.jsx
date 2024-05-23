@@ -172,7 +172,7 @@ const Bill = ({ product }) => {
     <>
       {showMessage?.open && <MessagePopup showMessage={showMessage} />}
       <div className="bill mt-10 grid grid-cols-2 gap-20">
-        <div className="bill-left">
+        {/* <div className="bill-left">
           <h2 className="bill-title font-semibold text-xl mb-5">
             Billing Information
           </h2>
@@ -186,45 +186,12 @@ const Bill = ({ product }) => {
               <Radio value="cash">Pay cash upon delivery</Radio>
             </RadioGroup>
           </form>
-        </div>
+        </div> */}
 
         <div className="bill-right">
           <h2 className="font-semibold text-xl mb-5">Your order</h2>
           <Divider orientation="horzital" />
           <div>
-            {/* {cartItems?.map((item, index) => (
-              <div key={index} className="flex flex-col gap-4 pt-4">
-                <div className="flex items-center gap-2 w-full">
-                  <div
-                    className={`bg-cover bg-center rounded-xl w-20 h-20 cursor-pointer`}
-                    style={{
-                      backgroundImage: `url(${
-                        item?.data?.media
-                          ? item?.data?.media[0]?.src
-                          : "/src/assets/No_Image.png"
-                      })`,
-                    }}
-                  />
-                  <div>
-                    <h3 className="font-medium text-foreground underline-offset-4 hover:underline hover:opacity-80 transition-opacity cursor-pointer">
-                      {item.data.product_name}
-                    </h3>
-                    <p>
-                      {item.data.checkedVariant.option1} -{" "}
-                      {item.data.checkedVariant.option2} -{" "}
-                      {item.data.checkedVariant.option3}
-                    </p>
-                    <p className="font-medium text-foreground">
-                      ${handlePriceProduct(item)}{" "}
-                      <span className="text-gray-400 font-normal">
-                        x {item.quantity}
-                      </span>{" "}
-                    </p>
-                  </div>
-                </div>
-                <Divider orientation="horzital" />
-              </div>
-            ))} */}
             {listYourOrders
               ?.filter((it) => it.status === "pending")
               .map((item, index) => (
@@ -243,12 +210,8 @@ const Bill = ({ product }) => {
                         {products[index]?.product_name}
                       </h3>
                       <p>
-                        {/* {item.data.checkedVariant.option1} -{" "}
-                        {item.data.checkedVariant.option2} -{" "}
-                        {item.data.checkedVariant.option3} */}
                       </p>
                       <p className="font-medium text-foreground">
-                        {/* ${handlePriceProduct(item)}{" "} */}
                         ${(item?.total_price / item?.items[0]?.quantity).toFixed(2)}{" "}
                         <span className="text-gray-400 font-normal">
                           x {item?.items[0]?.quantity}
@@ -294,9 +257,8 @@ const Bill = ({ product }) => {
             </>
           )}
         </div>
-      </div>
 
-      <div className="cart mt-10 w-full">
+        <div className="cart mt-10 w-full">
         <h2 className="bill-title font-semibold text-xl mb-5">
           List your orders
         </h2>
@@ -332,6 +294,9 @@ const Bill = ({ product }) => {
           </TableBody>
         </Table>
       </div>
+      </div>
+
+      
     </>
   );
 };
