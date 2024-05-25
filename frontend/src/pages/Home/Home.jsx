@@ -12,9 +12,9 @@ const Home = () => {
 
   return (
     <div className="">
-      <HeroSection  />
+      <HeroSection />
       {/* <Header /> */}
-      <Services/>
+      <Services />
       <ExploreMenu category={category} setCategory={setCategory} />
       <FoodDisplay category={category} />
       {/* <AppDownload /> */}

@@ -4,6 +4,7 @@ import "./index.css";
 import Home from "./pages/Home/Home";
 import Cart from "./pages/Cart/Cart";
 import PlaceOrder from "./pages/PlaceOrder/PlaceOrder";
+import Contact from "./components/Contact/Contact";
 import Footer from "./components/Footer/Footer";
 import { useState } from "react";
 import Bill from "./pages/Bill/Bill";
@@ -14,20 +15,20 @@ import Shop from "./pages/Shop/Shop";
 import { Login } from "./pages/Authentication/Login";
 import { Register } from "./pages/Authentication/Register";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
-
   return (
     <>
       <div className="app">
         <NextUIProvider>
-          <NavBar/>
+          <NavBar />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/order" element={<PlaceOrder />} />
             <Route path="/bill" element={<Bill />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -36,7 +37,7 @@ function App() {
         </NextUIProvider>
       </div>
       <Footer />
-      <ToastContainer autoClose={3000}/>
+      <ToastContainer autoClose={3000} />
     </>
   );
 }
