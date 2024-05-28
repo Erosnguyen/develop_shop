@@ -17,15 +17,17 @@ export const handleProcessingOrder = (order_id) => {
     status: "processing",
   };
   return axiosCuston.put(API_PATH + `/${order_id}`, payload);
-}
+};
 
-export const handleGetProductDetails = async(variant_id) => {
+export const handleGetProductDetails = async (variant_id) => {
   try {
-    const res = await axiosCuston.get(baseURL + `/products/variants/${variant_id}`);
+    const res = await axiosCuston.get(
+      baseURL + `/products/variants/${variant_id}`
+    );
     const product_id = res.data.variant.product_id;
     const response = await axiosCuston.get(baseURL + `/products/${product_id}`);
-    return response.data.product
+    return response.data.product;
   } catch (error) {
     console.error(error);
   }
-}
+};

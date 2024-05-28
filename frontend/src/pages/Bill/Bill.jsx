@@ -1,7 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import { getVariantPrice } from "../../lib/utils";
-import { getUserOrder, handleAddOrder, handleProcessingOrder, handleGetProductDetails } from "./billServices";
+import {
+  getUserOrder,
+  handleAddOrder,
+  handleProcessingOrder,
+  handleGetProductDetails,
+} from "./billServices";
 import MessagePopup from "../../components/MessagePopup/MessagePopup";
 import { fetchApiConfig } from "../../config";
 import {
@@ -42,7 +47,7 @@ const Bill = ({ product }) => {
   const statusColorMap = {
     completed: "success",
     cancel: "danger",
-    processing : "primary",
+    processing: "primary",
     pending: "warning",
   };
 
@@ -106,6 +111,7 @@ const Bill = ({ product }) => {
     e.preventDefault();
     try {
       let dataSubmit = convertDataSubmit(cartItems);
+
       const data = await handleAddOrder(dataSubmit);
       if (data?.status === 201) {
         cartItems?.forEach((i) => {
@@ -142,11 +148,14 @@ const Bill = ({ product }) => {
     }
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     async function fetchData() {
-      const details = await Promise.all(listYourOrders.filter((it) => it.status === "pending").map((item) => getProductDetail(item.items[0].product_id)));
-      setProducts(details)
-      console.log(details)
+      const details = await Promise.all(
+        listYourOrders
+          .filter((it) => it.status === "pending")
+          .map((item) => getProductDetail(item.items[0].product_id))
+      );
+      setProducts(details);
     }
     fetchData();
   }, [listYourOrders]);
@@ -164,9 +173,6 @@ const Bill = ({ product }) => {
       console.log(error);
     }
   };
-
-  console.log(products);
-  console.log(listYourOrders);
 
   return (
     <>
@@ -201,7 +207,9 @@ const Bill = ({ product }) => {
                       className={`bg-cover bg-center rounded-xl w-20 h-20 cursor-pointer`}
                       style={{
                         backgroundImage: `url(${
-                          products[index]?.media ? products[index]?.media[0]?.src : "src/assets/No_Image.png"
+                          products[index]?.media
+                            ? products[index]?.media[0]?.src
+                            : "src/assets/No_Image.png"
                         })`,
                       }}
                     />
@@ -209,10 +217,12 @@ const Bill = ({ product }) => {
                       <h3 className="font-medium text-foreground underline-offset-4 hover:underline hover:opacity-80 transition-opacity cursor-pointer">
                         {products[index]?.product_name}
                       </h3>
-                      <p>
-                      </p>
+                      <p></p>
                       <p className="font-medium text-foreground">
-                        ${(item?.total_price / item?.items[0]?.quantity).toFixed(2)}{" "}
+                        $
+                        {(item?.total_price / item?.items[0]?.quantity).toFixed(
+                          2
+                        )}{" "}
                         <span className="text-gray-400 font-normal">
                           x {item?.items[0]?.quantity}
                         </span>{" "}
@@ -259,44 +269,45 @@ const Bill = ({ product }) => {
         </div>
 
         <div className="cart mt-10 w-full">
-        <h2 className="bill-title font-semibold text-xl mb-5">
-          List your orders
-        </h2>
+          <h2 className="bill-title font-semibold text-xl mb-5">
+            List your orders
+          </h2>
 
-        <Table>
-          <TableHeader columns={columns}>
-            {(column) => (
-              <TableColumn key={column.key}>{column.label}</TableColumn>
-            )}
-          </TableHeader>
-          <TableBody items={cartItems} emptyContent={"Bạn chưa đặt hàng!"}>
-            {listYourOrders?.filter((it) => it.status !== "pending").map((i, x) => {
-              return (
-                <TableRow key={x}>
-                  <TableCell>{x + 1}</TableCell>
-                  <TableCell>
-                    <Chip
-                      className="capitalize"
-                      color={statusColorMap[i?.status]}
-                      size="sm"
-                      variant="flat"
-                    >
-                      {i?.status}
-                    </Chip>
-                  </TableCell>
-                  <TableCell>
-                    {i?.created_at && new Date(i.created_at).toLocaleString()}
-                  </TableCell>
-                  <TableCell>${i?.total_price || 0}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+          <Table>
+            <TableHeader columns={columns}>
+              {(column) => (
+                <TableColumn key={column.key}>{column.label}</TableColumn>
+              )}
+            </TableHeader>
+            <TableBody items={cartItems} emptyContent={"Bạn chưa đặt hàng!"}>
+              {listYourOrders
+                ?.filter((it) => it.status !== "pending")
+                .map((i, x) => {
+                  return (
+                    <TableRow key={x}>
+                      <TableCell>{x + 1}</TableCell>
+                      <TableCell>
+                        <Chip
+                          className="capitalize"
+                          color={statusColorMap[i?.status]}
+                          size="sm"
+                          variant="flat"
+                        >
+                          {i?.status}
+                        </Chip>
+                      </TableCell>
+                      <TableCell>
+                        {i?.created_at &&
+                          new Date(i.created_at).toLocaleString()}
+                      </TableCell>
+                      <TableCell>${i?.total_price || 0}</TableCell>
+                    </TableRow>
+                  );
+                })}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-      </div>
-
-      
     </>
   );
 };
