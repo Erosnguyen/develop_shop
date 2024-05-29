@@ -12,11 +12,17 @@ class Order(FastModel):
     customer_id = Column(Integer, ForeignKey("users.id"))
     total_price = Column(Numeric(10, 2))
     status = Column(String(50))
+    # Add address columns
+    address_street = Column(String(256), nullable=True)
+    address_city = Column(String(100), nullable=True)
+    address_state = Column(String(100), nullable=True)
+    address_country = Column(String(100), nullable=True)
 
     items = relationship("OrderItem", back_populates="order")
 
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
+
 
 
 class OrderItem(FastModel):
