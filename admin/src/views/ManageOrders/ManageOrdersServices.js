@@ -8,3 +8,7 @@ export const getListOrders = () => {
 export const getProductById = (id) => {
   return axios.get(API_PATH + '/products/' + id);
 };
+
+export const updateOrderStatus = (id, payload) => {
+  return axios.put(API_PATH + `/orders/${id}`, payload);
+};

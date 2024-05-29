@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import { getProductById } from './ManageOrdersServices';
+import { getProductById, updateOrderStatus } from './ManageOrdersServices';
 import {
   Table,
   TableBody,
@@ -20,51 +20,71 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import Swal from 'sweetalert2';
 
 export default function ManageOrdersDialog(props) {
   let { open, item, search, handleClose } = props;
-  const [state, setState] = useState({});
+  console.log('ManageOrdersDialog ~ item:', item);
   const [productsList, setProductsList] = useState([]);
 
   const steps = ['Pending', 'Processing', 'Shipped', 'Delivered'];
 
-  const handleChange = (e) => {
-    let { name, value } = e.target;
-    setState((pre) => ({ ...pre, [name]: value }));
-  };
-
   const getProductNameById = async (idPro) => {
     try {
       const res = await getProductById(idPro);
-      setProductsList((pre) => [
-        ...pre, res?.data?.product
-      ]);
+      setProductsList((pre) => [...pre, res?.data?.product]);
 
-        // setProductsList(res?.data?.product?.product_name)
+      // setProductsList(res?.data?.product?.product_name)
     } catch (error) {
       console.error(`Failed to get product name by id: ${error}`);
       return null;
     }
-  }
+  };
 
   useEffect(() => {
     async function fetchProductNames() {
-      const names = await Promise.all(item?.items?.map(async (item) => {
-        const productData = await getProductNameById(item?.item_id);
-      }));
+      const names = await Promise.all(
+        item?.items?.map(async (item) => {
+          const productData = await getProductNameById(item?.item_id);
+        }),
+      );
     }
-  
+
     fetchProductNames();
   }, [item?.items]);
-  
 
-  useEffect(() => {
-    setState({
-      ...item,
+  const handleUpdateStatus = async (label) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel!',
+      reverseButtons: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await updateOrderStatus(item?.id + 1, { status: label.toLowerCase() });
+        } catch (error) {}
+        Swal.fire({
+          title: 'Deleted!',
+          text: 'Your file has been deleted.',
+          icon: 'success',
+        });
+      } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'Your imaginary file is safe :)',
+          icon: 'error',
+        });
+      }
     });
-  }, [item]);
+  };
 
-  console.log(productsList);
   return (
     <>
       <Dialog
@@ -87,7 +107,7 @@ export default function ManageOrdersDialog(props) {
               <Stepper activeStep={0} alternativeLabel>
                 {steps.map((label) => (
                   <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
+                    <StepLabel onClick={() => handleUpdateStatus(label)}>{label}</StepLabel>
                   </Step>
                 ))}
               </Stepper>
@@ -105,15 +125,12 @@ export default function ManageOrdersDialog(props) {
                   </TableHead>
                   <TableBody>
                     {item?.items?.map((item, index) => (
-                        
                       <TableRow>
                         <TableCell>{index + 1}</TableCell>
-                        <TableCell align="center">
-                          {productsList[index]?.product_name}
-                        </TableCell>
+                        <TableCell align="center">{productsList[index]?.product_name}</TableCell>
                         <TableCell align="center">{item?.quantity}</TableCell>
                         <TableCell align="right">
-                        ${productsList[index]?.variants[0]?.price}
+                          ${productsList[index]?.variants[0]?.price}
                         </TableCell>
                       </TableRow>
                     ))}

@@ -2,8 +2,8 @@ import { CssBaseline, ThemeProvider } from '@mui/material';
 import { useNavigate, useRoutes } from 'react-router-dom';
 import Router from './routes/Router';
 import 'react-toastify/dist/ReactToastify.css';
+import './style.css';
 import { ToastContainer } from 'react-toastify';
-
 import { baselightTheme } from './theme/DefaultColors';
 import { useEffect } from 'react';
 
