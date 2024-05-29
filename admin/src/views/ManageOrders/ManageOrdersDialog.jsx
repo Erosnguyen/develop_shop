@@ -12,15 +12,37 @@ import { useCallback, useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { getProductById, getVariantById, updateOrderStatus } from './ManageOrdersServices';
 
+const steps = [
+  {
+    id: 0,
+    label: 'Pending',
+    field: 'pending',
+  },
+  {
+    id: 1,
+    label: 'Processing',
+    field: 'processing',
+  },
+  {
+    id: 2,
+    label: 'Shipped',
+    field: 'shipped',
+  },
+  {
+    id: 3,
+    label: 'Delivered',
+    field: 'delivered',
+  },
+];
+
 export default function ManageOrdersDialog(props) {
-  const { open, item, search, handleClose } = props;
+  const { open, item, handleClose, getOrders } = props;
+  const variantIdWithProp = item.items?.at(0).product_id;
 
   const [productDetail, setProductDetail] = useState();
-  const [variantDetail, setvariantDetail] = useState();
+  const [variantDetail, setVariantDetail] = useState();
 
   const orderQuantity = item?.items?.at(0).quantity;
-
-  const steps = ['Pending', 'Processing', 'Shipped', 'Delivered'];
 
   const getVariantsById = useCallback(
     async (idPro) => {
@@ -33,7 +55,7 @@ export default function ManageOrdersDialog(props) {
   const fetchProductById = useCallback(
     async (variantId) => {
       const { data: dataVariant } = await getVariantById(variantId);
-      setvariantDetail(dataVariant.variant);
+      setVariantDetail(dataVariant.variant);
 
       const { data: dataProduct } = await getProductById(dataVariant.variant?.product_id);
       setProductDetail(dataProduct.product);
@@ -42,41 +64,38 @@ export default function ManageOrdersDialog(props) {
   );
 
   useEffect(() => {
-    const variantIdWithProp = item.items?.at(0).product_id;
     fetchProductById(variantIdWithProp);
   }, [item?.items, fetchProductById]);
 
   const handleUpdateStatus = async (label) => {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, cancel!',
-      reverseButtons: true,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
+    const currentIndex = steps.findIndex((step) => step.field === item?.status);
+    const nextIndex = currentIndex + 1;
+    const nextField = steps[nextIndex] ? steps[nextIndex].field : null;
+
+    if (label === nextField) {
+      const { isConfirmed } = await Swal.fire({
+        title: 'Thay đổi trạng thái?',
+        text: `Bạn muốn thay đổi trạng thái đơn hàng thành ${nextField}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Accept',
+        reverseButtons: true,
+      });
+      if (isConfirmed) {
         try {
-          await updateOrderStatus(item?.id + 1, { status: label.toLowerCase() });
-        } catch (error) {}
-        Swal.fire({
-          title: 'Deleted!',
-          text: 'Your file has been deleted.',
-          icon: 'success',
-        });
-      } else if (
-        /* Read more about handling dismissals below */
-        result.dismiss === Swal.DismissReason.cancel
-      ) {
-        Swal.fire({
-          title: 'Cancelled',
-          text: 'Your imaginary file is safe :)',
-          icon: 'error',
-        });
+          await updateOrderStatus(item.id, { status: nextField });
+          await getOrders();
+          handleClose();
+          Swal.fire('Success', '', 'success');
+        } catch (error) {
+          handleClose();
+          Swal.fire('Oops!', '', 'error');
+        }
       }
-    });
+    }
   };
+
+  const activeStep = steps.findIndex((step) => step.field === item?.status);
 
   return (
     <>
@@ -97,10 +116,10 @@ export default function ManageOrdersDialog(props) {
         <DialogContent>
           <Grid container spacing={4}>
             <Grid item xs={12}>
-              <Stepper activeStep={0} alternativeLabel>
-                {steps.map((label) => (
-                  <Step key={label}>
-                    <StepLabel onClick={() => handleUpdateStatus(label)}>{label}</StepLabel>
+              <Stepper activeStep={activeStep} alternativeLabel>
+                {steps.map((step, index) => (
+                  <Step key={step.id} onClick={() => handleUpdateStatus(step.field)}>
+                    <StepLabel>{step.label}</StepLabel>
                   </Step>
                 ))}
               </Stepper>

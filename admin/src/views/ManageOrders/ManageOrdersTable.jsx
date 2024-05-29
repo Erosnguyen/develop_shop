@@ -1,22 +1,16 @@
-import React from 'react';
 import {
-  Typography,
   Box,
+  Card,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Card,
-  Button,
-  Chip,
+  Typography,
 } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { formatDate } from 'src/utils/format-date';
+import ManageOrdersTableRow from './ManageOrdersTableRow';
 
-function ManageOrdersTable(props) {
-  let { data, handleView } = props;
-
+function ManageOrdersTable({ data, handleView }) {
   return (
     <Card sx={{ mt: 2 }}>
       <Box sx={{ overflow: 'auto', width: { xs: '280px', sm: 'auto' } }}>
@@ -70,34 +64,7 @@ function ManageOrdersTable(props) {
           </TableHead>
           <TableBody>
             {data?.map((product, index) => (
-              <TableRow key={product.name}>
-                <TableCell>
-                  <Typography variant="subtitle2">{product?.id}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">{product?.customer_id}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={product?.status}
-                    size="small"
-                    color={product?.status === 'pending' ? 'warning' : 'success'}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">
-                    {formatDate(product?.updated_at || product?.created_at)}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle2">${product?.total_price || 0}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Button variant="contained" size="small" onClick={() => handleView(product)}>
-                    <VisibilityIcon />
-                  </Button>
-                </TableCell>
-              </TableRow>
+              <ManageOrdersTableRow key={index} product={product} handleView={handleView} />
             ))}
           </TableBody>
         </Table>
