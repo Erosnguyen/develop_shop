@@ -6,47 +6,41 @@ import { getListOrders } from './ManageOrdersServices';
 import ManageOrdersDialog from './ManageOrdersDialog';
 
 const ManageOrders = () => {
+  const [listitem, setListItem] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [item, setItem] = useState(null);
 
-    const [listitem, setListItem] = useState([]);
-    const [open, setOpen] = useState(false);
-    const [item, setItem] = useState(null)
+  const search = async () => {
+    try {
+      const data = await getListOrders();
+      if (data?.status === 200) {
+        setListItem(data?.data);
+      }
+    } catch (error) {}
+  };
 
-    const search = async () => {
-        try {
-            const data = await getListOrders();
-            if (data?.status === 200) {
-                setListItem(data?.data)
-            }
-        } catch (error) {
+  const handleView = (value) => {
+    setOpen(true);
+    setItem(value);
+  };
 
-        }
-    }
+  const handleClose = () => {
+    setOpen(false);
+    setItem(null);
+  };
 
-    const handleView = (value) => {
-        setOpen(true);
-        setItem(value);
-    }
+  useEffect(() => {
+    search();
+  }, []);
 
-    const handleClose = () => {
-        setOpen(false);
-        setItem(null);
-    }
-
-    useEffect(() => {
-        search();
-    }, []);
-
-    console.log(listitem)
-    return (
-        <PageContainer title="Orders">
-            <Card sx={{ p: 1, minHeight: "screen" }}>
-                <ManageOrdersTable data={listitem} handleView={handleView} />
-            </Card>
-            {
-                open && <ManageOrdersDialog open={open} handleClose={handleClose} item={item}/>
-            }
-        </PageContainer>
-    );
+  return (
+    <PageContainer title="Orders">
+      <Card sx={{ p: 1, minHeight: 'screen' }}>
+        <ManageOrdersTable data={listitem} handleView={handleView} />
+      </Card>
+      {open && <ManageOrdersDialog open={open} handleClose={handleClose} item={item} />}
+    </PageContainer>
+  );
 };
 
 export default ManageOrders;

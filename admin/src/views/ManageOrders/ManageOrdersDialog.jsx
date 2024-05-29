@@ -5,12 +5,12 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import { getProductById } from './ManageOrdersServices';
+import { getProductById, getVariantById } from './ManageOrdersServices';
 import {
   Table,
   TableBody,
@@ -22,49 +22,40 @@ import {
 } from '@mui/material';
 
 export default function ManageOrdersDialog(props) {
-  let { open, item, search, handleClose } = props;
-  const [state, setState] = useState({});
-  const [productsList, setProductsList] = useState([]);
+  const { open, item, search, handleClose } = props;
+
+  const [productDetail, setProductDetail] = useState();
+  const [variantDetail, setvariantDetail] = useState();
+
+  const orderQuantity = item?.items?.at(0).quantity;
 
   const steps = ['Pending', 'Processing', 'Shipped', 'Delivered'];
 
-  const handleChange = (e) => {
-    let { name, value } = e.target;
-    setState((pre) => ({ ...pre, [name]: value }));
-  };
+  const getVariantsById = useCallback(
+    async (idPro) => {
+      const res = await getVariantById(idPro);
+      return res.data.variant;
+    },
+    [item?.items],
+  );
 
-  const getProductNameById = async (idPro) => {
-    try {
-      const res = await getProductById(idPro);
-      setProductsList((pre) => [
-        ...pre, res?.data?.product
-      ]);
+  const fetchProductById = useCallback(
+    async (variantId) => {
+      const { data: dataVariant } = await getVariantById(variantId);
+      setvariantDetail(dataVariant.variant);
 
-        // setProductsList(res?.data?.product?.product_name)
-    } catch (error) {
-      console.error(`Failed to get product name by id: ${error}`);
-      return null;
-    }
-  }
-
-  useEffect(() => {
-    async function fetchProductNames() {
-      const names = await Promise.all(item?.items?.map(async (item) => {
-        const productData = await getProductNameById(item?.item_id);
-      }));
-    }
-  
-    fetchProductNames();
-  }, [item?.items]);
-  
+      const { data: dataProduct } = await getProductById(dataVariant.variant?.product_id);
+      setProductDetail(dataProduct.product);
+    },
+    [item?.items, getVariantsById],
+  );
 
   useEffect(() => {
-    setState({
-      ...item,
-    });
-  }, [item]);
+    const variantIdWithProp = item.items?.at(0).product_id;
 
-  console.log(productsList);
+    fetchProductById(variantIdWithProp);
+  }, [item?.items, fetchProductById]);
+
   return (
     <>
       <Dialog
@@ -101,22 +92,17 @@ export default function ManageOrdersDialog(props) {
                       <TableCell align="center">Tên sản phẩm</TableCell>
                       <TableCell align="center">Số lượng</TableCell>
                       <TableCell align="right">Giá</TableCell>
+                      <TableCell align="right">Tổng tiền</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {item?.items?.map((item, index) => (
-                        
-                      <TableRow>
-                        <TableCell>{index + 1}</TableCell>
-                        <TableCell align="center">
-                          {productsList[index]?.product_name}
-                        </TableCell>
-                        <TableCell align="center">{item?.quantity}</TableCell>
-                        <TableCell align="right">
-                        ${productsList[index]?.variants[0]?.price}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    <TableRow>
+                      <TableCell>{1}</TableCell>
+                      <TableCell align="center">{productDetail?.product_name}</TableCell>
+                      <TableCell align="center">{orderQuantity}</TableCell>
+                      <TableCell align="right">${variantDetail?.price}</TableCell>
+                      <TableCell align="right">${variantDetail?.price * orderQuantity}</TableCell>
+                    </TableRow>
                   </TableBody>
                 </Table>
               </TableContainer>
