@@ -12,3 +12,7 @@ export const getProductById = (id) => {
 export const updateOrderStatus = (id, payload) => {
   return axios.put(API_PATH + `/orders/${id}`, payload);
 };
+
+export const getVariantById = (id) => {
+  return axios.get(API_PATH + '/products/variants/' + id);
+};
