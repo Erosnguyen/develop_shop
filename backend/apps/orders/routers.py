@@ -6,7 +6,7 @@ from apps.accounts.services.user import User
 
 from .schemas import (OrderCreateSchema, OrderItemSchema, OrderSchema,
                       OrderUpdateSchema)
-from .services import OrderService, AddressSchema
+from .services import AddressSchema, OrderService
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
@@ -19,7 +19,9 @@ router = APIRouter(prefix="/orders", tags=["Orders"])
     description="Create a new order. Order should be a list include variant_product_id and quantity.",
 )
 async def create_order(
-    order: OrderCreateSchema, address: AddressSchema, current_user: User = Depends(AccountService.current_user)
+    order: OrderCreateSchema,
+    address: AddressSchema,
+    current_user: User = Depends(AccountService.current_user),
 ):
     user_id = current_user.id
     created_order = await OrderService.create_order(user_id, order.items, address)

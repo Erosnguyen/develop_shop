@@ -8,11 +8,14 @@ from pydantic import BaseModel, validator
 ---------------------------------------
 """
 
+
 class AddressSchema(BaseModel):
     street: str
     city: str
     state: str
     country: str
+
+
 class OrderItemSchema(BaseModel):
     variant_product_id: int
     quantity: int
