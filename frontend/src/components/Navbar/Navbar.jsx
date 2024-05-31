@@ -1,108 +1,159 @@
-import React, { useEffect, useState } from "react";
-import { assets } from "../../assets/assets";
+import React, { useEffect, useState, useContext } from "react";
 import "../../index.css";
 import { Link } from "react-router-dom";
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  Input,
+  Button,
+  DropdownItem,
+  DropdownTrigger,
+  Dropdown,
+  DropdownMenu,
+  Avatar,
+  Badge,
+} from "@nextui-org/react";
+import { SearchIcon } from "../../assets/SearchIcon";
+import { useLocation } from "react-router-dom";
+import { CartIcon } from "../../assets/CartIcon"
+import { Logo } from "../../assets/Logo";
+import { getUserOrder } from "../../pages/Bill/billServices";
+import { useNavigate } from "react-router-dom";
 
-const NavBar = ({ setShowLogin }) => {
-  const [menu, setMenu] = useState("home");
-  const token = localStorage.getItem("access_token")
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+const NavBar = () => {
+  const location = useLocation();
+  let navigate = useNavigate();
+  const currentPath = location.pathname;
+
+  const token = localStorage.getItem("access_token");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [orderCount, setOrderCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchOrderCount() {
+      const count = await getUserOrder(); 
+      setOrderCount(count.data.filter((it) => it.status === "pending").length);
+    }
+
+    fetchOrderCount();
+  }, [isLoggedIn]);
 
   const handleLogout = () => {
-    localStorage.removeItem("access_token")
+    localStorage.removeItem("access_token");
     setIsLoggedIn(false);
-  }
+    setOrderCount(0);
+    navigate("/login");
+  };
+
+  const menus = [
+    {
+      name: "Trang chủ",
+      link: "/",
+      id: 1,
+    },
+    {
+      name: "Cửa Hàng",
+      link: "/shop",
+      id: 2,
+    },
+    {
+      name: "Thanh Toán",
+      link: "/bill",
+      id: 3,
+    },
+    {
+      name: "Liên hệ",
+      link: "/contact",
+      id: 4,
+    },
+    
+  ];
 
   useEffect(() => {
     if (token) {
-      setIsLoggedIn(true)
+      setIsLoggedIn(true);
     } else {
-      setIsLoggedIn(false)
+      setIsLoggedIn(false);
     }
-  }, [token])
+  }, [token]);
+
   return (
-    <div className="navbar pt-5 justify-between flex items-center">
-      {/* <img src={assets.logo} alt="" className="w-[150px]" /> */}
-      <div className="logo lg:w-[140px] md:w-[120px]">
-        <Link to="/">
-          <h1>HUONG VIET</h1>
-        </Link>
-      </div>
-      <ul className="navbar-menu flex list-none gap-5 text-[#49557e] text-lg xl:gap-[20px] lg:gap-[15px] lg:text-[16px] max-md:hidden max-lg:hidden scroll-smooth">
-        <a
-          href="/"
-          onClick={() => setMenu("home")}
-          className={
-            menu === "home"
-              ? "active:pb-[2px] border-b-2 border-[#49557e] cursor-pointer scroll-smooth"
-              : "cursor-pointer"
-          }
-        >
-          Home
-        </a>
-        <a
-          href="#explore-menu"
-          onClick={() => setMenu("menu")}
-          className={
-            menu === "menu"
-              ? "active:pb-[2px] border-b-2 border-[#49557e] cursor-pointer"
-              : "cursor-pointer"
-          }
-        >
-          Menu
-        </a>
-        <a
-          href="#app-download"
-          onClick={() => setMenu("mobile")}
-          className={
-            menu === "mobile"
-              ? "active:pb-[2px] border-b-2 border-[#49557e] cursor-pointer"
-              : "cursor-pointer"
-          }
-        >
-          Mobile
-        </a>
-        <a
-          href="#footer"
-          onClick={() => setMenu("contact-us")}
-          className={
-            menu === "contact-us"
-              ? "active:pb-[2px] border-b-2 border-[#49557e] cursor-pointer"
-              : "cursor-pointer"
-          }
-        >
-          Contact us
-        </a>
-      </ul>
-      <div className="navbar-right flex items-center gap-10 max-xl:gap-[30px] max-lg:gap-5">
-        <img
-          className="max-lg:w-[22px] max-md:w-5"
-          src={assets.search_icon}
-          alt=""
-        />
-        <div className="navbar-search-icon relative max-lg:w-[22px] max-md:w-5">
+    <>
+      <Navbar >
+        <NavbarContent justify="start">
+          <NavbarBrand className="mr-4">
+            <a href="/" className="hidden sm:flex gap-2 items-center font-bold text-inherit">
+              <Logo/>
+              <p>HƯƠNG VIỆT</p>
+            </a>
+          </NavbarBrand>
+          <NavbarContent className="hidden sm:flex gap-3">
+            {menus.map((item) => (
+              <NavbarItem key={item.id} isActive={currentPath === item.link}>
+                <Link color="foreground" to={item.link}>
+                  {item.name}
+                </Link>
+              </NavbarItem>
+            ))}
+          </NavbarContent>
+        </NavbarContent>
+
+        <NavbarContent as="div" className="items-center" justify="end">
+          <Input
+            classNames={{
+              base: "max-w-full sm:max-w-[10rem] h-10",
+              mainWrapper: "h-full",
+              input: "text-small",
+              inputWrapper:
+                "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
+            }}
+            placeholder="Tìm kiếm..."
+            size="sm"
+            startContent={<SearchIcon size={18} />}
+            type="search"
+          />
           <Link to={"/cart"}>
-            <img src={assets.basket_icon} alt="" />
+              <Badge color="danger" content={orderCount} isInvisible={false} shape="circle">
+                <CartIcon size={24} />
+              </Badge>
           </Link>
-          <div className="dot absolute min-w-[10px] min-h-[10px] bg-amber-700 rounded-[5px] -top-2 -right-2"></div>
-        </div>
-        {
-          isLoggedIn ?
-            <button
-              onClick={() => handleLogout()}
-              className="bg-transparent text-base text-[#49557e] border border-solid border-amber-700  rounded-[50px] cursor-pointer hover:bg-[#fff4f2] text-center px-[30px] py-[10px] max-xl:py-[8px] max-xl:px-[25px] max-lg:px-[20px] max-lg:py-[7px] lg:text-[15px]"
-            >
-              Logout
-            </button> :
-            <button
-              onClick={() => setShowLogin(true)}
-              className="bg-transparent text-base text-[#49557e] border border-solid border-amber-700  rounded-[50px] cursor-pointer hover:bg-[#fff4f2] text-center px-[30px] py-[10px] max-xl:py-[8px] max-xl:px-[25px] max-lg:px-[20px] max-lg:py-[7px] lg:text-[15px]"
-            >
-              sign in
-            </button>
-        }
-      </div>
-    </div>
+          {isLoggedIn ? (
+            <Dropdown placement="bottom-end">
+              <DropdownTrigger>
+                <Avatar
+                  isBordered
+                  as="button"
+                  className="transition-transform"
+                  color="secondary"
+                  name="User"
+                  size="sm"
+                  src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                />
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Profile Actions" variant="flat">
+                <DropdownItem key="profile" className="h-14 gap-2">
+                  <p className="font-semibold">Signed in as</p>
+                  <p className="font-semibold">user@example.com</p>
+                </DropdownItem>
+                <DropdownItem onClick={handleLogout} key="logout" color="danger">
+                  Log Out
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          ) : (
+            <Link to="/login">
+              <Button color="warning" variant="flat">
+                Đăng nhập
+              </Button>
+            </Link>
+          )}
+        </NavbarContent>
+      </Navbar>
+    </>
   );
 };
 

@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, Body, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -231,6 +233,42 @@ async def verify_change_email(
 )
 async def retrieve_user(user_id: int):
     return {"user": UserManager.to_dict(UserManager.get_user(user_id))}
+
+
+# ------------------------
+# --- List All Users ---
+# ------------------------
+
+
+@router.get(
+    "/",
+    status_code=status.HTTP_200_OK,
+    summary="List all users",
+    description="Retrieve a list of all users. Only admins can access this endpoint.",
+    tags=["Users"],
+    dependencies=[Depends(Permission.is_admin)],
+)
+async def list_users():
+    users = UserManager.get_all_users()
+    return [{"user": UserManager.to_dict(user)} for user in users]
+
+
+# ------------------------
+# --- Delete a User ---
+# ------------------------
+
+
+@router.delete(
+    "/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a single user",
+    description="Delete a user by ID. Only admins can delete users.",
+    tags=["Users"],
+    dependencies=[Depends(Permission.is_admin)],
+)
+async def delete_user(user_id: int):
+    UserManager.delete_user(user_id)
+    return {"detail": "User deleted successfully"}
 
 
 # TODO DELETE /accounts/me

@@ -4,7 +4,8 @@ from apps.accounts.services.authenticate import AccountService
 from apps.accounts.services.permissions import Permission
 from apps.accounts.services.user import User
 
-from .schemas import OrderCreateSchema, OrderItemSchema, OrderSchema
+from .schemas import (OrderCreateSchema, OrderItemSchema, OrderSchema,
+                      OrderUpdateSchema)
 from .services import OrderService
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
@@ -67,3 +68,41 @@ async def list_orders_by_customer_id(
     customer_id = int(current_user.id)
     orders = OrderService.list_orders_by_customer_id(customer_id)
     return orders
+
+
+@router.put(
+    "/{order_id}",
+    status_code=status.HTTP_200_OK,
+    summary="Update an existing order",
+    description="""Update an existing order by its ID. 
+    Valid_statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled']""",
+    response_model=OrderSchema,
+)
+async def update_order(
+    order_id: int,
+    update_data: OrderUpdateSchema,
+    current_user: User = Depends(AccountService.current_user),
+):
+    updated_order = await OrderService.update_order(order_id, update_data)
+    if updated_order is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Order not found"
+        )
+    return updated_order
+
+
+@router.delete(
+    "/{order_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete an order",
+    description="Delete an order by its ID.",
+)
+async def delete_order(
+    order_id: int, current_user: User = Depends(AccountService.current_user)
+):
+    deleted_order = await OrderService.delete_order(order_id)
+    if deleted_order is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Order not found"
+        )
+    return {"message": "Order deleted successfully"}

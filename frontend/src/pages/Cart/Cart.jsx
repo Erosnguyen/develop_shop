@@ -1,9 +1,27 @@
-import React, { useContext, useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import { Link } from "react-router-dom";
 import { getVariantPrice } from "../../lib/utils";
+import { DeleteIcon } from "../../assets/DeleteIcon";
+import {
+  getUserOrder,
+  handleGetProductDetails,
+} from "../../pages/Bill/billServices";
+import { fetchApiConfig } from "../../config";
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Image,
+  Tooltip,
+  Button,
+  Tab,
+} from "@nextui-org/react";
 
-const Cart = ({ product }) => {
+const Cart = () => {
   const {
     cartItems,
     removeFromCart,
@@ -11,91 +29,115 @@ const Cart = ({ product }) => {
     decreaseCartQuantity,
   } = useContext(StoreContext);
 
-  console.log("Cart Items: ", cartItems);
+  const [listYourOrders, setListYourOrders] = useState([]);
+  const [product, setProduct] = useState([]);
+  const [productId, setProductId] = useState([]);
 
-  const [quantity, setQuantity] = useState(1);
+  const columns = [
+    {
+      key: "product",
+      label: "Sản phẩm",
+    },
+    {
+      key: "image",
+      label: "Hình ảnh",
+    },
+    {
+      key: "quantity",
+      label: "Số lượng",
+    },
+    {
+      key: "price",
+      label: "Giá tiền",
+    },
+    // {
+    //   key: "remove",
+    //   label: "Xóa",
+    // },
+  ];
 
-  const incrementQuantity = () => {
-    setQuantity((prev) => prev + 1);
+  const handleGetOrder = async () => {
+    try {
+      const res = await getUserOrder();
+      setListYourOrders(res.data.filter((item) => item.status === "pending"));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const decrementQuantity = () => {
-    setQuantity((prev) => Math.max(prev - 1, 1));
+  const getProductDetail = async (variant_id) => {
+    try {
+      const response = await handleGetProductDetails(variant_id);
+      return response;
+    } catch (error) {
+      // Xử lý lỗi nếu có
+      console.error("Error occurred:", error);
+      throw error; // Đưa lỗi ra ngoài để xử lý ở nơi gọi hàm
+    }
   };
 
-  const handleDeleteProductInCart = (data) => {
-    removeFromCart(data);
-  };
+  useEffect(() => {
+    handleGetOrder();
+  }, []);
+
+
+  useEffect(() => {
+    async function fetchData() {
+      const details = await Promise.all(listYourOrders.map((item) => getProductDetail(item.items[0].product_id)));
+      setProduct(details) 
+    }
+    fetchData();
+  }, [listYourOrders]); 
+
+  // console.log(product)
+  console.log(listYourOrders)
 
   return (
     <div className="cart mt-10 w-full">
-      <table className="table-fixed w-full">
-        <thead>
-          <tr className="text-[#49557e]">
-            <th className="border divide-solid border-amber-700">PRODUCT</th>
-            <th className="border divide-solid border-amber-700">IMAGE</th>
-            <th className="border divide-solid border-amber-700">QUANTILY</th>
-            <th className="border divide-solid border-amber-700">PRICE</th>
-            <th className="border divide-solid border-amber-700">REMOVE</th>
-          </tr>
-        </thead>
+      <Table>
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn key={column.key}>{column.label}</TableColumn>
+          )}
+        </TableHeader>
+        <TableBody items={listYourOrders} emptyContent={"Giỏ hàng trống"}>
+          {listYourOrders.map((item, idx) => {
+            
 
-        <tbody className="">
-          {cartItems?.map((item) => (
-            <tr className="text-center">
-              <td className="border divide-solid border-amber-700">
-                <div>{item.data.product_name}</div>
-              </td>
-              <td className="border divide-solid border-amber-700 bg-no-repeat bg-center px-6 py-6">
-                <img
-                  className="w-full h-40 "
-                  src={item.data.media[0]?.src}
-                  alt=""
-                />
-              </td>
-              <td className="border divide-solid border-amber-700">
-                <div className="flex justify-center">
-                  {/* <button
-                    className="font-bold text-[25px]"
-                    onClick={decrementQuantity}
-                  >
-                    -
-                  </button> */}
-                  <div className="pl-5 pr-5 text-[25px]">{item?.quantity}</div>
-                  {/* <button
-                    className="font-bold text-[25px]"
-                    onClick={incrementQuantity}
-                  >
-                    +
-                  </button> */}
-                </div>
-              </td>
-              <td className="border divide-solid border-amber-700">{getVariantPrice(
-                item?.data?.variants,
-                item?.data?.checkedVariant.color,
-                item?.data?.checkedVariant.material,
-                item?.data?.checkedVariant.size,
-                item?.quantity
-              )}$</td>
-              <td className="border divide-solid border-amber-700">
-                <div>
-                  <button
-                    className="text-red-700 font-bold"
-                    onClick={() => handleDeleteProductInCart(item.data)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            return (
+              <TableRow key={idx}>
+                <TableCell>{product[idx]?.product_name}</TableCell>
+                <TableCell>
+                  <Image
+                    width={100}
+                    height={100}
+                    src={
+                      product[idx]?.media != null
+                        ? product[idx]?.media[0]?.src
+                        : "src/assets/No_Image.png"
+                    }
+                  />
+                </TableCell>
+                <TableCell>{item?.items[0]?.quantity}</TableCell>
+                <TableCell>${item?.total_price}</TableCell>
+                {/* <TableCell>
+                  <Tooltip color="danger" content="Xoá sản phẩm này?">
+                    <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                      <Button isIconOnly color="light">
+                        <DeleteIcon />
+                      </Button>
+                    </span>
+                  </Tooltip>
+                </TableCell> */}
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+
       <div className="flex justify-end mt-10">
         <Link to="/Bill">
-          <button className="bg-amber-700 px-5 py-4 text-white">
-            PURCHASE
-          </button>
+          <Button color="warning">Thanh Toán</Button>
         </Link>
       </div>
     </div>

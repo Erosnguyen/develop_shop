@@ -13,12 +13,6 @@ import { uniqueId } from 'lodash';
 const Menuitems = [
   {
     id: uniqueId(),
-    title: 'Dashboard',
-    icon: IconLayoutDashboard,
-    href: '/dashboard',
-  },
-  {
-    id: uniqueId(),
     title: 'Manage food',
     icon: IconBook,
     href: '/manage-food',
@@ -45,12 +39,12 @@ const Menuitems = [
   //   navlabel: true,
   //   subheader: 'Hệ thống',
   // },
-  // {
-  //   id: uniqueId(),
-  //   title: 'Nhân viên',
-  //   icon: IconUser,
-  //   href: '/manage-staff',
-  // },
+  {
+    id: uniqueId(),
+    title: 'User',
+    icon: IconUser,
+    href: '/manage-user',
+  },
   // {
   //   id: uniqueId(),
   //   title: 'Người dùng',

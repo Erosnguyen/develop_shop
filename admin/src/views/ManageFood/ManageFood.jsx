@@ -26,7 +26,6 @@ const ManageBook = () => {
     const handleEdit = async (value) => {
         try {
             const data = await getById(value?.product_id);
-            console.log()
             setOpen(true);
             setItem({
                 ...data?.data?.product,
@@ -73,7 +72,9 @@ const ManageBook = () => {
     return (
         <PageContainer title="Manage food">
             <Card sx={{ p: 1, minHeight: "screen" }}>
-                <Button variant='contained' size='small' onClick={handleClickOpen}>Thêm mới</Button>
+                <div style={{ display: 'flex' }}>
+                    <Button style={{ marginLeft: 'auto' }} variant='contained' size='small' onClick={handleClickOpen}>Thêm mới</Button>
+                </div>
                 <ManageFoodTable data={listitem} handleEdit={handleEdit} handleOpenDelete={handleOpenDelete} />
             </Card>
             {open && <ManageFoodDialog
