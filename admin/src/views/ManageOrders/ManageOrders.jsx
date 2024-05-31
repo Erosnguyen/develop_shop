@@ -1,52 +1,53 @@
-import React, { useEffect, useState } from 'react';
 import { Card } from '@mui/material';
+import { useEffect, useState } from 'react';
 import PageContainer from 'src/components/container/PageContainer';
-import ManageOrdersTable from './ManageOrdersTable';
-import { getListOrders } from './ManageOrdersServices';
 import ManageOrdersDialog from './ManageOrdersDialog';
+import { getListOrders } from './ManageOrdersServices';
+import ManageOrdersTable from './ManageOrdersTable';
 
 const ManageOrders = () => {
+  const [listitem, setListItem] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [item, setItem] = useState(null);
 
-    const [listitem, setListItem] = useState([]);
-    const [open, setOpen] = useState(false);
-    const [item, setItem] = useState(null)
+  const getOrders = async () => {
+    try {
+      const data = await getListOrders();
+      if (data?.status === 200) {
+        setListItem(data?.data.reverse());
+      }
+    } catch (error) {}
+  };
 
-    const search = async () => {
-        try {
-            const data = await getListOrders();
-            if (data?.status === 200) {
-                setListItem(data?.data)
-            }
-        } catch (error) {
+  const handleView = (value) => {
+    setOpen(true);
+    setItem(value);
+  };
 
-        }
-    }
+  const handleClose = () => {
+    setOpen(false);
+    setItem(null);
+  };
 
-    const handleView = (value) => {
-        setOpen(true);
-        setItem(value);
-    }
+  useEffect(() => {
+    getOrders();
+  }, []);
 
-    const handleClose = () => {
-        setOpen(false);
-        setItem(null);
-    }
-
-    useEffect(() => {
-        search();
-    }, []);
-
-    console.log(listitem)
-    return (
-        <PageContainer title="Orders">
-            <Card sx={{ p: 1, minHeight: "screen" }}>
-                <ManageOrdersTable data={listitem} handleView={handleView} />
-            </Card>
-            {
-                open && <ManageOrdersDialog open={open} handleClose={handleClose} item={item}/>
-            }
-        </PageContainer>
-    );
+  return (
+    <PageContainer title="Orders">
+      <Card sx={{ p: 1, minHeight: 'screen' }}>
+        <ManageOrdersTable data={listitem} handleView={handleView} />
+      </Card>
+      {open && (
+        <ManageOrdersDialog
+          open={open}
+          handleClose={handleClose}
+          item={item}
+          getOrders={getOrders}
+        />
+      )}
+    </PageContainer>
+  );
 };
 
 export default ManageOrders;

@@ -13,12 +13,6 @@ import { uniqueId } from 'lodash';
 const Menuitems = [
   {
     id: uniqueId(),
-    title: 'Dashboard',
-    icon: IconLayoutDashboard,
-    href: '/dashboard',
-  },
-  {
-    id: uniqueId(),
     title: 'Manage food',
     icon: IconBook,
     href: '/manage-food',

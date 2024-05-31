@@ -125,28 +125,19 @@ function ManageGenreTable(props) {
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    {/* <Typography
-                                        sx={{
-                                            fontSize: "15px",
-                                            fontWeight: "500",
-                                        }}
-                                    >
-                                        {user?.user?.role}
-                                    </Typography> */}
                                     <Chip size='small' label={user?.user?.role} color={user?.user?.role == "admin"  ? "warning" : "primary"} />
                                 </TableCell>
                                 <TableCell>
-                                    {/* <Typography
-                                        sx={{
-                                            fontSize: "15px",
-                                            fontWeight: "500",
-                                        }}
-                                    >
-                                        {user?.user?.is_verified_email ? "Đã xác thực" : "Chưa xác thực"}
-                                    </Typography> */}
                                     <Chip size='small' label={user?.user?.is_verified_email ? "Đã xác thực" : "Chưa xác thực"} color={user?.user?.is_verified_email ? "success" : "error"} />
                                 </TableCell>
                                 <TableCell>
+                                    {/* <Button
+                                        variant="contained"
+                                        sx={{ minWidth: 0, mr: 1 }}
+                                        onClick={() => handleEdit(user)}
+                                    >
+                                        <IconEdit size="1.3rem" />
+                                    </Button> */}
                                     <Button
                                         variant="contained"
                                         sx={{ minWidth: 0, mr: 1 }}
