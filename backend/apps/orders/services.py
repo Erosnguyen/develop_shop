@@ -8,12 +8,15 @@ from apps.products.services import ProductService
 from config import settings
 from config.database import DatabaseManager
 
-from .schemas import OrderItemSchema, OrderSchema, OrderUpdateSchema
+from .schemas import (AddressSchema, OrderItemSchema, OrderSchema,
+                      OrderUpdateSchema)
 
 
 class OrderService:
     @classmethod
-    async def create_order(cls, customer_id: int, items: List[OrderItemSchema]):
+    async def create_order(
+        cls, customer_id: int, items: List[OrderItemSchema], address: AddressSchema
+    ):
         """
         Create a new order.
 
@@ -21,6 +24,7 @@ class OrderService:
         - customer_id (int): The ID of the customer placing the order.
         - items (List[OrderItemSchema]): A list of OrderItemSchema objects representing the order items.
           Each object should contain the variant_product_id and quantity.
+        - address (AddressSchema): Address information for the order.
 
         Returns:
         - Order: The created order object.
@@ -38,7 +42,14 @@ class OrderService:
 
         with DatabaseManager.session as session:
             order = Order(
-                customer_id=customer_id, total_price=total_price, status="pending"
+                customer_id=customer_id,
+                total_price=total_price,
+                status="pending",
+                # Populate address fields
+                address_street=address.street,
+                address_city=address.city,
+                address_state=address.state,
+                address_country=address.country,
             )
             session.add(order)
             session.flush()

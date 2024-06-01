@@ -1,10 +1,22 @@
 services:
   be:
     build:
+      volumes:
+        - .:/app
       context: ./backend
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    networks:
+      - webapp
+  fe:
+    build:
+      volumes:
+        - .:/app
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
     networks:
       - webapp
 networks:
