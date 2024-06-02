@@ -1,3 +1,4 @@
+from http.client import HTTPException
 from itertools import product as options_combination
 
 from fastapi import Request
@@ -222,15 +223,124 @@ class ProductService:
         return product
 
     @classmethod
-    def update_product(cls, product_id, **kwargs):
+    def update_product(
+        cls, product_id, product_data: dict, options: list = None, variants: list = None
+    ):
+        # Update the product
+        product = Product.get_or_404(product_id)
+        for key, value in product_data.items():
+            setattr(product, key, value)
+        product.updated_at = DateTime.now()
 
-        # --- init data ---
-        # TODO `updated_at` is autoupdate dont need to code
-        kwargs["updated_at"] = DateTime.now()
+        session = DatabaseManager.session
+        try:
+            session.commit()
+            session.refresh(product)
+        except Exception as e:
+            session.rollback()
+            # raise HTTPException(status_code=500, detail=f"Failed to update product: {str(e)}")
 
-        # --- update product ---
-        Product.update(product_id, **kwargs)
+        # Update the options
+        if options is not None:
+            cls.__update_product_options(product_id, options)
+
+        # Update the variants
+        if variants is not None:
+            cls.__update_product_variants(product_id, variants)
+
         return cls.retrieve_product(product_id)
+
+    @classmethod
+    def __update_product_options(cls, product_id, options):
+        # Clear existing options and add new ones
+        session = DatabaseManager.session
+        existing_options = (
+            session.query(ProductOption)
+            .filter(ProductOption.product_id == product_id)
+            .all()
+        )
+        for option in existing_options:
+            session.delete(option)
+        session.commit()
+
+        for option in options:
+            new_option = ProductOption.create(
+                product_id=product_id, option_name=option["option_name"]
+            )
+            for item in option["items"]:
+                ProductOptionItem.create(option_id=new_option.id, item_name=item)
+        session.commit()
+
+    @classmethod
+    def update_product(
+        cls, product_id, product_data: dict, options: list = None, variants: list = None
+    ):
+        session = DatabaseManager.session
+
+        # Update the product
+        product = session.query(Product).get(product_id)
+        if not product:
+            raise ValueError(f"Product with id {product_id} not found")
+
+        for key, value in product_data.items():
+            setattr(product, key, value)
+        product.updated_at = DateTime.now()
+
+        session.commit()
+        session.refresh(product)
+
+        # Update the options
+        if options is not None:
+            cls.__update_product_options(session, product_id, options)
+
+        # Update the variants
+        if variants is not None:
+            cls.__update_product_variants(session, product_id, variants)
+
+        return cls.retrieve_product(product_id)
+
+    @classmethod
+    def __update_product_options(cls, session, product_id, options):
+        # Clear existing options and add new ones
+        existing_options = (
+            session.query(ProductOption)
+            .filter(ProductOption.product_id == product_id)
+            .all()
+        )
+        for option in existing_options:
+            session.delete(option)
+        session.commit()
+
+        for option in options:
+            new_option = ProductOption.create(
+                product_id=product_id, option_name=option["option_name"]
+            )
+            for item in option["items"]:
+                ProductOptionItem.create(option_id=new_option.id, item_name=item)
+        session.commit()
+
+    @classmethod
+    def __update_product_variants(cls, session, product_id, variants):
+        # Clear existing variants and add new ones
+        existing_variants = (
+            session.query(ProductVariant)
+            .filter(ProductVariant.product_id == product_id)
+            .all()
+        )
+        for variant in existing_variants:
+            session.delete(variant)
+        session.commit()
+
+        for variant in variants:
+            ProductVariant.create(
+                product_id=product_id,
+                price=variant["price"],
+                stock=variant["stock"],
+                option1=variant.get("option1"),
+                option2=variant.get("option2"),
+                option3=variant.get("option3"),
+            )
+        session.commit()
 
     @classmethod
     def update_variant(cls, variant_id, **kwargs):

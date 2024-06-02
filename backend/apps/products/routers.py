@@ -92,28 +92,30 @@ async def list_produces(request: Request):
     status_code=status.HTTP_200_OK,
     response_model=schemas.UpdateProductOut,
     summary="Updates a product",
-    description="Updates a product.",
+    description="Updates a product along with its options and variants.",
     tags=["Product"],
     dependencies=[Depends(Permission.is_admin)],
 )
 async def update_product(
     request: Request, product_id: int, payload: schemas.UpdateProductIn
 ):
-    # TODO permission: only admin
-    # TODO update a product with media
-
     updated_product_data = {}
-    payload = payload.model_dump()
+    payload_dict = payload.dict()
 
-    for key, value in payload.items():
-        if value is not None:
+    for key, value in payload_dict.items():
+        if value is not None and key not in ["options", "variants"]:
             updated_product_data[key] = value
 
     try:
         updated_product = ProductService(request).update_product(
-            product_id, **updated_product_data
+            product_id,
+            updated_product_data,
+            payload_dict.get("options"),
+            payload_dict.get("variants"),
         )
         return {"product": updated_product}
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
