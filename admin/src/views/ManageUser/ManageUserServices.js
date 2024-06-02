@@ -18,5 +18,5 @@ export const updateGenre = (payload) => {
 };
 
 export const deleteUser = (id) => {
-  return axios.delete(API_PATH + '/accounts/' + id, { headers });
+  return axios.delete(API_PATH + '/accounts/' + id, );
 };

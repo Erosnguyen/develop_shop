@@ -15,6 +15,9 @@ import { Login } from "./pages/Authentication/Login";
 import { Register } from "./pages/Authentication/Register";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { UserInfo } from "./pages/UserInfo/UserInfo";
+import { ChangeEmail } from "./pages/UserInfo/ChangeEmail";
+import { ChangePassword } from "./pages/UserInfo/ChangePassword";
 
 function App() {
 
@@ -31,6 +34,9 @@ function App() {
             <Route path="/shop" element={<Shop />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/information" element={<UserInfo />} />
+            <Route path="/information/change-email" element={<ChangeEmail />} />
+            <Route path="/information/change-password" element={<ChangePassword />} />
             <Route path="/product/:id" element={<ProductDetail />} />
           </Routes>
         </NextUIProvider>

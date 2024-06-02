@@ -9,6 +9,13 @@ from pydantic import BaseModel, validator
 """
 
 
+class AddressSchema(BaseModel):
+    street: str
+    city: str
+    state: str
+    country: str
+
+
 class OrderItemSchema(BaseModel):
     variant_product_id: int
     quantity: int
@@ -19,6 +26,7 @@ class OrderSchema(BaseModel):
     customer_id: int
     total_price: float
     status: str
+    address: AddressSchema
     items: List[OrderItemSchema]
 
     class Config:
