@@ -85,12 +85,19 @@ async def update_order(
     update_data: OrderUpdateSchema,
     current_user: User = Depends(AccountService.current_user),
 ):
-    updated_order = await OrderService.update_order(order_id, update_data)
-    if updated_order is None:
+    try:
+        updated_order = await OrderService.update_order(order_id, update_data)
+        if updated_order is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Order not found"
+            )
+        return updated_order
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Order not found"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
-    return updated_order
 
 
 @router.delete(
