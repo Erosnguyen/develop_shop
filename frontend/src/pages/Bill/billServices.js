@@ -4,12 +4,22 @@ const baseURL = "http://127.0.0.1:8000";
 
 const API_PATH = baseURL + "/orders";
 
+const token = localStorage.getItem('token');
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  };
+
 export const handleAddOrder = (payload) => {
   return axiosCuston.post(API_PATH, payload);
 };
 
 export const getUserOrder = () => {
-  return axiosCuston.post(API_PATH + "/customer_id");
+  return axiosCuston.post(API_PATH + "/customer_id"
+  );
 };
 
 export const handleProcessingOrder = (order_id) => {

@@ -5,18 +5,11 @@ export function findItemName(itemId, options) {
     return name || (item && item.item_name);
   }, "");
 }
-export const getVariantPrice = (
-  variants,
-  variantColor,
-  variantMaterial,
-  variantSize,
-  quantity = 1
-) => {
-  const selectedVariant = variants?.find(
-    (variant) =>
-      variant.option1 === variantColor &&
-      variant.option2 === variantMaterial &&
-      variant.option3 === variantSize
+export const getVariantPrice = (variants, checkedVariant, quantity = 1) => {
+  const selectedVariant = variants?.find((variant) =>
+    Object.keys(checkedVariant).every(
+      (key) => variant[key] === checkedVariant[key]
+    )
   );
 
   return selectedVariant ? Number((selectedVariant.price * quantity).toFixed(2)) : 0;
