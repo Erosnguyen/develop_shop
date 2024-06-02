@@ -25,6 +25,9 @@ class VariantSchema(BaseModel):
 class UpdateVariantIn(BaseModel):
     price: float | None = None
     stock: int | None = None
+    option1: int | None = None
+    option2: int | None = None
+    option3: int | None = None
 
 
 class UpdateVariantOut(BaseModel):
@@ -213,6 +216,8 @@ class UpdateProductIn(BaseModel):
     product_name: Annotated[str, Query(max_length=255, min_length=1)] | None = None
     description: str | None = None
     status: str | None = None
+    options: list[OptionIn] | None = None
+    variants: list[UpdateVariantIn] | None = None
 
 
 class UpdateProductOut(BaseModel):

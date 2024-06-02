@@ -109,16 +109,6 @@ class OrderService:
 
     @classmethod
     async def update_order(cls, order_id: int, update_data: OrderUpdateSchema):
-        """
-        Update an existing order.
-
-        Args:
-        - order_id (int): The ID of the order to update.
-        - update_data (OrderUpdateSchema): The data to update the order with.
-
-        Returns:
-        - dict: A dictionary representation of the updated order object.
-        """
         with DatabaseManager.session as session:
             order = (
                 session.query(Order)
@@ -137,7 +127,19 @@ class OrderService:
             customer_id=order.customer_id,
             total_price=float(order.total_price),
             status=order.status,
-            items=[],
+            address=AddressSchema(
+                street=order.address_street,
+                city=order.address_city,
+                state=order.address_state,
+                country=order.address_country,
+            ),
+            items=[
+                OrderItemSchema(
+                    variant_product_id=item.product_id,  # Ensure correct attribute name
+                    quantity=item.quantity,
+                )
+                for item in order.items
+            ],
         )
         return updated_order
 
