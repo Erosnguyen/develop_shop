@@ -21,6 +21,8 @@ class OrderService:
             variant_id = item.variant_product_id
             quantity = item.quantity
             variant = ProductService.retrieve_variant(variant_id)
+            if not variant:
+                continue  # Skip this item if the variant is not found
             price = variant["price"]
             total_price += price * quantity
             order_item = OrderItem(product_id=variant_id, quantity=quantity)
@@ -49,14 +51,16 @@ class OrderService:
         return cls.retrieve_order(order.id)
 
     @classmethod
-    def list_orders(cls, limit: int = 12):
+    def list_orders(cls) -> List[OrderSchema]:
         orders_list = []
 
         with DatabaseManager.session as session:
-            orders = session.query(Order).limit(limit).all()
+            orders = session.query(Order).all()
 
         for order in orders:
-            orders_list.append(cls.retrieve_order(order.id))
+            order_schema = cls.retrieve_order(order.id)
+            if order_schema:
+                orders_list.append(order_schema)
 
         return orders_list
 
@@ -75,6 +79,9 @@ class OrderService:
         items_with_product = []
         for item in order.items:
             product = ProductService.retrieve_product(item.product_id)
+            if not product:
+                continue  # Skip the item if product not found
+
             items_with_product.append(
                 OrderItemSchema(
                     variant_product_id=item.product_id,
