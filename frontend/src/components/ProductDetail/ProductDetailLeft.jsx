@@ -7,8 +7,6 @@ const ProductDetailLeft = ({ product }) => {
   const handleChangeImage = (index) => {
     setActiveImage(index);
   }
-
-  console.log(product)
   return (
     <div className="flex flex-col gap-4 w-full ">
       <div className="shrink-0 h-[400px] lg:h-[500px]" >

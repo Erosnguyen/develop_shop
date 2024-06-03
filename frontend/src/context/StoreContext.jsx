@@ -1,11 +1,33 @@
 import { createContext, useEffect, useState } from "react";
 import { fetchApiConfig } from "../config";
+import { getUserOrder } from "../pages/Bill/billServices";
 
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
   const [products, setProducts] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    const savedCartItems = localStorage.getItem("cartItems");
+    return savedCartItems ? JSON.parse(savedCartItems) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  const handleGetOrder = async () => {
+    try {
+      const res = await getUserOrder();
+      // setCartItems(res.data.filter((item) => item.status === "pending"));
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetOrder();
+  }, []);
 
   function getItemQuantity(data) {
     return (
@@ -14,21 +36,22 @@ const StoreContextProvider = (props) => {
     );
   }
   function checkExistingCartItem(data, checkedVariant) {
-    const { option1, option2, option3 } = checkedVariant;
     const item = cartItems.find(
       (item) =>
         item.data.product_id === data.product_id &&
-        item.data.checkedVariant.option1 === option1 &&
-        item.data.checkedVariant.option2 === option2 &&
-        item.data.checkedVariant.option3 === option3
+        item.data.checkedVariant == checkedVariant
     );
-    return item != null;
+    return item;
   }
 
   function increaseCartQuantity(data, checkedVariant) {
     setCartItems((prevCart) => {
       const newCart = [...prevCart];
-      const existingItemIndex = newCart.findIndex(product => product.data.product_id === data.product_id && product.data.checkedVariant.option1 === checkedVariant.option1 && product.data.checkedVariant.option2 === checkedVariant.option2 && product.data.checkedVariant.option3 === checkedVariant.option3);
+      const existingItemIndex = newCart.findIndex(
+        (product) =>
+          product.data.product_id === data.product_id &&
+          product.data.checkedVariant === checkedVariant
+      );
       if (existingItemIndex !== -1) {
         newCart[existingItemIndex].quantity += 1;
       }
@@ -39,7 +62,11 @@ const StoreContextProvider = (props) => {
   function decreaseCartQuantity(data, checkedVariant) {
     setCartItems((prevCart) => {
       const newCart = [...prevCart];
-      const existingItemIndex = newCart.findIndex(product => product.data.product_id === data.product_id && product.data.checkedVariant.option1 === checkedVariant.option1 && product.data.checkedVariant.option2 === checkedVariant.option2 && product.data.checkedVariant.option3 === checkedVariant.option3);
+      const existingItemIndex = newCart.findIndex(
+        (product) =>
+          product.data.product_id === data.product_id &&
+          product.data.checkedVariant === checkedVariant
+      );
       if (existingItemIndex !== -1) {
         if (newCart[existingItemIndex].quantity > 1) {
           newCart[existingItemIndex].quantity -= 1;
@@ -51,16 +78,13 @@ const StoreContextProvider = (props) => {
     });
   }
 
-
   function removeFromCart(data, checkedVariant) {
     setCartItems((currItems) => {
       return currItems.filter(
         (item) =>
           item.data.product_id !==
             (data.product_id || data?.data?.product_id) ||
-          item.data.checkedVariant.option1 !== checkedVariant.option1 ||
-          item.data.checkedVariant.option2 !== checkedVariant.option2 ||
-          item.data.checkedVariant.option3 !== checkedVariant.option3
+          item.data.checkedVariant !== checkedVariant
       );
     });
   }
@@ -70,12 +94,10 @@ const StoreContextProvider = (props) => {
       const existingItem = checkExistingCartItem(data, checkedVariant);
       if (existingItem) {
         return currItems.map((item) => {
+          console.log(item, existingItem);
           if (
-            item.data.product_id === existingItem.data.product_id &&
-            item.data.checkedVariant.color ===
-              existingItem.data.checkedVariant.color &&
-            item.data.checkedVariant.size ===
-              existingItem.data.checkedVariant.size
+            item?.data?.product_id === existingItem?.data?.product_id &&
+            item?.data?.checkedVariant === existingItem?.data?.checkedVariant
           ) {
             return { ...item, quantity: item.quantity + quantity };
           } else {

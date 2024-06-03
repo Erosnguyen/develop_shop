@@ -21,12 +21,23 @@ import { CartIcon } from "../../assets/CartIcon"
 import { Logo } from "../../assets/Logo";
 import { getUserOrder } from "../../pages/Bill/billServices";
 import { useNavigate } from "react-router-dom";
+import { StoreContext } from "../../context/StoreContext";
 
 
 const NavBar = () => {
   const location = useLocation();
   let navigate = useNavigate();
   const currentPath = location.pathname;
+
+  const {
+    products,
+    cartItems,
+    getItemQuantity,
+    increaseCartQuantity,
+    decreaseCartQuantity,
+    removeFromCart,
+    addCart,
+  } = useContext(StoreContext);
 
   const token = localStorage.getItem("access_token");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -117,7 +128,7 @@ const NavBar = () => {
             type="search"
           />
           <Link to={"/cart"}>
-              <Badge color="danger" content={orderCount} isInvisible={false} shape="circle">
+              <Badge color="danger" content={cartItems.length} isInvisible={false} shape="circle">
                 <CartIcon size={24} />
               </Badge>
           </Link>
