@@ -66,8 +66,11 @@ const ProductDetailRight = ({ product }) => {
   };
 
   const handleAddCart = async() => {
-    AddCart(product, checkedVariant, quantity);
+    // AddCart(product, checkedVariant, quantity);
+    addCart(product, checkedVariant, quantity);
   };
+
+  console.log(cartItems)
 
   return (
     <div className="flex flex-col gap-4">

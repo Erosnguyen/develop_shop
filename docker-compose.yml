@@ -1,24 +1,41 @@
+version: '3.8'
+
 services:
   be:
     build:
-      volumes:
-        - .:/app
       context: ./backend
       dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
     ports:
       - "8000:8000"
     networks:
       - webapp
+
   fe:
     build:
-      volumes:
-        - .:/app
       context: ./frontend
       dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
     ports:
       - "3000:3000"
     networks:
       - webapp
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    volumes:
+      - ./admin:/app
+    ports:
+      - "3001:3001"
+    networks:
+      - webapp
+
 networks:
   webapp:
     driver: bridge
