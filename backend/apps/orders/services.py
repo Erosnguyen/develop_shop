@@ -1,15 +1,13 @@
 from typing import List
 
-from sqlalchemy import and_, or_, select
 from sqlalchemy.orm import joinedload
 
 from apps.orders.models import Order, OrderItem
 from apps.products.services import ProductService
-from config import settings
 from config.database import DatabaseManager
 
 from .schemas import (AddressSchema, OrderItemSchema, OrderSchema,
-                      OrderUpdateSchema)
+                      OrderUpdateSchema, ProductSchema)
 
 
 class OrderService:
@@ -17,18 +15,6 @@ class OrderService:
     async def create_order(
         cls, customer_id: int, items: List[OrderItemSchema], address: AddressSchema
     ):
-        """
-        Create a new order.
-
-        Args:
-        - customer_id (int): The ID of the customer placing the order.
-        - items (List[OrderItemSchema]): A list of OrderItemSchema objects representing the order items.
-          Each object should contain the variant_product_id and quantity.
-        - address (AddressSchema): Address information for the order.
-
-        Returns:
-        - Order: The created order object.
-        """
         total_price = 0
         order_items = []
         for item in items:
@@ -45,7 +31,6 @@ class OrderService:
                 customer_id=customer_id,
                 total_price=total_price,
                 status="pending",
-                # Populate address fields
                 address_street=address.street,
                 address_city=address.city,
                 address_state=address.state,
@@ -59,22 +44,16 @@ class OrderService:
                 session.add(order_item)
 
             session.commit()
-
             session.refresh(order)
 
-            order.items
-
-        return order
+        return cls.retrieve_order(order.id)
 
     @classmethod
     def list_orders(cls, limit: int = 12):
-        if hasattr(settings, "orders_list_limit"):
-            limit = settings.orders_list_limit
-
         orders_list = []
 
         with DatabaseManager.session as session:
-            orders = session.execute(select(Order.id))
+            orders = session.query(Order).limit(limit).all()
 
         for order in orders:
             orders_list.append(cls.retrieve_order(order.id))
@@ -82,7 +61,7 @@ class OrderService:
         return orders_list
 
     @classmethod
-    def retrieve_order(cls, order_id: int):
+    def retrieve_order(cls, order_id: int) -> OrderSchema:
         with DatabaseManager.session as session:
             order = (
                 session.query(Order)
@@ -90,11 +69,36 @@ class OrderService:
                 .filter(Order.id == order_id)
                 .first()
             )
-        return order
+            if not order:
+                return None
+
+        items_with_product = []
+        for item in order.items:
+            product = ProductService.retrieve_product(item.product_id)
+            items_with_product.append(
+                OrderItemSchema(
+                    variant_product_id=item.product_id,
+                    quantity=item.quantity,
+                    product=ProductSchema(**product),
+                )
+            )
+
+        return OrderSchema(
+            order_id=order.id,
+            customer_id=order.customer_id,
+            total_price=float(order.total_price),
+            status=order.status,
+            address=AddressSchema(
+                street=order.address_street,
+                city=order.address_city,
+                state=order.address_state,
+                country=order.address_country,
+            ),
+            items=items_with_product,
+        )
 
     @classmethod
-    def list_orders_by_customer_id(cls, customer_id: int):
-        print("Customer ID:", customer_id)
+    def list_orders_by_customer_id(cls, customer_id: int) -> List[OrderSchema]:
         orders_by_customer = []
         with DatabaseManager.session as session:
             orders = (
@@ -104,11 +108,13 @@ class OrderService:
                 .all()
             )
             for order in orders:
-                orders_by_customer.append(order)
+                orders_by_customer.append(cls.retrieve_order(order.id))
         return orders_by_customer
 
     @classmethod
-    async def update_order(cls, order_id: int, update_data: OrderUpdateSchema):
+    async def update_order(
+        cls, order_id: int, update_data: OrderUpdateSchema
+    ) -> OrderSchema:
         with DatabaseManager.session as session:
             order = (
                 session.query(Order)
@@ -122,38 +128,10 @@ class OrderService:
             session.commit()
             session.refresh(order)
 
-        updated_order = OrderSchema(
-            order_id=order.id,
-            customer_id=order.customer_id,
-            total_price=float(order.total_price),
-            status=order.status,
-            address=AddressSchema(
-                street=order.address_street,
-                city=order.address_city,
-                state=order.address_state,
-                country=order.address_country,
-            ),
-            items=[
-                OrderItemSchema(
-                    variant_product_id=item.product_id,  # Ensure correct attribute name
-                    quantity=item.quantity,
-                )
-                for item in order.items
-            ],
-        )
-        return updated_order
+        return cls.retrieve_order(order.id)
 
     @classmethod
-    async def delete_order(cls, order_id: int):
-        """
-        Delete an existing order.
-
-        Args:
-        - order_id (int): The ID of the order to delete.
-
-        Returns:
-        - dict: A dictionary representation of the deleted order object, or None if the order was not found.
-        """
+    async def delete_order(cls, order_id: int) -> dict:
         with DatabaseManager.session as session:
             order = session.query(Order).filter(Order.id == order_id).first()
             if order is None:
