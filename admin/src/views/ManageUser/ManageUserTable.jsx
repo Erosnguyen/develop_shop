@@ -81,7 +81,7 @@ function ManageGenreTable(props) {
                     </TableHead>
                     <TableBody>
                         {data?.map((user, index) => (
-                            <TableRow key={useReducer.name}>
+                            <TableRow key={index}>
                                 <TableCell>
                                     <Typography
                                         sx={{

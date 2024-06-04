@@ -33,7 +33,7 @@ const ManageBook = () => {
                 stock: data?.data?.product?.variants?.reduce((total, item) => total + item?.stock, 0),
             });
         } catch (error) {
-
+ 
         }
     }
 

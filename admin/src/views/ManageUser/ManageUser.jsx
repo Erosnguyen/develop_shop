@@ -15,9 +15,15 @@ const ManageUser = () => {
     const [open, setOpen] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
 
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
     const handleClose = () => {
+        setItem(null);
         setOpen(false);
         setOpenDelete(false);
+        search();
     };
 
     const handleEdit = (value) => {
@@ -60,6 +66,9 @@ const ManageUser = () => {
     return (
         <PageContainer title="Quản lý người dùng">
             <Card sx={{ p: 1, minHeight: "screen" }}>
+                <div style={{ display: 'flex' }}>
+                    <Button style={{ marginLeft: 'auto' }} variant='contained' size='small' onClick={handleClickOpen} >Thêm mới</Button>
+                </div>
                 <ManageUserTable data={listitem} handleEdit={handleEdit} handleOpenDelete={handleOpenDelete} />
             </Card>
             {open && <ManageUserDialog
