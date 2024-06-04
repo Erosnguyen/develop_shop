@@ -3,6 +3,7 @@ from itertools import product as options_combination
 
 from fastapi import Request
 from sqlalchemy import and_, or_, select
+from sqlalchemy.orm import joinedload
 
 from apps.core.date_time import DateTime
 from apps.core.services.media import MediaService
@@ -131,50 +132,39 @@ class ProductService:
 
         cls.variants = cls.retrieve_variants(cls.product.id)
 
-    @classmethod
-    def retrieve_variants(cls, product_id):
-        """
-        Get all variants of a product
-        """
-
-        product_variants = []
-        variants: list[ProductVariant] = ProductVariant.filter(
-            ProductVariant.product_id == product_id
-        ).all()
-        for variant in variants:
-            product_variants.append(
-                {
-                    "variant_id": variant.id,
-                    "product_id": variant.product_id,
-                    "price": variant.price,
-                    "stock": variant.stock,
-                    "option1": variant.option1,
-                    "option2": variant.option2,
-                    "option3": variant.option3,
-                    "created_at": DateTime.string(variant.created_at),
-                    "updated_at": DateTime.string(variant.updated_at),
-                }
-            )
-
-        if product_variants:
-            return product_variants
-        return None
-
     @staticmethod
     def retrieve_variant(variant_id: int):
-        variant = ProductVariant.get_or_404(variant_id)
-        variant_data = {
-            "variant_id": variant.id,
-            "product_id": variant.product_id,
-            "price": variant.price,
-            "stock": variant.stock,
-            "option1": variant.option1,
-            "option2": variant.option2,
-            "option3": variant.option3,
-            "created_at": DateTime.string(variant.created_at),
-            "updated_at": DateTime.string(variant.updated_at),
-        }
-        return variant_data
+        with DatabaseManager.session as session:
+            variant = (
+                session.query(ProductVariant)
+                .filter(ProductVariant.id == variant_id)
+                .first()
+            )
+            if not variant:
+                return None
+
+            product = (
+                session.query(Product)
+                .options(
+                    joinedload(Product.options).joinedload(ProductOption.option_items),
+                    joinedload(Product.media),
+                )
+                .filter(Product.id == variant.product_id)
+                .first()
+            )
+
+            return {
+                "variant_id": variant.id,
+                "product_id": variant.product_id,
+                "price": variant.price,
+                "stock": variant.stock,
+                "option1": variant.option1,
+                "option2": variant.option2,
+                "option3": variant.option3,
+                "created_at": variant.created_at,
+                "updated_at": variant.updated_at,
+                "product": product,
+            }
 
     @classmethod
     def get_item_ids_by_product_id(cls, product_id):
