@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from sqlalchemy.orm import joinedload
@@ -7,7 +8,9 @@ from apps.products.services import ProductService
 from config.database import DatabaseManager
 
 from .schemas import (AddressSchema, OrderItemSchema, OrderSchema,
-                      OrderUpdateSchema, ProductSchema)
+                      OrderUpdateSchema, ProductMediaSchema,
+                      ProductOptionItemSchema, ProductOptionSchema,
+                      ProductSchema, ProductVariantSchema)
 
 
 class OrderService:
@@ -22,7 +25,8 @@ class OrderService:
             quantity = item.quantity
             variant = ProductService.retrieve_variant(variant_id)
             if not variant:
-                continue  # Skip this item if the variant is not found
+                logging.error(f"Variant with ID {variant_id} not found.")
+                raise ValueError(f"Variant with ID {variant_id} not found.")
             price = variant["price"]
             total_price += price * quantity
             order_item = OrderItem(product_id=variant_id, quantity=quantity)
@@ -78,15 +82,86 @@ class OrderService:
 
         items_with_product = []
         for item in order.items:
-            product = ProductService.retrieve_product(item.product_id)
-            if not product:
-                continue  # Skip the item if product not found
+            variant = ProductService.retrieve_variant(item.product_id)
+            if not variant:
+                logging.error(f"Variant with ID {item.product_id} not found.")
+                continue  # Skip the item if variant not found
+
+            product = variant["product"]
+
+            product_variants = [
+                ProductVariantSchema(
+                    variant_id=variant["variant_id"],
+                    product_id=variant["product_id"],
+                    price=variant["price"],
+                    stock=variant["stock"],
+                    option1=variant["option1"],
+                    option2=variant["option2"],
+                    option3=variant["option3"],
+                    created_at=variant["created_at"].strftime("%Y-%m-%d %H:%M:%S"),
+                    updated_at=(
+                        variant["updated_at"].strftime("%Y-%m-%d %H:%M:%S")
+                        if variant["updated_at"]
+                        else None
+                    ),
+                )
+            ]
+
+            product_media = [
+                ProductMediaSchema(
+                    media_id=media.id,
+                    product_id=media.product_id,
+                    alt=media.alt,
+                    src=media.src,
+                    type=media.type,
+                    created_at=media.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                    updated_at=(
+                        media.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+                        if media.updated_at
+                        else None
+                    ),
+                )
+                for media in product.media
+            ]
+
+            product_options = [
+                ProductOptionSchema(
+                    options_id=option.id,
+                    option_name=option.option_name,
+                    items=[
+                        ProductOptionItemSchema(
+                            item_id=item.id, item_name=item.item_name
+                        )
+                        for item in option.option_items
+                    ],
+                )
+                for option in product.options
+            ]
 
             items_with_product.append(
                 OrderItemSchema(
                     variant_product_id=item.product_id,
                     quantity=item.quantity,
-                    product=ProductSchema(**product),
+                    product=ProductSchema(
+                        product_id=product.id,
+                        product_name=product.product_name,
+                        description=product.description,
+                        status=product.status,
+                        created_at=product.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                        updated_at=(
+                            product.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+                            if product.updated_at
+                            else None
+                        ),
+                        published_at=(
+                            product.published_at.strftime("%Y-%m-%d %H:%M:%S")
+                            if product.published_at
+                            else None
+                        ),
+                        options=product_options,
+                        variants=product_variants,
+                        media=product_media,
+                    ),
                 )
             )
 
@@ -115,7 +190,9 @@ class OrderService:
                 .all()
             )
             for order in orders:
-                orders_by_customer.append(cls.retrieve_order(order.id))
+                order_schema = cls.retrieve_order(order.id)
+                if order_schema:
+                    orders_by_customer.append(order_schema)
         return orders_by_customer
 
     @classmethod
@@ -130,6 +207,7 @@ class OrderService:
                 .first()
             )
             if order is None:
+                logging.error(f"Order with ID {order_id} not found.")
                 return None
             order.status = update_data.status
             session.commit()
@@ -142,6 +220,7 @@ class OrderService:
         with DatabaseManager.session as session:
             order = session.query(Order).filter(Order.id == order_id).first()
             if order is None:
+                logging.error(f"Order with ID {order_id} not found.")
                 return None
 
             session.delete(order)
