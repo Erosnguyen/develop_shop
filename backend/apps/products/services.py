@@ -203,7 +203,12 @@ class ProductService:
 
     @classmethod
     def retrieve_product(cls, product_id):
-        cls.product = Product.get_or_404(product_id)
+        with DatabaseManager.session as session:
+            cls.product = (
+                session.query(Product).filter(Product.id == product_id).first()
+            )
+        if not cls.product:
+            return None  # Return None if the product is not found
         cls.options = cls.retrieve_options(product_id)
         cls.variants = cls.retrieve_variants(product_id)
         cls.media = cls.retrieve_media_list(product_id)

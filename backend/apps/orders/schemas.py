@@ -65,7 +65,7 @@ class AddressSchema(BaseModel):
 class OrderItemSchema(BaseModel):
     variant_product_id: int
     quantity: int
-    product: ProductSchema
+    product: Optional[ProductSchema]
 
 
 class OrderSchema(BaseModel):
