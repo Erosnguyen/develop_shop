@@ -8,7 +8,8 @@ export function findItemName(itemId, options) {
 export const getVariantPrice = (variants, checkedVariant, quantity = 1) => {
   const selectedVariant = variants?.find((variant) =>
     {
-     checkedVariant && Object.keys(checkedVariant).every(
+      // tìm checkendVariant trong variant
+      return Object.keys(checkedVariant).every(
         (key) => variant[key] === checkedVariant[key]
       )
     }
@@ -26,3 +27,20 @@ export const getVariantId = (variants, checkedVariant) => {
 
   return selectedVariant ? selectedVariant.variant_id : "";
 }
+
+export const getVariantPriceDetail = (
+  variants,
+  variantColor,
+  variantMaterial,
+  variantSize,
+  quantity = 1
+) => {
+  const selectedVariant = variants?.find(
+    (variant) =>
+      variant.option1 === variantColor &&
+      variant.option2 === variantMaterial &&
+      variant.option3 === variantSize
+  );
+
+  return selectedVariant ? Number((selectedVariant.price * quantity).toFixed(2)) : 0;
+};

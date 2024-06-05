@@ -196,7 +196,7 @@ const Cart = () => {
                   </div>
                 </TableCell>
                 <TableCell>${
-                  getVariantPrice(item?.data?.variants, item?.data?.checkedVariant, item?.quantity)
+                  getVariantPrice(item?.product?.variants, item?.variant_product_id, item?.quantity)
                   }</TableCell>
                 <TableCell>
                   <Tooltip color="danger" content="Xoá sản phẩm này?">

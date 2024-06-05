@@ -17,12 +17,6 @@ const FoodItem = (props) => {
     variants,
   } = props;
   const { handleClick, ...rest } = props;
-  const {
-    cartItems,
-    increaseCartQuantity,
-    decreaseCartQuantity,
-    getItemQuantity,
-  } = useContext(StoreContext);
 
   const [quantity, setQuantity] = useState(1);
 
@@ -53,11 +47,10 @@ const FoodItem = (props) => {
 
   //lấy giá tiền của variant theo màu, hình thức, kiểu
 
-  const priceProduct = getVariantPrice(
+  const priceProduct = 
+  getVariantPrice(
     variants,
-    options ? options[0]?.items[0]?.item_id : "",
-    options ? options[1]?.items[0]?.item_id : "",
-    options ? options[2]?.items[0]?.item_id : ""
+    variants?.[0],
   );
 
   const incrementQuantity = () => {
