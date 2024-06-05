@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { fetchApiConfig } from "../config";
-import { getUserOrder } from "../pages/Bill/billServices";
+import { getUserOrder, handleAddOrder } from "../pages/Bill/billServices";
+import { getVariantId } from "../lib/utils";
 
 export const StoreContext = createContext(null);
 
@@ -15,15 +16,42 @@ const StoreContextProvider = (props) => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
+  const handleCart = async() => {
+    //Xem có order nào của user không
+    //Nếu có thì lấy ra
+
+  }
+
   const handleGetOrder = async () => {
     try {
       const res = await getUserOrder();
       // setCartItems(res.data.filter((item) => item.status === "pending"));
-      console.log(res);
+      console.log(res.data);
     } catch (error) {
       console.log(error);
     }
   };
+
+  const handleCreateOrder = async () => {
+    try {
+      if (cartItems.length === 0) return;
+      const convertData = {
+        order: {
+          items: cartItems
+        },
+        address: {
+          street: "",
+          city: "",
+          state: "",
+          country: ""
+        }
+      }
+      const res = await handleAddOrder(convertData);
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
     handleGetOrder();
@@ -35,22 +63,20 @@ const StoreContextProvider = (props) => {
         ?.quantity || 0
     );
   }
-  function checkExistingCartItem(data, checkedVariant) {
+  function checkExistingCartItem(data, variant_product_id) {
     const item = cartItems.find(
       (item) =>
-        item.data.product_id === data.product_id &&
-        item.data.checkedVariant == checkedVariant
+        item.variant_product_id == variant_product_id
     );
     return item;
   }
 
-  function increaseCartQuantity(data, checkedVariant) {
+  function increaseCartQuantity(data) {
     setCartItems((prevCart) => {
       const newCart = [...prevCart];
       const existingItemIndex = newCart.findIndex(
         (product) =>
-          product.data.product_id === data.product_id &&
-          product.data.checkedVariant === checkedVariant
+          product?.variant_product_id === data?.variant_product_id
       );
       if (existingItemIndex !== -1) {
         newCart[existingItemIndex].quantity += 1;
@@ -59,13 +85,12 @@ const StoreContextProvider = (props) => {
     });
   }
 
-  function decreaseCartQuantity(data, checkedVariant) {
+  function decreaseCartQuantity(data) {
     setCartItems((prevCart) => {
       const newCart = [...prevCart];
       const existingItemIndex = newCart.findIndex(
         (product) =>
-          product.data.product_id === data.product_id &&
-          product.data.checkedVariant === checkedVariant
+          product.variant_product_id === data.variant_product_id
       );
       if (existingItemIndex !== -1) {
         if (newCart[existingItemIndex].quantity > 1) {
@@ -78,26 +103,22 @@ const StoreContextProvider = (props) => {
     });
   }
 
-  function removeFromCart(data, checkedVariant) {
+  function removeFromCart(data, variant_product_id) {
     setCartItems((currItems) => {
       return currItems.filter(
         (item) =>
-          item.data.product_id !==
-            (data.product_id || data?.data?.product_id) ||
-          item.data.checkedVariant !== checkedVariant
+          item?.variant_product_id !== variant_product_id
       );
     });
   }
 
   function addCart(data, checkedVariant, quantity) {
     setCartItems((currItems) => {
-      const existingItem = checkExistingCartItem(data, checkedVariant);
+      const existingItem = checkExistingCartItem(data, getVariantId(data?.variants, checkedVariant));
       if (existingItem) {
         return currItems.map((item) => {
-          console.log(item, existingItem);
           if (
-            item?.data?.product_id === existingItem?.data?.product_id &&
-            item?.data?.checkedVariant === existingItem?.data?.checkedVariant
+            item?.variant_product_id === existingItem?.variant_product_id
           ) {
             return { ...item, quantity: item.quantity + quantity };
           } else {
@@ -107,10 +128,11 @@ const StoreContextProvider = (props) => {
       } else {
         return [
           ...currItems,
-          { data: { ...data, checkedVariant }, quantity: quantity },
+          { variant_product_id: getVariantId(data?.variants, checkedVariant) , quantity: quantity, product: { ...data}  },
         ];
       }
     });
+    handleCreateOrder();
   }
 
   useEffect(() => {

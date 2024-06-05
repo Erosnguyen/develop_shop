@@ -7,10 +7,22 @@ export function findItemName(itemId, options) {
 }
 export const getVariantPrice = (variants, checkedVariant, quantity = 1) => {
   const selectedVariant = variants?.find((variant) =>
+    {
+     checkedVariant && Object.keys(checkedVariant).every(
+        (key) => variant[key] === checkedVariant[key]
+      )
+    }
+  );
+
+  return selectedVariant ? Number((selectedVariant.price * quantity).toFixed(2)) : 0;
+};
+
+export const getVariantId = (variants, checkedVariant) => {
+  const selectedVariant = variants?.find((variant) =>
     Object.keys(checkedVariant).every(
       (key) => variant[key] === checkedVariant[key]
     )
   );
 
-  return selectedVariant ? Number((selectedVariant.price * quantity).toFixed(2)) : 0;
-};
+  return selectedVariant ? selectedVariant.variant_id : "";
+}

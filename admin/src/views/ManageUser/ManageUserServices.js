@@ -10,11 +10,7 @@ export const getAllUser = () => {
 };
 
 export const insertUser = (payload) => {
-  return axios.post(API_PATH + '/insertUser', payload);
-};
-
-export const updateGenre = (payload) => {
-  return axios.put(API_PATH + '/updateGenre', payload);
+  return axios.post(API_PATH + '/accounts/register', payload);
 };
 
 export const deleteUser = (id) => {
