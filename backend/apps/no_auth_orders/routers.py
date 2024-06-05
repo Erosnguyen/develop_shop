@@ -14,9 +14,10 @@ router = APIRouter(prefix="/guest_order", tags=["Guest Orders"])
     response_model=GuestOrderSchema,
 )
 async def create_guest_order(guest_order_data: GuestOrderCreateSchema):
-    order = await GuestOrderService.create_guest_order(order_data=guest_order_data)
-    if order is None:
+    try:
+        order = await GuestOrderService.create_guest_order(order_data=guest_order_data)
+    except ValueError as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Error creating order"
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
     return order

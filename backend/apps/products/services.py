@@ -130,7 +130,7 @@ class ProductService:
                 product_id=cls.product.id, price=cls.price, stock=cls.stock
             )
 
-        cls.variants = cls.retrieve_variants(cls.product.id)
+        cls.variants = cls.retrieve_variant(cls.product.id)
 
     @staticmethod
     def retrieve_variant(variant_id: int):
@@ -194,29 +194,78 @@ class ProductService:
     @classmethod
     def retrieve_product(cls, product_id):
         with DatabaseManager.session as session:
-            cls.product = (
-                session.query(Product).filter(Product.id == product_id).first()
+            product = (
+                session.query(Product)
+                .options(
+                    joinedload(Product.options).joinedload(ProductOption.option_items),
+                    joinedload(Product.media),
+                    joinedload(Product.variants),  # Eager load variants
+                )
+                .filter(Product.id == product_id)
+                .first()
             )
-        if not cls.product:
-            return None  # Return None if the product is not found
-        cls.options = cls.retrieve_options(product_id)
-        cls.variants = cls.retrieve_variants(product_id)
-        cls.media = cls.retrieve_media_list(product_id)
-
-        product = {
-            "product_id": cls.product.id,
-            "product_name": cls.product.product_name,
-            "description": cls.product.description,
-            "status": cls.product.status,
-            "created_at": DateTime.string(cls.product.created_at),
-            "updated_at": DateTime.string(cls.product.updated_at),
-            "published_at": DateTime.string(cls.product.published_at),
-            "options": cls.options,
-            "variants": cls.variants,
-            "media": cls.media,
+        if not product:
+            return None
+    
+        def convert_to_string(dt):
+            return dt.strftime("%Y-%m-%d %H:%M:%S") if dt else None
+    
+        variants = [
+            {
+                "variant_id": v.id,
+                "product_id": v.product_id,
+                "price": float(v.price),
+                "stock": v.stock,
+                "option1": v.option1,
+                "option2": v.option2,
+                "option3": v.option3,
+                "created_at": convert_to_string(v.created_at),
+                "updated_at": convert_to_string(v.updated_at),
+            }
+            for v in product.variants
+        ]
+    
+        options = [
+            {
+                "options_id": option.id,
+                "option_name": option.option_name,
+                "items": [
+                    {
+                        "item_id": item.id,
+                        "item_name": item.item_name,
+                    }
+                    for item in option.option_items
+                ],
+            }
+            for option in product.options
+        ]
+    
+        media = [
+            {
+                "media_id": media.id,
+                "product_id": media.product_id,
+                "alt": media.alt,
+                "src": media.src,
+                "type": media.type,
+                "created_at": convert_to_string(media.created_at),
+                "updated_at": convert_to_string(media.updated_at),
+            }
+            for media in product.media
+        ]
+    
+        return {
+            "product_id": product.id,
+            "product_name": product.product_name,
+            "description": product.description,
+            "status": product.status,
+            "created_at": convert_to_string(product.created_at),
+            "updated_at": convert_to_string(product.updated_at),
+            "published_at": convert_to_string(product.published_at),
+            "options": options,
+            "variants": variants,  # Ensure this is a list of dictionaries
+            "media": media,
         }
-        return product
-
+    
     @classmethod
     def update_product(
         cls, product_id, product_data: dict, options: list = None, variants: list = None
