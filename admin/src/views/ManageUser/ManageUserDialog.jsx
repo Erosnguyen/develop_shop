@@ -8,6 +8,8 @@ import Grid from '@mui/material/Grid';
 import { useEffect, useState } from 'react';
 import { insertUser, updateGenre } from './ManageUserServices';
 import { Select, MenuItem } from '@mui/material';
+import { to } from 'react-spring';
+import { toast } from 'react-toastify';
 
 export default function ManageUserDialog(props) {
     let {
@@ -22,15 +24,35 @@ export default function ManageUserDialog(props) {
         setState((pre) => ({ ...pre, [name]: value }));
     }
 
+    const convertDataSubmit = (value) => {
+        return {
+            email: value?.email,
+            password: value?.password,
+            password_confirm: value?.password_confirm,
+            role: value?.role,
+        }
+    }
+
+    const convertDataUpdate = (value) => {
+        return {
+            first_name: value?.first_name,
+            last_name: value?.last_name
+        }
+    }
+
     const handleSubmit = async () => {
         try {
-            if (state?.genre_id) {
-                await updateGenre(state);
+            const dataSubmit = convertDataSubmit(state);
+            const dataSubmitUpdate = convertDataUpdate(state);
+            if (state?.user_id == null) {
+                console.log(dataSubmit)
+                const res = await insertUser(dataSubmit);
+                toast.success("Thêm thành công")
             } else {
-                await insertUser(state)
+                
             }
         } catch (error) {
-
+            toast.error("Thêm thất bại")
         } finally {
             handleClose();
         }
@@ -38,7 +60,7 @@ export default function ManageUserDialog(props) {
 
     useEffect(() => {
         setState({
-            ...item.user
+            ...item?.user
         })
     }, [item])
 
@@ -58,7 +80,7 @@ export default function ManageUserDialog(props) {
                     },
                 }}
             >
-                <DialogTitle>Thông tin người dùng</DialogTitle>
+                <DialogTitle>Insert người dùng</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
                         <Grid item md={12} sm={12} xs={12}>
@@ -71,12 +93,37 @@ export default function ManageUserDialog(props) {
                                 fullWidth
                                 variant="standard"
                                 value={state?.email || ""}
-                                disabled
                                 onChange={(e) => handleChange(e)}
                             />
                         </Grid>
-                        <Grid item md={12} sm={12} xs={12}>
+                        { state?.user_id == null &&<Grid item md={12} sm={12} xs={12}>
                             <TextField
+                                autoFocus
+                                required
+                                margin="dense"
+                                name="password"
+                                label="Password"
+                                fullWidth
+                                variant="standard"
+                                value={state?.password || ""}
+                                onChange={(e) => handleChange(e)}
+                            />
+                        </Grid>}
+                        { state?.user_id == null && <Grid item md={12} sm={12} xs={12}>
+                            <TextField
+                                autoFocus
+                                required
+                                margin="dense"
+                                name="password_confirm"
+                                label="Password Confirm"
+                                fullWidth
+                                variant="standard"
+                                value={state?.password_confirm || ""}
+                                onChange={(e) => handleChange(e)}
+                            />
+                        </Grid>}
+                        {state?.user_id && <Grid item md={12} sm={12} xs={12}>
+                             <TextField
                                 autoFocus
                                 required
                                 margin="dense"
@@ -87,9 +134,11 @@ export default function ManageUserDialog(props) {
                                 value={state?.first_name || ""}
                                 onChange={(e) => handleChange(e)}
                             />
+                           
                         </Grid>
-                        <Grid item md={12} sm={12} xs={12}>
-                            <TextField
+                         }
+                        {state?.user_id && <Grid item md={12} sm={12} xs={12}>
+                             <TextField
                                 autoFocus
                                 required
                                 margin="dense"
@@ -101,6 +150,7 @@ export default function ManageUserDialog(props) {
                                 onChange={(e) => handleChange(e)}
                             />
                         </Grid>
+                        }
                         <Grid item md={12} sm={12} xs={12}>
                             <Select sx={{ minWidth: 100}} name="role" value={state?.role || ""} onChange={(e) => handleChange(e)}>
                                 <MenuItem value="admin">Admin</MenuItem>
@@ -111,7 +161,7 @@ export default function ManageUserDialog(props) {
                 </DialogContent>
                 <DialogActions>
                     <Button variant='contained' size='small' color='error' onClick={handleClose}>Hủy</Button>
-                    <Button variant='contained' size='small' color='primary' type="submit" onClick={handleSubmit}>Lưu</Button>
+                    <Button variant='contained' size='small' color='primary' type="submit">Lưu</Button>
                 </DialogActions>
             </Dialog>
         </>

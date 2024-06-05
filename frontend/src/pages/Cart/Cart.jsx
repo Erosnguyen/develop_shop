@@ -119,7 +119,7 @@ const Cart = () => {
               <TableRow key={idx}>
                 <TableCell>
                   <div>
-                    {item?.data?.product_name}
+                    {item?.product?.product_name}
                     <div>
                       {}
                     </div>
@@ -130,8 +130,8 @@ const Cart = () => {
                     width={100}
                     height={100}
                     src={
-                      item?.data?.media != null
-                        ? item?.data?.media[0]?.src
+                      item?.product?.media != null
+                        ? item?.product?.media[0]?.src
                         : "src/assets/No_Image.png"
                     }
                   />
@@ -140,8 +140,7 @@ const Cart = () => {
                   <div className="relative flex items-center">
                     <button
                       onClick={handleDecreaseCartQuantity(
-                        item.data,
-                        item.data.checkedVariant
+                        item
                       )}
                       type="button"
                       className="flex-shrink-0 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
@@ -173,8 +172,7 @@ const Cart = () => {
                     />
                     <button
                       onClick={handleIncreaseCartQuantity(
-                        item.data,
-                        item.data.checkedVariant
+                        item
                       )}
                       type="button"
                       className="flex-shrink-0 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
@@ -205,7 +203,7 @@ const Cart = () => {
                     <span className="text-lg text-danger cursor-pointer active:opacity-50">
                       <Button
                         onClick={() =>
-                          removeFromCart(item?.data, item?.data?.checkedVariant)
+                          removeFromCart(item?.data, item?.variant_product_id)
                         }
                         isIconOnly
                         color="light"
