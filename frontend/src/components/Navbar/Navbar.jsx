@@ -44,20 +44,21 @@ const NavBar = () => {
 
   const [orderCount, setOrderCount] = useState(0);
 
-  useEffect(() => {
-    async function fetchOrderCount() {
-      const count = await getUserOrder(); 
-      setOrderCount(count.data.filter((it) => it.status === "pending").length);
-    }
+  // useEffect(() => {
+  //   async function fetchOrderCount() {
+  //     const count = await getUserOrder(); 
+  //     setOrderCount(count.data.filter((it) => it.status === "pending").length);
+  //   }
 
-    fetchOrderCount();
-  }, [isLoggedIn]);
+  //   fetchOrderCount();
+  // }, [isLoggedIn]);
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
+    localStorage.removeItem('cartItems');
     setIsLoggedIn(false);
     setOrderCount(0);
-    navigate("/login");
+    window.location = '/login';
   };
 
   const menus = [
@@ -128,7 +129,7 @@ const NavBar = () => {
             type="search"
           />
           <Link to={"/cart"}>
-              <Badge color="danger" content={cartItems.length} isInvisible={false} shape="circle">
+              <Badge color="danger" content={cartItems?.length} isInvisible={false} shape="circle">
                 <CartIcon size={24} />
               </Badge>
           </Link>
