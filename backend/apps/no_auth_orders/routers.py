@@ -17,7 +17,5 @@ async def create_guest_order(guest_order_data: GuestOrderCreateSchema):
     try:
         order = await GuestOrderService.create_guest_order(order_data=guest_order_data)
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     return order
