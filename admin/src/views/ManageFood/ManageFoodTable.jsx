@@ -16,7 +16,6 @@ import { convertDateFormat } from 'src/AppConst';
 
 function ManageFoodTable(props) {
   let { data, handleEdit, handleOpenDelete } = props;
-
   return (
     <Card sx={{ mt: 2 }}>
       <Box sx={{ overflow: 'auto', width: { xs: '280px', sm: 'auto' } }}>
@@ -75,7 +74,7 @@ function ManageFoodTable(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.map((product, index) => (
+            {data?.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map((product, index) => (
               <TableRow key={index}>
                 <TableCell>
                   <Typography
