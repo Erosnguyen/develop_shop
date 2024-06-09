@@ -5,10 +5,17 @@ from apps.products.services import ProductService
 from config.database import DatabaseManager
 from .models import Guest_Order, Guest_OrderItem
 from .schemas import (
-    GuestAddressSchema, GuestOrderCreateSchema, GuestOrderItemSchema,
-    GuestOrderSchema, ProductSchema, ProductVariantSchema, ProductMediaSchema,
-    ProductOptionSchema, ProductOptionItemSchema
+    GuestAddressSchema,
+    GuestOrderCreateSchema,
+    GuestOrderItemSchema,
+    GuestOrderSchema,
+    ProductSchema,
+    ProductVariantSchema,
+    ProductMediaSchema,
+    ProductOptionSchema,
+    ProductOptionItemSchema,
 )
+
 
 class GuestOrderService:
     @classmethod
@@ -93,7 +100,11 @@ class GuestOrderService:
                     option2=variant["option2"],
                     option3=variant["option3"],
                     created_at=variant["created_at"].strftime("%Y-%m-%d %H:%M:%S"),
-                    updated_at=variant["updated_at"].strftime("%Y-%m-%d %H:%M:%S") if variant["updated_at"] else None
+                    updated_at=(
+                        variant["updated_at"].strftime("%Y-%m-%d %H:%M:%S")
+                        if variant["updated_at"]
+                        else None
+                    ),
                 )
             ]
 
@@ -105,7 +116,11 @@ class GuestOrderService:
                     src=media.src,
                     type=media.type,
                     created_at=media.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                    updated_at=media.updated_at.strftime("%Y-%m-%d %H:%M:%S") if media.updated_at else None
+                    updated_at=(
+                        media.updated_at.strftime("%Y-%m-%d %H:%M:%S")
+                        if media.updated_at
+                        else None
+                    ),
                 )
                 for media in product["media"]
             ]
@@ -116,11 +131,10 @@ class GuestOrderService:
                     option_name=option["option_name"],
                     items=[
                         ProductOptionItemSchema(
-                            item_id=item["item_id"],
-                            item_name=item["item_name"]
+                            item_id=item["item_id"], item_name=item["item_name"]
                         )
                         for item in option["items"]
-                    ]
+                    ],
                 )
                 for option in product["options"]
             ]
@@ -135,11 +149,19 @@ class GuestOrderService:
                         description=product["description"],
                         status=product["status"],
                         created_at=product["created_at"].strftime("%Y-%m-%d %H:%M:%S"),
-                        updated_at=product["updated_at"].strftime("%Y-%m-%d %H:%M:%S") if product["updated_at"] else None,
-                        published_at=product["published_at"].strftime("%Y-%m-%d %H:%M:%S") if product["published_at"] else None,
+                        updated_at=(
+                            product["updated_at"].strftime("%Y-%m-%d %H:%M:%S")
+                            if product["updated_at"]
+                            else None
+                        ),
+                        published_at=(
+                            product["published_at"].strftime("%Y-%m-%d %H:%M:%S")
+                            if product["published_at"]
+                            else None
+                        ),
                         options=product_options,
                         variants=product_variants,
-                        media=product_media
+                        media=product_media,
                     ),
                 )
             )

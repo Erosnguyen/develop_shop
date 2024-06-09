@@ -4,8 +4,7 @@ from apps.accounts.services.authenticate import AccountService
 from apps.accounts.services.permissions import Permission
 from apps.accounts.services.user import User
 
-from .schemas import (OrderCreateSchema, OrderItemSchema, OrderSchema,
-                      OrderUpdateSchema)
+from .schemas import OrderCreateSchema, OrderItemSchema, OrderSchema, OrderUpdateSchema
 from .services import AddressSchema, OrderService
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
@@ -69,6 +68,17 @@ async def list_orders_by_customer_id(
 ):
     customer_id = int(current_user.id)
     orders = OrderService.list_orders_by_customer_id(customer_id)
+    return orders
+
+
+@router.get(
+    "/user/{user_id}",
+    status_code=status.HTTP_200_OK,
+    summary="Retrieve orders by user ID",
+    description="Retrieve a list of orders placed by a specific user.",
+)
+async def list_orders_by_user_id(user_id: int):
+    orders = OrderService.list_orders_by_customer_id(user_id)
     return orders
 
 
