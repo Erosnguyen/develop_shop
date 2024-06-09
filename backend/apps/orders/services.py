@@ -7,10 +7,17 @@ from apps.orders.models import Order, OrderItem
 from apps.products.services import ProductService
 from config.database import DatabaseManager
 
-from .schemas import (AddressSchema, OrderItemSchema, OrderSchema,
-                      OrderUpdateSchema, ProductMediaSchema,
-                      ProductOptionItemSchema, ProductOptionSchema,
-                      ProductSchema, ProductVariantSchema)
+from .schemas import (
+    AddressSchema,
+    OrderItemSchema,
+    OrderSchema,
+    OrderUpdateSchema,
+    ProductMediaSchema,
+    ProductOptionItemSchema,
+    ProductOptionSchema,
+    ProductSchema,
+    ProductVariantSchema,
+)
 
 
 class OrderService:
