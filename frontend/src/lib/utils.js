@@ -44,3 +44,24 @@ export const getVariantPriceDetail = (
 
   return selectedVariant ? Number((selectedVariant.price * quantity).toFixed(2)) : 0;
 };
+
+export const getMedia = (id, src)  => {
+  return 'http://localhost:8000/media/products/'+ id +  '/' + src;
+}
+
+export const getOptionName = (options, variant) => {
+  const optionNames = [];
+
+  for (let i = 1; i <= 3; i++) {
+    const optionId = variant[0][`option${i}`];
+    for (const option of options) {
+      const item = option.items.find(item => item.item_id === optionId);
+      if (item) {
+        optionNames.push(item.item_name);
+        break;
+      }
+    }
+  }
+  //Trả về string : Nếu có 3 option thì trả về 3 option cách nhau bởi dấu ','
+  return optionNames.join(", ");
+}

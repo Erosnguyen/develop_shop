@@ -158,6 +158,23 @@ const StoreContextProvider = (props) => {
     });
   }
 
+  //Tôi muốn hàm thay đổi option đã chọn
+  const updateVariant = (data, checkedVariant, currentVariantId) => {
+    setCartItems((prevCart) => {
+      const newCart = [...prevCart];
+      const existingItemIndex = newCart.findIndex(
+        (product) =>
+          product?.variant_product_id === currentVariantId
+      );
+      if (existingItemIndex !== -1) {
+        newCart[existingItemIndex].variant_product_id = getVariantId(data?.variants, checkedVariant);
+      }
+      handleCartAPIChange();
+      return newCart;
+    });
+  }
+
+
 
   useEffect(() => {
     // code to run when the component mounts

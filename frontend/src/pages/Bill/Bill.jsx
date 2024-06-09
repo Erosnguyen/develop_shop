@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
-import { getVariantPrice } from "../../lib/utils";
+import { getMedia, getVariantPrice } from "../../lib/utils";
 import {
   getUserOrder,
   handleAddOrder,
@@ -217,15 +217,15 @@ const Bill = ({ product }) => {
                     style={{
                       backgroundImage: `url(${
                         item?.product?.media
-                          ? item?.product?.media[0]?.src
+                          ? getMedia(item?.product?.product_id ,item?.product?.media[0]?.src)
                           : "src/assets/No_Image.png"
                       })`,
                     }}
                   />
                   <div>
-                    <h3 className="font-medium text-foreground underline-offset-4 hover:underline hover:opacity-80 transition-opacity cursor-pointer">
+                    <a href={`/product/${item.product.product_id}`} className="font-medium text-foreground underline-offset-4 hover:underline hover:opacity-80 transition-opacity cursor-pointer">
                       {item.product.product_name}
-                    </h3>
+                    </a>
                     <p></p>
                     <p className="font-medium text-foreground">
                       $
