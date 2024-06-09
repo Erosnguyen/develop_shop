@@ -56,25 +56,25 @@ const Cart = () => {
     },
   ];
 
-  const handleGetOrder = async () => {
-    try {
-      const res = await getUserOrder();
-      setListYourOrders(res.data.filter((item) => item.status === "pending"));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const handleGetOrder = async () => {
+  //   try {
+  //     const res = await getUserOrder();
+  //     setListYourOrders(res.data.filter((item) => item.status === "pending"));
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
-  const getProductDetail = async (variant_id) => {
-    try {
-      const response = await handleGetProductDetails(variant_id);
-      return response;
-    } catch (error) {
-      // Xử lý lỗi nếu có
-      console.error("Error occurred:", error);
-      throw error; // Đưa lỗi ra ngoài để xử lý ở nơi gọi hàm
-    }
-  };
+  // const getProductDetail = async (variant_id) => {
+  //   try {
+  //     const response = await handleGetProductDetails(variant_id);
+  //     return response;
+  //   } catch (error) {
+  //     // Xử lý lỗi nếu có
+  //     console.error("Error occurred:", error);
+  //     throw error; // Đưa lỗi ra ngoài để xử lý ở nơi gọi hàm
+  //   }
+  // };
 
   const handleDecreaseCartQuantity = (data, checkedVariant) => {
     return () => {
@@ -88,9 +88,9 @@ const Cart = () => {
     }
   }
 
-  useEffect(() => {
-    handleGetOrder();
-  }, []);
+  // useEffect(() => {
+  //   handleGetOrder();
+  // }, []);
 
   // useEffect(() => {
   //   async function fetchData() {
@@ -196,7 +196,7 @@ const Cart = () => {
                   </div>
                 </TableCell>
                 <TableCell>${
-                  getVariantPrice(item?.data?.variants, item?.data?.checkedVariant, item?.quantity)
+                  getVariantPrice(item?.product?.variants, item?.variant_product_id, item?.quantity)
                   }</TableCell>
                 <TableCell>
                   <Tooltip color="danger" content="Xoá sản phẩm này?">

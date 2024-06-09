@@ -131,13 +131,13 @@ function ManageGenreTable(props) {
                                     <Chip size='small' label={user?.user?.is_verified_email ? "Đã xác thực" : "Chưa xác thực"} color={user?.user?.is_verified_email ? "success" : "error"} />
                                 </TableCell>
                                 <TableCell>
-                                    {/* <Button
+                                    <Button
                                         variant="contained"
                                         sx={{ minWidth: 0, mr: 1 }}
                                         onClick={() => handleEdit(user)}
                                     >
-                                        <IconEdit size="1.3rem" />
-                                    </Button> */}
+                                        <IconEye size="1.3rem" />
+                                    </Button>
                                     <Button
                                         variant="contained"
                                         sx={{ minWidth: 0, mr: 1 }}

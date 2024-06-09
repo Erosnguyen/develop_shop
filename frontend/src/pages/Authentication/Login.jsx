@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Button, Input, Checkbox } from "@nextui-org/react";
 import { EyeFilledIcon } from "../../assets/EyeFilledIcon ";
 import { EyeSlashFilledIcon } from "../../assets/EyeSlashFilledIcon ";
 import { handleLogin } from "../../components/LoginPopup/loginServices";
 import { toast } from "react-toastify";
+import { StoreContext } from "../../context/StoreContext";
 
 export const Login = () => {
   const [isVisible, setIsVisible] = React.useState(false);
@@ -13,9 +14,14 @@ export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const {
+    handleFetchOrderToCart
+  } = useContext(StoreContext);
+
   const handleSignIn = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
+    try {
+      const formData = new FormData();
         formData.append("username", email)
         formData.append("password", password)
     const data = await handleLogin(formData);
@@ -23,8 +29,16 @@ export const Login = () => {
       toast.success("Đăng nhập thành công!");
       localStorage.setItem("access_token", data?.data?.access_token);
       localStorage.setItem("token_type", data?.data?.token_type);
+      handleFetchOrderToCart();
       window.location.href = "/";
     }
+    else {
+      toast.error("Đăng nhập thất bại!");
+    }
+    } catch (error) {
+      toast.error("Đăng nhập thất bại! ", error);
+    }
+    
   };
 
   console.log(email, password)

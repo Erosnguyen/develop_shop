@@ -6,9 +6,12 @@ import PageContainer from 'src/components/container/PageContainer';
 import Logo from 'src/layouts/full/shared/logo/Logo';
 import AuthLogin from './auth/AuthLogin';
 import { login } from './authServices';
+import { useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
 
 const Login2 = () => {
   const [state, setState] = useState({});
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -24,9 +27,14 @@ const Login2 = () => {
       const data = await login(formData);
       if (data?.status === 200) {
         localStorage.setItem('token', data?.data?.access_token);
-        window.location.href = '/';
+        toast.success('Đăng nhập thành công');
+        navigate("/");
+      }
+      else {
+        toast.error('Đăng nhập thất bại');
       }
     } catch (error) {
+      toast.error(error?.response?.data?.detail);
       console.log(error);
     }
   };

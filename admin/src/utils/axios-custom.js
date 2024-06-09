@@ -24,6 +24,11 @@ instance.interceptors.response.use(
     return response;
   },
   function (error) {
+    if (error.response.status === 401) {
+      // Handle logout here
+      localStorage.removeItem("token");
+      window.location = '/auth/login'; // Redirect to login page
+    }
     return Promise.reject(error);
   },
 );
