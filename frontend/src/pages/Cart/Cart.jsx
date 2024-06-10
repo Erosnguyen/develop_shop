@@ -22,7 +22,14 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
 } from "@nextui-org/react";
+import { useNavigate } from "react-router-dom";
 import { SelectVariant } from "../../components/Cart/SelectVariant";
 
 const Cart = () => {
@@ -31,11 +38,16 @@ const Cart = () => {
     removeFromCart,
     increaseCartQuantity,
     decreaseCartQuantity,
+    updateSelectedProductinCart
   } = useContext(StoreContext);
+
+  const navigate = useNavigate();
 
   const [listYourOrders, setListYourOrders] = useState([]);
   const [product, setProduct] = useState([]);
   const [productId, setProductId] = useState([]);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
 
   const columns = [
     {
@@ -64,25 +76,19 @@ const Cart = () => {
     },
   ];
 
-  // const handleGetOrder = async () => {
-  //   try {
-  //     const res = await getUserOrder();
-  //     setListYourOrders(res.data.filter((item) => item.status === "pending"));
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const handleSelect = (key) => {
+    setSelectedKeys(key);
+  }
 
-  // const getProductDetail = async (variant_id) => {
-  //   try {
-  //     const response = await handleGetProductDetails(variant_id);
-  //     return response;
-  //   } catch (error) {
-  //     // Xử lý lỗi nếu có
-  //     console.error("Error occurred:", error);
-  //     throw error; // Đưa lỗi ra ngoài để xử lý ở nơi gọi hàm
-  //   }
-  // };
+  const handleBill = () => {
+    if (selectedKeys == "all") {
+      updateSelectedProductinCart("all");
+    }
+    else {
+      updateSelectedProductinCart([...selectedKeys]);
+    }
+    navigate("/Bill");
+  }
 
   const handleDecreaseCartQuantity = (data, checkedVariant) => {
     return () => {
@@ -96,26 +102,47 @@ const Cart = () => {
     };
   };
 
-  // useEffect(() => {
-  //   handleGetOrder();
-  // }, []);
+  const handleDeleteCart = (data, checkedVariant) => {
+    return () => {
+      removeFromCart(data, checkedVariant);
+    };
+  };
 
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     const details = await Promise.all(
-  //       listYourOrders.map((item) => getProductDetail(item.items[0].product_id))
-  //     );
-  //     setProduct(details);
-  //   }
-  //   fetchData();
-  // }, [listYourOrders]);
-
-  // console.log(product)
-  console.log(cartItems);
+  console.log(selectedKeys);
 
   return (
     <div className="cart mt-10 w-full">
-      <Table selectionMode="multiple">
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Confirm Delete
+              </ModalHeader>
+              <ModalBody>
+                <p>Are you sure you want to delete this item?</p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button
+                  color="danger"
+                  onPress={onClose}
+                  onClick={handleDeleteCart()}
+                >
+                  Delete
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+      <Table
+        selectionMode="multiple"
+        selectedKeys={selectedKeys}
+        onSelectionChange={(keys) => handleSelect(keys)}
+      >
         <TableHeader columns={columns}>
           {(column) => (
             <TableColumn key={column.key}>{column.label}</TableColumn>
@@ -149,6 +176,7 @@ const Cart = () => {
                 <TableCell>
                   {item?.product?.options?.length ? (
                     <SelectVariant item={item} />
+                  ) : (
                     // <Popover placement="bottom">
                     //   <PopoverTrigger>
                     //     <Button variant="light" size="sm" color="default">
@@ -186,7 +214,7 @@ const Cart = () => {
                     //               variant="flat"
                     //               key={item_option.item_id}
                     //               color={
-                    //                 item_option.item_id === item?.product.variants[0]?.option1 || item_option.item_id === item?.product.variants[0]?.option2 || item_option.item_id === item?.product.variants[0]?.option3 
+                    //                 item_option.item_id === item?.product.variants[0]?.option1 || item_option.item_id === item?.product.variants[0]?.option2 || item_option.item_id === item?.product.variants[0]?.option3
                     //                   ? "warning"
                     //                   : "default"
                     //               }
@@ -212,7 +240,6 @@ const Cart = () => {
                     //     </div>
                     //   </PopoverContent>
                     // </Popover>
-                  ) : (
                     <></>
                   )}
                 </TableCell>
@@ -286,6 +313,7 @@ const Cart = () => {
                         onClick={() =>
                           removeFromCart(item?.data, item?.variant_product_id)
                         }
+                        // onPress={onOpen}
                         isIconOnly
                         color="light"
                       >
@@ -301,9 +329,7 @@ const Cart = () => {
       </Table>
 
       <div className="flex justify-end mt-10">
-        <Link to="/Bill">
-          <Button color="warning">Thanh Toán</Button>
-        </Link>
+          <Button onClick={() => handleBill()} color="warning">Thanh Toán</Button>
       </div>
     </div>
   );

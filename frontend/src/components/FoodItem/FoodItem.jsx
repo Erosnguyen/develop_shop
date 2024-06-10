@@ -92,7 +92,7 @@ const FoodItem = (props) => {
       <div className="food-item-info p-3">
         <div className="food-item-name-rating mb-[10px]">
           <p
-            className="text-xl font-bold py-2"
+            className="text-xl font-bold py-2 line-clamp-1"
           >
             {product_name}
           </p>

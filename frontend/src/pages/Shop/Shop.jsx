@@ -198,7 +198,7 @@ const Shop = () => {
       </div>
       {/* Product List  */}
       <div className="food-display-list grid grid-cols-4 mt-[30px] gap-[30px] gap-y-[50px] max-sm:grid-cols-1 max-md:grid-cols-2 max-lg:grid-cols-3">
-        {productList.map((item, index) => (
+        {productList.reverse().map((item, index) => (
           <FoodItem key={index} {...item} handleClick={handleClick} />
         ))}
       </div>

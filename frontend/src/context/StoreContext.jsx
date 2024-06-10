@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { fetchApiConfig } from "../config";
 import { getUserOrder, handleAddOrder, handleDeleteOrder } from "../pages/Bill/billServices";
-import { getVariantId } from "../lib/utils";
+import { getVariantId, getVariants } from "../lib/utils";
 import { toast } from "react-toastify";
 
 export const StoreContext = createContext(null);
@@ -12,6 +12,7 @@ const StoreContextProvider = (props) => {
     const savedCartItems = localStorage.getItem("cartItems");
     return savedCartItems ? JSON.parse(savedCartItems) : [];
   });
+  const [selectedProduct, setSelectedProduct] = useState([]);
   const [orders, setOrders] = useState([]);
 
   const isUser = localStorage.getItem("access_token") != null;
@@ -158,8 +159,7 @@ const StoreContextProvider = (props) => {
     });
   }
 
-  //Tôi muốn hàm thay đổi option đã chọn
-  const updateVariant = (data, checkedVariant, currentVariantId) => {
+  function updateOption(variants, checkedVariant, currentVariantId) {
     setCartItems((prevCart) => {
       const newCart = [...prevCart];
       const existingItemIndex = newCart.findIndex(
@@ -167,7 +167,10 @@ const StoreContextProvider = (props) => {
           product?.variant_product_id === currentVariantId
       );
       if (existingItemIndex !== -1) {
-        newCart[existingItemIndex].variant_product_id = getVariantId(data?.variants, checkedVariant);
+        const new_variant_id =  getVariantId(variants, checkedVariant);
+        // console.log(getVariants(variants, new_variant_id), newCart[existingItemIndex].product.variants)
+        newCart[existingItemIndex].variant_product_id = new_variant_id;
+        newCart[existingItemIndex].product.variants = [getVariants(variants, new_variant_id)];
       }
       handleCartAPIChange();
       return newCart;
@@ -185,6 +188,19 @@ const StoreContextProvider = (props) => {
     getProducts();
   }, []);
 
+  //Update selected Product 
+  const updateSelectedProductinCart = (itemsIndex) => {
+    if(itemsIndex == "all") {
+      setSelectedProduct(cartItems);
+    }
+    else {
+      const selectedProduct = itemsIndex.map((index) => {
+        return cartItems[index];
+      });
+      setSelectedProduct(selectedProduct);
+    }
+  }
+
   console.log(cartItems)
 
   return (
@@ -198,6 +214,9 @@ const StoreContextProvider = (props) => {
         decreaseCartQuantity,
         removeFromCart,
         handleFetchOrderToCart,
+        updateOption,
+        selectedProduct,
+        updateSelectedProductinCart
       }}
     >
       {props.children}

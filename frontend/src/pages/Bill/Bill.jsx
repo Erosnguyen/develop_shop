@@ -37,6 +37,7 @@ const Bill = ({ product }) => {
 
   const {
     cartItems,
+    selectedProduct,
     removeFromCart,
     increaseCartQuantity,
     decreaseCartQuantity,
@@ -78,7 +79,7 @@ const Bill = ({ product }) => {
 
   const totalPrice = () => {
     let total = 0;
-    cartItems?.forEach((i) => {
+    selectedProduct?.forEach((i) => {
       total += handlePriceProduct(i);
     });
     return total.toFixed(2);
@@ -126,7 +127,7 @@ const Bill = ({ product }) => {
           // thêm order mới
           const convertData = {
             order: {
-              items: cartItems,
+              items: selectedProduct,
             },
             address: {
               street: state?.street || "",
@@ -147,7 +148,7 @@ const Bill = ({ product }) => {
           window.location = "/bill";
         } else {
           const convertData = {
-            items: cartItems,
+            items: selectedProduct,
             address: {
               street: state?.street || "",
               city: state?.city || "",
@@ -184,7 +185,7 @@ const Bill = ({ product }) => {
     handleGetUserOrder();
   }, []);
 
-  console.log(state);
+  console.log(selectedProduct);
 
   return (
     <>
@@ -259,7 +260,7 @@ const Bill = ({ product }) => {
           <h2 className="font-semibold text-xl mb-5">Your order</h2>
           <Divider orientation="horzital" />
           <div>
-            {cartItems.map((item, index) => (
+            {selectedProduct.map((item, index) => (
               <div key={index} className="flex flex-col gap-4 pt-4">
                 <div className="flex items-center gap-2 w-full">
                   <div
@@ -277,17 +278,27 @@ const Bill = ({ product }) => {
                   />
                   <div>
                     <a
-                      href={`/product/${item.product.product_id}`}
+                      href={`/product/${item?.product?.product_id}`}
                       className="font-medium text-foreground underline-offset-4 hover:underline hover:opacity-80 transition-opacity cursor-pointer"
                     >
-                      {item.product.product_name}
+                      {item?.product?.product_name}
                     </a>
-                    <p></p>
+                    <p>
+                      {item?.product?.options.length > 0 && (
+                        <p className="text-sm">
+                          Variantion :
+                          {getOptionName(
+                            item?.product?.options,
+                            item?.product?.variants
+                          )}
+                        </p>
+                      )}
+                    </p>
                     <p className="font-medium text-foreground">
                       $
                       {getVariantPrice(
-                        item.product.variants,
-                        item.variant_product_id
+                        item?.product?.variants,
+                        item?.variant_product_id
                       )}{" "}
                       <span className="text-gray-400 font-normal">
                         x {item.quantity}
@@ -299,7 +310,7 @@ const Bill = ({ product }) => {
               </div>
             ))}
           </div>
-          {cartItems.length > 0 && (
+          {selectedProduct.length > 0 && (
             <>
               <div className="flex justify-between items-center font-medium text-foreground py-4">
                 <p>Total</p>

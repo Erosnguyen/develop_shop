@@ -140,6 +140,7 @@ function ManageGenreTable(props) {
                                     </Button>
                                     <Button
                                         variant="contained"
+                                        color='error'
                                         sx={{ minWidth: 0, mr: 1 }}
                                         onClick={() => handleOpenDelete(user)}
                                     >
