@@ -10,8 +10,11 @@ import { toast } from 'react-toastify';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import { getProductById } from './ManageOrdersServices';
+import { getProductById, updateOrder } from './ManageOrdersServices';
 import {
+  FormControl,
+  InputLabel,
+  Select,
   Table,
   TableBody,
   TableCell,
@@ -19,6 +22,7 @@ import {
   TableHead,
   TableRow,
   Typography,
+  MenuItem
 } from '@mui/material';
 
 export default function ManageOrdersDialog(props) {
@@ -32,17 +36,28 @@ export default function ManageOrdersDialog(props) {
     let { name, value } = e.target;
     setState((pre) => ({ ...pre, [name]: value }));
   };
+
   useEffect(() => {
     setState({
       ...item,
     });
   }, [item]);
 
-  const handleCancle = () => {
-    
-  }
+  const handleUpdateStatus = async () => {
+    try {
+      const data = await updateOrder(item.order_id, { status: state.status });
+      if (data.status === 200) {
+        toast.success("Update success");
+        handleClose();
+        search();
+      }
+    } catch (error) {
+      toast.error("Update fail");
+      console.log(error);
+    }
+  };
 
-  console.log(item);
+  console.log(state);
   return (
     <>
       <Dialog
@@ -64,16 +79,28 @@ export default function ManageOrdersDialog(props) {
             <Grid item xs={12}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                 <p>Address: {item?.address?.city !== "" && item?.address?.street + ", " + item?.address?.city + ", " + item?.address?.state + ", "+ item?.address?.country || "N/A"}</p>
-                <Button size='sm' color="error">Cancle</Button>
+                {/* <Button size='sm' color="error">Cancle</Button> */}
               </div>
             </Grid>
             <Grid item xs={12}>
-              <Stepper activeStep={item.status == "shipped" && 1 || item.status == "delivered" && 2 || 0} alternativeLabel>
-                {steps.map((label) => (
+              <Stepper activeStep={item.status == "shipped" && 1 || item.status == "delivered" && 2 || item.status == "cancelled" && 1 || 0} alternativeLabel>
+                {steps.map((label) => {
+                  const labelProps = {};
+                  if (item.status == "cancelled") {
+                    labelProps.optional = (
+                      <Typography variant="caption" color="error">
+                        Cancelled
+                      </Typography>
+                    );
+                    labelProps.error = true;
+                  }
+                  return(
+                  
                   <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
+                    <StepLabel {...labelProps}>{label}</StepLabel>
                   </Step>
-                ))}
+                )}
+                )}
               </Stepper>
             </Grid>
             <Grid item xs={12}>
@@ -105,9 +132,24 @@ export default function ManageOrdersDialog(props) {
                 </Table>
               </TableContainer>
             </Grid>
-            <Grid item xs={12} style={{ textAlign: 'right' }}>
-              <div>
-                
+            <Grid item xs={12}>
+              <div style={{display: "flex", justifyContent: "space-between", alignContent: "center"}}>
+              <FormControl >
+                <InputLabel id="demo-simple-select-label">Status</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Status"
+                  value={state.status || item.status}
+                  name='status'
+                  onChange={handleChange}
+                >
+                  <MenuItem value={'processing'}>Processing</MenuItem>
+                  <MenuItem value={'shipped'}>Shipped</MenuItem>
+                  <MenuItem value={'delivered'}>Delivired</MenuItem>
+                  <MenuItem value={'cancelled'}>Cancelled</MenuItem>
+                </Select>
+              </FormControl>
                 <p>Total: ${item.total_price}</p>
               </div>
               
@@ -118,7 +160,7 @@ export default function ManageOrdersDialog(props) {
           <Button variant="contained" size="small" color="error" onClick={handleClose}>
             Hủy
           </Button>
-          <Button variant="contained" size="small" type="submit">
+          <Button onClick={() => handleUpdateStatus()} variant="contained" size="small" type="submit">
             Lưu
           </Button>
         </DialogActions>

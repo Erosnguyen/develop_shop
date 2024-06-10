@@ -95,7 +95,7 @@ function ManageOrdersTable(props) {
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Chip label={product?.status} size='small' color={product?.status === "processing" ? "warning" : "success"} />
+                                    <Chip label={product?.status} size='small' color={product?.status === "processing" && "warning" || product?.status === "delivered" && "primary" || product?.status === "shipped" && "success" || "error"} />
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="subtitle2">

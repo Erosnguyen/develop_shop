@@ -12,3 +12,7 @@ export const getProductById = (id) => {
 export const getCustomerById = (id) => {
   return axios.get(API_PATH + '/accounts/' + id);
 }
+
+export const updateOrder = (id, data) => {
+  return axios.put(API_PATH + '/orders/' + id, data);
+}
