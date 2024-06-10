@@ -12,6 +12,7 @@ const StoreContextProvider = (props) => {
     const savedCartItems = localStorage.getItem("cartItems");
     return savedCartItems ? JSON.parse(savedCartItems) : [];
   });
+  const [selectedProduct, setSelectedProduct] = useState([]);
   const [orders, setOrders] = useState([]);
 
   const isUser = localStorage.getItem("access_token") != null;
@@ -187,6 +188,19 @@ const StoreContextProvider = (props) => {
     getProducts();
   }, []);
 
+  //Update selected Product 
+  const updateSelectedProductinCart = (itemsIndex) => {
+    if(itemsIndex == "all") {
+      setSelectedProduct(cartItems);
+    }
+    else {
+      const selectedProduct = itemsIndex.map((index) => {
+        return cartItems[index];
+      });
+      setSelectedProduct(selectedProduct);
+    }
+  }
+
   console.log(cartItems)
 
   return (
@@ -201,6 +215,8 @@ const StoreContextProvider = (props) => {
         removeFromCart,
         handleFetchOrderToCart,
         updateOption,
+        selectedProduct,
+        updateSelectedProductinCart
       }}
     >
       {props.children}
