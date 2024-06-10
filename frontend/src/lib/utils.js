@@ -65,3 +65,7 @@ export const getOptionName = (options, variant) => {
   //Trả về string : Nếu có 3 option thì trả về 3 option cách nhau bởi dấu ','
   return optionNames.join(", ");
 }
+
+export const getVariants = (variants, variant_id) => {
+  return variants.find(variant => variant.variant_id === variant_id);
+}
