@@ -183,7 +183,7 @@ const StoreContextProvider = (props) => {
     // code to run when the component mounts
     const getProducts = async () => {
       const response = await fetchApiConfig("products");
-      setProducts(response.products);
+      setProducts(response.products.reverse());
     };
     getProducts();
   }, []);
@@ -201,7 +201,18 @@ const StoreContextProvider = (props) => {
     }
   }
 
-  console.log(cartItems)
+  //Choose product in selected product
+  const chooseProduct = (data, checkedVariant, quantity) => {
+    // Thêm mới sản phẩm vào selectedProdct , thay thế select product chỉ có đúng 1 sản phẩm đó
+    const product = {
+      variant_product_id: getVariantId(data?.variants, checkedVariant),
+      quantity: quantity,
+      product: { ...data }
+    }
+    setSelectedProduct([product]);
+  }
+
+  console.log(selectedProduct)
 
   return (
     <StoreContext.Provider
@@ -216,7 +227,8 @@ const StoreContextProvider = (props) => {
         handleFetchOrderToCart,
         updateOption,
         selectedProduct,
-        updateSelectedProductinCart
+        updateSelectedProductinCart,
+        chooseProduct
       }}
     >
       {props.children}

@@ -5,7 +5,7 @@ import {
   PopoverTrigger,
 } from "@nextui-org/react";
 import React, {useEffect, useState, useContext} from "react";
-import { getOptionName } from "../../lib/utils";
+import { getOptionName, getVariants } from "../../lib/utils";
 import { fetchApiConfig } from "../../config";
 import { StoreContext } from "../../context/StoreContext";
 
@@ -69,7 +69,7 @@ export const SelectVariant = ({ item }) => {
       <Popover isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)} placement="bottom">
         <PopoverTrigger>
           <Button variant="light" size="sm" color="default">
-            {getOptionName(item?.product?.options, item?.product?.variants)}
+            {getOptionName(item?.product?.options, [getVariants(item?.product?.variants, item.variant_product_id)])}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
