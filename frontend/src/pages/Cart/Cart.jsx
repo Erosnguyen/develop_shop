@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import { Link } from "react-router-dom";
-import { getVariantPrice } from "../../lib/utils";
+import { getMedia, getOptionName, getVariantPrice } from "../../lib/utils";
 import { DeleteIcon } from "../../assets/DeleteIcon";
 import {
   getUserOrder,
@@ -19,7 +19,11 @@ import {
   Tooltip,
   Button,
   Tab,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
 } from "@nextui-org/react";
+import { SelectVariant } from "../../components/Cart/SelectVariant";
 
 const Cart = () => {
   const {
@@ -36,61 +40,65 @@ const Cart = () => {
   const columns = [
     {
       key: "product",
-      label: "Sản phẩm",
+      label: "Product",
     },
     {
       key: "image",
-      label: "Hình ảnh",
+      label: "Image",
+    },
+    {
+      key: "option",
+      label: "Variations",
     },
     {
       key: "quantity",
-      label: "Số lượng",
+      label: "Quantity",
     },
     {
       key: "price",
-      label: "Giá tiền",
+      label: "Price",
     },
     {
       key: "remove",
-      label: "Xóa",
+      label: "Delete",
     },
   ];
 
-  const handleGetOrder = async () => {
-    try {
-      const res = await getUserOrder();
-      setListYourOrders(res.data.filter((item) => item.status === "pending"));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const handleGetOrder = async () => {
+  //   try {
+  //     const res = await getUserOrder();
+  //     setListYourOrders(res.data.filter((item) => item.status === "pending"));
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
-  const getProductDetail = async (variant_id) => {
-    try {
-      const response = await handleGetProductDetails(variant_id);
-      return response;
-    } catch (error) {
-      // Xử lý lỗi nếu có
-      console.error("Error occurred:", error);
-      throw error; // Đưa lỗi ra ngoài để xử lý ở nơi gọi hàm
-    }
-  };
+  // const getProductDetail = async (variant_id) => {
+  //   try {
+  //     const response = await handleGetProductDetails(variant_id);
+  //     return response;
+  //   } catch (error) {
+  //     // Xử lý lỗi nếu có
+  //     console.error("Error occurred:", error);
+  //     throw error; // Đưa lỗi ra ngoài để xử lý ở nơi gọi hàm
+  //   }
+  // };
 
   const handleDecreaseCartQuantity = (data, checkedVariant) => {
     return () => {
       decreaseCartQuantity(data, checkedVariant);
-    }
-  }
+    };
+  };
 
   const handleIncreaseCartQuantity = (data, checkedVariant) => {
     return () => {
       increaseCartQuantity(data, checkedVariant);
-    }
-  }
+    };
+  };
 
-  useEffect(() => {
-    handleGetOrder();
-  }, []);
+  // useEffect(() => {
+  //   handleGetOrder();
+  // }, []);
 
   // useEffect(() => {
   //   async function fetchData() {
@@ -107,7 +115,7 @@ const Cart = () => {
 
   return (
     <div className="cart mt-10 w-full">
-      <Table>
+      <Table selectionMode="multiple">
         <TableHeader columns={columns}>
           {(column) => (
             <TableColumn key={column.key}>{column.label}</TableColumn>
@@ -119,10 +127,9 @@ const Cart = () => {
               <TableRow key={idx}>
                 <TableCell>
                   <div>
-                    {item?.product?.product_name}
-                    <div>
-                      {}
-                    </div>
+                    <a href={`/product/${item?.product?.product_id}`}>
+                      {item?.product?.product_name}
+                    </a>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -131,17 +138,88 @@ const Cart = () => {
                     height={100}
                     src={
                       item?.product?.media != null
-                        ? item?.product?.media[0]?.src
+                        ? getMedia(
+                            item?.product?.product_id,
+                            item?.product?.media[0]?.src
+                          )
                         : "src/assets/No_Image.png"
                     }
                   />
                 </TableCell>
                 <TableCell>
+                  {item?.product?.options?.length ? (
+                    <SelectVariant item={item} />
+                    // <Popover placement="bottom">
+                    //   <PopoverTrigger>
+                    //     <Button variant="light" size="sm" color="default">
+                    //       {getOptionName(
+                    //         item?.product?.options,
+                    //         item?.product?.variants
+                    //       )}
+                    //       <svg
+                    //         xmlns="http://www.w3.org/2000/svg"
+                    //         fill="none"
+                    //         viewBox="0 0 24 24"
+                    //         strokeWidth="1.5"
+                    //         stroke="currentColor"
+                    //         className="size-3"
+                    //       >
+                    //         <path
+                    //           strokeLinecap="round"
+                    //           strokeLinejoin="round"
+                    //           d="m19.5 8.25-7.5 7.5-7.5-7.5"
+                    //         />
+                    //       </svg>
+                    //     </Button>
+                    //   </PopoverTrigger>
+                    //   <PopoverContent className="p-4">
+                    //     {item?.product?.options.map((option, index) => (
+                    //       <div
+                    //         className="flex gap-4 flex-wrap space-y-2 w-full items-center"
+                    //         key={option.options_id}
+                    //       >
+                    //         <div>{option.option_name}:</div>
+                    //         <div className="flex items-center gap-4 flex-wrap">
+                    //           {option.items.map((item_option) => (
+                    //             <Button
+                    //               size="sm"
+                    //               variant="flat"
+                    //               key={item_option.item_id}
+                    //               color={
+                    //                 item_option.item_id === item?.product.variants[0]?.option1 || item_option.item_id === item?.product.variants[0]?.option2 || item_option.item_id === item?.product.variants[0]?.option3 
+                    //                   ? "warning"
+                    //                   : "default"
+                    //               }
+                    //             >
+                    //               {item_option.item_name}
+                    //             </Button>
+                    //           ))}
+                    //         </div>
+                    //       </div>
+                    //     ))}
+                    //     <div className="pt-4 space-x-2 flex justify-end w-full">
+                    //       {/* <Button variant="flat" size="sm">
+                    //         Cancle
+                    //       </Button> */}
+                    //       <Button
+                    //         onClick={() => console.log("Apply")}
+                    //         variant="solid"
+                    //         size="sm"
+                    //         color="warning"
+                    //       >
+                    //         Apply
+                    //       </Button>
+                    //     </div>
+                    //   </PopoverContent>
+                    // </Popover>
+                  ) : (
+                    <></>
+                  )}
+                </TableCell>
+                <TableCell>
                   <div className="relative flex items-center">
                     <button
-                      onClick={handleDecreaseCartQuantity(
-                        item
-                      )}
+                      onClick={handleDecreaseCartQuantity(item)}
                       type="button"
                       className="flex-shrink-0 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
                     >
@@ -171,9 +249,7 @@ const Cart = () => {
                       required
                     />
                     <button
-                      onClick={handleIncreaseCartQuantity(
-                        item
-                      )}
+                      onClick={handleIncreaseCartQuantity(item)}
                       type="button"
                       className="flex-shrink-0 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
                     >
@@ -195,9 +271,14 @@ const Cart = () => {
                     </button>
                   </div>
                 </TableCell>
-                <TableCell>${
-                  getVariantPrice(item?.data?.variants, item?.data?.checkedVariant, item?.quantity)
-                  }</TableCell>
+                <TableCell>
+                  $
+                  {getVariantPrice(
+                    item?.product?.variants,
+                    item?.variant_product_id,
+                    item?.quantity
+                  )}
+                </TableCell>
                 <TableCell>
                   <Tooltip color="danger" content="Xoá sản phẩm này?">
                     <span className="text-lg text-danger cursor-pointer active:opacity-50">

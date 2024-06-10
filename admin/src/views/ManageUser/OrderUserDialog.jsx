@@ -10,16 +10,14 @@ import { insertUser, updateGenre } from './ManageUserServices';
 import { Select, MenuItem } from '@mui/material';
 import { to } from 'react-spring';
 import { toast } from 'react-toastify';
-import { getUserOrder } from './ManageUserServices';
 
-export default function OrderDialog(props) {
+export default function ManageUserDialog(props) {
     let {
         open,
         item,
         handleClose
     } = props;
     const [state, setState] = useState({});
-    const [order, setOrder] = useState([]);
 
     const handleChange = (e) => {
         let { name, value } = e.target;
@@ -64,19 +62,9 @@ export default function OrderDialog(props) {
         setState({
             ...item?.user
         })
-        getOrder()
     }, [item])
 
-    const getOrder = async () => {
-        try {
-            const res = await getUserOrder(state?.user_id);
-            setOrder(res?.data?.data)
-        } catch (error) {
-            toast.error("Lỗi lấy dữ liệu")
-        }
-    }
-
-    console.log(order)
+    console.log(state)
     return (
         <>
             <Dialog
@@ -168,9 +156,6 @@ export default function OrderDialog(props) {
                                 <MenuItem value="admin">Admin</MenuItem>
                                 <MenuItem value="user">User</MenuItem>
                             </Select>
-                        </Grid>
-                        <Grid item md={12} sm={12} xs={12}>
-                            
                         </Grid>
                     </Grid>
                 </DialogContent>

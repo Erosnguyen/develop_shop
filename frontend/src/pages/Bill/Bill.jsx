@@ -1,7 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
-import { getVariantPrice } from "../../lib/utils";
-import { getUserOrder, handleAddOrder, handleProcessingOrder, handleGetProductDetails } from "./billServices";
+import { getMedia, getOptionName, getVariantPrice } from "../../lib/utils";
+import {
+  getUserOrder,
+  handleAddOrder,
+  handleProcessingOrder,
+  handleDeleteOrder,
+  handleGuestOrder,
+} from "./billServices";
 import MessagePopup from "../../components/MessagePopup/MessagePopup";
 import { fetchApiConfig } from "../../config";
 import {
@@ -26,7 +32,8 @@ const Bill = ({ product }) => {
   const [showMessage, setShowMessage] = useState({});
   const [listYourOrders, setListYourOrders] = useState([]);
   const variants = product?.variants;
-  const [products, setProducts] = useState([]);
+  const [state, setState] = useState({});
+  const isUser = localStorage.getItem("access_token") != null;
 
   const {
     cartItems,
@@ -39,10 +46,18 @@ const Bill = ({ product }) => {
     removeFromCart(data, checkedVariant);
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setState((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   const statusColorMap = {
     completed: "success",
     cancel: "danger",
-    processing : "primary",
+    processing: "primary",
     pending: "warning",
   };
 
@@ -55,10 +70,9 @@ const Bill = ({ product }) => {
 
   const handlePriceProduct = (item) => {
     return getVariantPrice(
-      item?.data?.variants,
-      item.data.checkedVariant.option1,
-      item.data.checkedVariant.option2,
-      item.data.checkedVariant.option3
+      item?.product?.variants,
+      item?.variant_product_id,
+      item?.quantity
     );
   };
 
@@ -68,19 +82,6 @@ const Bill = ({ product }) => {
       total += handlePriceProduct(i);
     });
     return total.toFixed(2);
-  };
-
-  const convertDataSubmit = (data = []) => {
-    return {
-      items: data?.map((i) => {
-        return {
-          variant_product_id: i?.data?.variants?.length
-            ? i?.data?.variants[0]?.variant_id
-            : null,
-          quantity: i?.quantity,
-        };
-      }),
-    };
   };
 
   const columns = [
@@ -105,15 +106,64 @@ const Bill = ({ product }) => {
   const handleOrder = async (e) => {
     e.preventDefault();
     try {
-      let dataSubmit = convertDataSubmit(cartItems);
-      const data = await handleAddOrder(dataSubmit);
-      if (data?.status === 201) {
-        cartItems?.forEach((i) => {
-          handleDeleteProductInCart(i.data, i.data.checkedVariant);
-        });
-        handleGetUserOrder();
+      if (
+        state?.street == null ||
+        state?.city == null ||
+        state?.state == null ||
+        state?.country == null
+      ) {
+        toast.error("Please fill in all the information!");
+        return;
+      } else {
+        if (isUser) {
+          // xoá order cũ với status pending
+          const listOrderPending = listYourOrders.filter(
+            (it) => it.status === "pending"
+          );
+          listOrderPending.forEach((it) => {
+            handleDeleteOrder(it.order_id);
+          });
+          // thêm order mới
+          const convertData = {
+            order: {
+              items: cartItems,
+            },
+            address: {
+              street: state?.street || "",
+              city: state?.city || "",
+              state: state?.state || "",
+              country: state?.country || "",
+            },
+          };
+          await handleAddOrder(convertData);
+          // xoá cart
+          localStorage.removeItem("cartItems");
+          // Lấy lại order
+          handleGetUserOrder();
+          //Update status
+          const order = listYourOrders.filter((it) => it.status === "pending");
+          await handleProcessingOrder(order[0].order_id);
+          toast.success("Order successfully!");
+          window.location = "/bill";
+        } else {
+          const convertData = {
+            items: cartItems,
+            address: {
+              street: state?.street || "",
+              city: state?.city || "",
+              state: state?.state || "",
+              country: state?.country || "",
+            },
+            first_name: state?.first_name || "",
+            last_name: state?.last_name || "",
+            email: state?.email || "",
+          };
+          // console.log(convertData)
+          await handleGuestOrder(convertData);
+          localStorage.removeItem("cartItems");
+          toast.success("Order successfully!");
+        }
       }
-      toast.success("Order successfully!");
     } catch (error) {
       toast.error("Order failed!");
       console.log(error);
@@ -122,122 +172,132 @@ const Bill = ({ product }) => {
 
   const handleGetUserOrder = async () => {
     try {
+      if (!isUser) return;
       const data = await getUserOrder();
       setListYourOrders(data?.data || []);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
     handleGetUserOrder();
   }, []);
 
-  const getProductDetail = async (variant_id) => {
-    try {
-      const response = await handleGetProductDetails(variant_id);
-      return response;
-    } catch (error) {
-      // Xử lý lỗi nếu có
-      console.error("Error occurred:", error);
-      throw error; // Đưa lỗi ra ngoài để xử lý ở nơi gọi hàm
-    }
-  };
-
-  useEffect(() => { 
-    async function fetchData() {
-      const details = await Promise.all(listYourOrders.filter((it) => it.status === "pending").map((item) => getProductDetail(item.items[0].product_id)));
-      setProducts(details)
-      console.log(details)
-    }
-    fetchData();
-  }, [listYourOrders]);
-
-  const handleProcessing = async (id) => {
-    try {
-      const data = await handleProcessingOrder(id);
-      if (data?.status === 200) {
-        toast.success("Processing successfully!");
-        setProducts([]);
-        handleGetUserOrder();
-      }
-    } catch (error) {
-      toast.error("Processing failed!");
-      console.log(error);
-    }
-  };
-
-  console.log(products);
-  console.log(listYourOrders);
+  console.log(state);
 
   return (
     <>
       {showMessage?.open && <MessagePopup showMessage={showMessage} />}
       <div className="bill mt-10 grid grid-cols-2 gap-20">
-        {/* <div className="bill-left">
+        <div className="bill-left">
           <h2 className="bill-title font-semibold text-xl mb-5">
             Billing Information
           </h2>
           <form action="" className="flex flex-col gap-4">
-            <Input isRequired type="text" label="Fullname" />
-            <Input isRequired type="text" label="Adress" />
-            <Input isRequired type="text" label="Phone number" />
-            <Input type="text" label="Note" />
+            {isUser == false && (
+              <>
+                <Input
+                  onChange={handleChange}
+                  isRequired
+                  name="first_name"
+                  type="text"
+                  label="First Name"
+                />
+                <Input
+                  onChange={handleChange}
+                  isRequired
+                  name="last_name"
+                  type="text"
+                  label="Last Name"
+                />
+                <Input
+                  onChange={handleChange}
+                  isRequired
+                  name="email"
+                  type="email"
+                  label="Email"
+                />
+              </>
+            )}
+            <Input
+              onChange={handleChange}
+              isRequired
+              name="street"
+              type="text"
+              label="Street"
+            />
+            <Input
+              onChange={handleChange}
+              isRequired
+              name="city"
+              type="text"
+              label="City"
+            />
+            <Input
+              onChange={handleChange}
+              isRequired
+              name="state"
+              type="text"
+              label="State"
+            />
+            <Input
+              onChange={handleChange}
+              isRequired
+              name="country"
+              type="text"
+              label="Country"
+            />
             <RadioGroup label="Payment Method">
               <Radio value="bank">Bank Transfer</Radio>
               <Radio value="cash">Pay cash upon delivery</Radio>
             </RadioGroup>
           </form>
-        </div> */}
+        </div>
 
         <div className="bill-right">
           <h2 className="font-semibold text-xl mb-5">Your order</h2>
           <Divider orientation="horzital" />
           <div>
-            {listYourOrders
-              ?.filter((it) => it.status === "pending")
-              .map((item, index) => (
-                <div key={index} className="flex flex-col gap-4 pt-4">
-                  <div className="flex items-center gap-2 w-full">
-                    <div
-                      className={`bg-cover bg-center rounded-xl w-20 h-20 cursor-pointer`}
-                      style={{
-                        backgroundImage: `url(${
-                          products[index]?.media ? products[index]?.media[0]?.src : "src/assets/No_Image.png"
-                        })`,
-                      }}
-                    />
-                    <div>
-                      <h3 className="font-medium text-foreground underline-offset-4 hover:underline hover:opacity-80 transition-opacity cursor-pointer">
-                        {products[index]?.product_name}
-                      </h3>
-                      <p>
-                      </p>
-                      <p className="font-medium text-foreground">
-                        ${(item?.total_price / item?.items[0]?.quantity).toFixed(2)}{" "}
-                        <span className="text-gray-400 font-normal">
-                          x {item?.items[0]?.quantity}
-                        </span>{" "}
-                      </p>
-                    </div>
-                  </div>
-                  <Divider orientation="horzital" />
-                  <>
-                    <div className="flex justify-between items-center font-medium text-foreground py-2">
-                      <p>Total</p>
-                      <p> ${item?.total_price}</p>
-                    </div>
-                    <Button
-                      className="text-white"
-                      radius="sm"
-                      fullWidth
-                      color="warning"
-                      onClick={() => handleProcessing(item.id)}
+            {cartItems.map((item, index) => (
+              <div key={index} className="flex flex-col gap-4 pt-4">
+                <div className="flex items-center gap-2 w-full">
+                  <div
+                    className={`bg-cover bg-center rounded-xl w-20 h-20 cursor-pointer`}
+                    style={{
+                      backgroundImage: `url(${
+                        item?.product?.media
+                          ? getMedia(
+                              item?.product?.product_id,
+                              item?.product?.media[0]?.src
+                            )
+                          : "src/assets/No_Image.png"
+                      })`,
+                    }}
+                  />
+                  <div>
+                    <a
+                      href={`/product/${item.product.product_id}`}
+                      className="font-medium text-foreground underline-offset-4 hover:underline hover:opacity-80 transition-opacity cursor-pointer"
                     >
-                      Thanh Toán
-                    </Button>
-                  </>
-                  <Divider orientation="horzital" />
+                      {item.product.product_name}
+                    </a>
+                    <p></p>
+                    <p className="font-medium text-foreground">
+                      $
+                      {getVariantPrice(
+                        item.product.variants,
+                        item.variant_product_id
+                      )}{" "}
+                      <span className="text-gray-400 font-normal">
+                        x {item.quantity}
+                      </span>{" "}
+                    </p>
+                  </div>
                 </div>
-              ))}
+                <Divider orientation="horzital" />
+              </div>
+            ))}
           </div>
           {cartItems.length > 0 && (
             <>
@@ -257,46 +317,136 @@ const Bill = ({ product }) => {
             </>
           )}
         </div>
-
-        <div className="cart mt-10 w-full">
+      </div>
+      <div className="cart mt-10 w-full">
         <h2 className="bill-title font-semibold text-xl mb-5">
           List your orders
         </h2>
 
-        <Table>
+        {/* <Table>
           <TableHeader columns={columns}>
             {(column) => (
               <TableColumn key={column.key}>{column.label}</TableColumn>
             )}
           </TableHeader>
           <TableBody items={cartItems} emptyContent={"Bạn chưa đặt hàng!"}>
-            {listYourOrders?.filter((it) => it.status !== "pending").map((i, x) => {
-              return (
-                <TableRow key={x}>
-                  <TableCell>{x + 1}</TableCell>
-                  <TableCell>
+            {listYourOrders
+              ?.filter((it) => it.status !== "pending")
+              .map((i, x) => {
+                return (
+                  <TableRow key={x}>
+                    <TableCell>{x + 1}</TableCell>
+                    <TableCell>
+                      <Chip
+                        className="capitalize"
+                        color={statusColorMap[i?.status]}
+                        size="sm"
+                        variant="flat"
+                      >
+                        {i?.status}
+                      </Chip>
+                    </TableCell>
+                    <TableCell>
+                      {i?.created_at && new Date(i.created_at).toLocaleString()}
+                    </TableCell>
+                    <TableCell>${i?.total_price || 0}</TableCell>
+                  </TableRow>
+                );
+              })}
+          </TableBody>
+        </Table> */}
+        <div className="">
+          {listYourOrders
+            ?.filter((it) => it.status !== "pending")
+            .reverse()
+            .map((order, index) => (
+              <div key={index} className="mb-4 shadow-md p-4">
+                <div className="flex justify-end space-x-4">
+                  <div>
+                    {order.address.street !== ""
+                      ? order.address.street +
+                        ", " +
+                        order.address.city +
+                        ", " +
+                        order.address.state +
+                        ", " +
+                        order.address.country +
+                        " | "
+                      : ""}
+                  </div>
+                  <div>
+                    {/* <p className="uppercase">{order.status}</p> */}
                     <Chip
-                      className="capitalize"
-                      color={statusColorMap[i?.status]}
+                      className="uppercase"
+                      color={statusColorMap[order?.status]}
                       size="sm"
                       variant="flat"
                     >
-                      {i?.status}
+                      {order?.status}
                     </Chip>
-                  </TableCell>
-                  <TableCell>
-                    {i?.created_at && new Date(i.created_at).toLocaleString()}
-                  </TableCell>
-                  <TableCell>${i?.total_price || 0}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                  </div>
+                </div>
+                {order?.items?.map((item, index) => (
+                  <div key={index} className="items-center gap-2 w-full">
+                    <div className="flex items-center gap-2 w-full p-2">
+                      <div className="flex items-center gap-2 w-full">
+                        <div
+                          className={`bg-cover bg-center rounded-xl w-20 h-20 cursor-pointer`}
+                          style={{
+                            backgroundImage: `url(${
+                              item?.product?.media
+                                ? getMedia(
+                                    item?.product?.product_id,
+                                    item?.product?.media[0]?.src
+                                  )
+                                : "src/assets/No_Image.png"
+                            })`,
+                          }}
+                        />
+                        <div>
+                          <a
+                            href={`/product/${item.product.product_id}`}
+                            className="font-medium text-foreground underline-offset-4 hover:underline hover:opacity-80 transition-opacity cursor-pointer"
+                          >
+                            {item.product.product_name}
+                          </a>
+                          {item?.product?.options.length > 0 && (
+                            <p className="text-sm">
+                              Variantion :
+                              {getOptionName(
+                                item?.product?.options,
+                                item.product.variants
+                              )}
+                            </p>
+                          )}
+                          <p className="font-medium text-foreground">
+                            $
+                            {getVariantPrice(
+                              item.product.variants,
+                              item.variant_product_id
+                            )}{" "}
+                            <span className="text-gray-400 font-normal">
+                              x {item.quantity}
+                            </span>{" "}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <Divider orientation="horzital" />
+                  </div>
+                ))}
+                <div className="flex justify-end mt-4">
+                  <div className="flex space-x-4 items-center">
+                    <p>Order Total:</p>
+                    <p className="text-xl font-semibold">
+                      ${order.total_price}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+        </div>
       </div>
-      </div>
-
-      
     </>
   );
 };

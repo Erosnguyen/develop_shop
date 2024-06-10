@@ -16,3 +16,7 @@ export const insertUser = (payload) => {
 export const deleteUser = (id) => {
   return axios.delete(API_PATH + '/accounts/' + id, );
 };
+
+export const getUserOrder = (id) => {
+  return axios.get(API_PATH + '/orders/' + id, { headers });
+}

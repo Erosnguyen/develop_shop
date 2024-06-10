@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { assets } from "../../assets/assets";
 import { StoreContext } from "../../context/StoreContext";
 import { Link } from "react-router-dom";
-import { getVariantPrice } from "../../lib/utils";
+import { getMedia, getVariantPrice } from "../../lib/utils";
 import { Button } from "@nextui-org/react";
 import { AddIcon } from "../../assets/AddIcon";
 
@@ -17,12 +17,6 @@ const FoodItem = (props) => {
     variants,
   } = props;
   const { handleClick, ...rest } = props;
-  const {
-    cartItems,
-    increaseCartQuantity,
-    decreaseCartQuantity,
-    getItemQuantity,
-  } = useContext(StoreContext);
 
   const [quantity, setQuantity] = useState(1);
 
@@ -53,11 +47,10 @@ const FoodItem = (props) => {
 
   //lấy giá tiền của variant theo màu, hình thức, kiểu
 
-  const priceProduct = getVariantPrice(
+  const priceProduct = 
+  getVariantPrice(
     variants,
-    options ? options[0]?.items[0]?.item_id : "",
-    options ? options[1]?.items[0]?.item_id : "",
-    options ? options[2]?.items[0]?.item_id : ""
+    variants?.[0],
   );
 
   const incrementQuantity = () => {
@@ -81,7 +74,7 @@ const FoodItem = (props) => {
           className={`bg-cover bg-center rounded-xl w-full h-80 md:h-40 lg:h-60 xl:h-80 2xl:h-80 hover:scale-105 transition-transform duration-300 ease-in-out cursor-pointer`}
           style={{
             backgroundImage: `url(${
-              media ? media[0]?.src : "/src/assets/No_Image.png"
+              media ? getMedia(product_id, media[0]?.src) : "/src/assets/No_Image.png"
             })`,
           }}
         ></div>

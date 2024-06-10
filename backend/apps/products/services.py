@@ -245,7 +245,7 @@ class ProductService:
                 "media_id": media.id,
                 "product_id": media.product_id,
                 "alt": media.alt,
-                "src": media.src,
+                "src": cls.__get_media_url(media.product_id, media.src),
                 "type": media.type,
                 "created_at": convert_to_string(media.created_at),
                 "updated_at": convert_to_string(media.updated_at),

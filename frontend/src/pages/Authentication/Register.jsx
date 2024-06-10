@@ -53,6 +53,7 @@ export const Register = () => {
         window.location.href = '/login';
       }
     } catch (error) {
+      toast.error("OTP không chính xác", error);
       console.log(error);
     }
   }

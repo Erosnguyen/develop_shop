@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ChangeCount from "./ChangeCount";
 import { StoreContext } from "../../context/StoreContext";
-import { getVariantPrice } from "../../lib/utils";
+import { getVariantPrice, getVariantPriceDetail } from "../../lib/utils";
 import { Button } from "@nextui-org/react";
 import { AddIcon } from "../../assets/AddIcon";
 import { toast } from "react-toastify";
@@ -50,7 +50,7 @@ const ProductDetailRight = ({ product }) => {
 
   //lấy giá tiền của variant theo màu, hình thức, kiểu
 
-  const priceProduct = getVariantPrice(
+  const priceProduct = getVariantPriceDetail(
     variants,
     checkedVariant.option1,
     checkedVariant.option2,
@@ -74,11 +74,11 @@ const ProductDetailRight = ({ product }) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-[30px] font-medium">{product.product_name}</div>
+      <div className="text-[30px] font-medium">{product?.product_name}</div>
       <div className="divide-solid text-amber-700 text-[25px] font-medium">
         ${priceProduct}
       </div>
-      <div className="text-sm line-clamp-3 font-normal text-gray-400">{product.description}</div>
+      <div className="text-sm line-clamp-3 font-normal text-gray-400">{product?.description}</div>
       <div className="flex flex-col gap-2">
         {options?.map((option, idx) => (
           <div className="flex gap-4 flex-wrap " key={option.options_id}>

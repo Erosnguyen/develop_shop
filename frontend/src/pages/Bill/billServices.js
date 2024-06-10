@@ -39,3 +39,11 @@ export const handleGetProductDetails = async(variant_id) => {
     console.error(error);
   }
 }
+
+export const handleDeleteOrder = (order_id) => {
+  return axiosCuston.delete(API_PATH + `/${order_id}`, config);
+}
+
+export const handleGuestOrder = async (payload) => {
+  return axiosCuston.post(baseURL + "/guest_order", payload);
+}
