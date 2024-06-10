@@ -26,45 +26,23 @@ export default function ManageOrdersDialog(props) {
   const [state, setState] = useState({});
   const [productsList, setProductsList] = useState([]);
 
-  const steps = ['Pending', 'Processing', 'Shipped', 'Delivered'];
+  const steps = ['Processing', 'Shipped', 'Delivered'];
 
   const handleChange = (e) => {
     let { name, value } = e.target;
     setState((pre) => ({ ...pre, [name]: value }));
   };
-
-  const getProductNameById = async (idPro) => {
-    try {
-      const res = await getProductById(idPro);
-      setProductsList((pre) => [
-        ...pre, res?.data?.product
-      ]);
-
-        // setProductsList(res?.data?.product?.product_name)
-    } catch (error) {
-      console.error(`Failed to get product name by id: ${error}`);
-      return null;
-    }
-  }
-
-  useEffect(() => {
-    async function fetchProductNames() {
-      const names = await Promise.all(item?.items?.map(async (item) => {
-        const productData = await getProductNameById(item?.item_id);
-      }));
-    }
-  
-    fetchProductNames();
-  }, [item?.items]);
-  
-
   useEffect(() => {
     setState({
       ...item,
     });
   }, [item]);
 
-  console.log(productsList);
+  const handleCancle = () => {
+    
+  }
+
+  console.log(item);
   return (
     <>
       <Dialog
@@ -80,11 +58,17 @@ export default function ManageOrdersDialog(props) {
           },
         }}
       >
-        <DialogTitle>Chi tiết đơn hàng</DialogTitle>
+        <DialogTitle>Order Infomation</DialogTitle>
         <DialogContent>
           <Grid container spacing={4}>
             <Grid item xs={12}>
-              <Stepper activeStep={0} alternativeLabel>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                <p>Address: {item?.address?.city !== "" && item?.address?.street + ", " + item?.address?.city + ", " + item?.address?.state + ", "+ item?.address?.country || "N/A"}</p>
+                <Button size='sm' color="error">Cancle</Button>
+              </div>
+            </Grid>
+            <Grid item xs={12}>
+              <Stepper activeStep={item.status == "shipped" && 1 || item.status == "delivered" && 2 || 0} alternativeLabel>
                 {steps.map((label) => (
                   <Step key={label}>
                     <StepLabel>{label}</StepLabel>
@@ -109,17 +93,24 @@ export default function ManageOrdersDialog(props) {
                       <TableRow>
                         <TableCell>{index + 1}</TableCell>
                         <TableCell align="center">
-                          {productsList[index]?.product_name}
+                          {item?.product.product_name}
                         </TableCell>
                         <TableCell align="center">{item?.quantity}</TableCell>
                         <TableCell align="right">
-                        ${productsList[index]?.variants[0]?.price}
+                        ${item?.product.variants[0].price}
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </TableContainer>
+            </Grid>
+            <Grid item xs={12} style={{ textAlign: 'right' }}>
+              <div>
+                
+                <p>Total: ${item.total_price}</p>
+              </div>
+              
             </Grid>
           </Grid>
         </DialogContent>

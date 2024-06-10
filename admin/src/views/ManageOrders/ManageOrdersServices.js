@@ -8,3 +8,7 @@ export const getListOrders = () => {
 export const getProductById = (id) => {
   return axios.get(API_PATH + '/products/' + id);
 };
+
+export const getCustomerById = (id) => {
+  return axios.get(API_PATH + '/accounts/' + id);
+}

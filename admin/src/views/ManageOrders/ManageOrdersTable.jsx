@@ -11,6 +11,7 @@ import {
     Chip
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import CustomerName from './CustomerName';
 
 function ManageOrdersTable(props) {
     let {
@@ -47,17 +48,17 @@ function ManageOrdersTable(props) {
                             </TableCell>
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600} color={"white"}>
-                                    Customer id
+                                    Customer
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600} color={"white"}>
+                                    Address
                                 </Typography>
                             </TableCell>
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600} color={"white"}>
                                     Status
-                                </Typography>
-                            </TableCell>
-                            <TableCell>
-                                <Typography variant="subtitle2" fontWeight={600} color={"white"}>
-                                    Created at
                                 </Typography>
                             </TableCell>
                             <TableCell>
@@ -73,26 +74,28 @@ function ManageOrdersTable(props) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data?.map((product, index) => (
+                        {data?.filter((order) => order.status !== "pending").map((product, index) => (
                             <TableRow key={product.name}>
                                 
                                 <TableCell>
                                     <Typography variant="subtitle2">
-                                        {product?.id}
+                                        {product?.order_id}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="subtitle2">
-                                        {product?.customer_id}
+                                        {
+                                            <CustomerName customerId={product?.customer_id} />
+                                        }
                                     </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Chip label={product?.status} size='small' color={product?.status === "pending" ? "warning" : "success"} />
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="subtitle2">
-                                        {product?.created_at}
+                                        {product?.address?.city !== "" && product?.address?.street + ", " + product?.address?.city + ", " + product?.address?.state + ", "+ product?.address?.country || "N/A"}
                                     </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Chip label={product?.status} size='small' color={product?.status === "processing" ? "warning" : "success"} />
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="subtitle2">
