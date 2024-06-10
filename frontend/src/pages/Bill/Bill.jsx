@@ -282,7 +282,17 @@ const Bill = ({ product }) => {
                     >
                       {item.product.product_name}
                     </a>
-                    <p></p>
+                    <p>
+                      {item?.product?.options.length > 0 && (
+                        <p className="text-sm">
+                          Variantion :
+                          {getOptionName(
+                            item?.product?.options,
+                            item.product.variants
+                          )}
+                        </p>
+                      )}
+                    </p>
                     <p className="font-medium text-foreground">
                       $
                       {getVariantPrice(

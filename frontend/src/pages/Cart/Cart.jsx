@@ -22,6 +22,7 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
+  Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure
 } from "@nextui-org/react";
 import { SelectVariant } from "../../components/Cart/SelectVariant";
 
@@ -36,6 +37,7 @@ const Cart = () => {
   const [listYourOrders, setListYourOrders] = useState([]);
   const [product, setProduct] = useState([]);
   const [productId, setProductId] = useState([]);
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
   const columns = [
     {
@@ -96,6 +98,12 @@ const Cart = () => {
     };
   };
 
+  const handleDeleteCart = (data, checkedVariant) => {
+    return () => {
+      removeFromCart(data, checkedVariant);
+    };
+  };
+
   // useEffect(() => {
   //   handleGetOrder();
   // }, []);
@@ -115,6 +123,28 @@ const Cart = () => {
 
   return (
     <div className="cart mt-10 w-full">
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Confirm Delete</ModalHeader>
+              <ModalBody>
+                <p> 
+                  Are you sure you want to delete this item?
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button color="danger" onPress={onClose} onClick={handleDeleteCart()}>
+                  Delete
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
       <Table selectionMode="multiple">
         <TableHeader columns={columns}>
           {(column) => (
@@ -286,6 +316,7 @@ const Cart = () => {
                         onClick={() =>
                           removeFromCart(item?.data, item?.variant_product_id)
                         }
+                        // onPress={onOpen}
                         isIconOnly
                         color="light"
                       >
