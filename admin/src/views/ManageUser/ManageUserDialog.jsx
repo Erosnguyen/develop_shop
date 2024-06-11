@@ -8,9 +8,7 @@ import Grid from '@mui/material/Grid';
 import { useEffect, useState } from 'react';
 import { insertUser, updateGenre } from './ManageUserServices';
 import { Select, MenuItem } from '@mui/material';
-import { to } from 'react-spring';
 import { toast } from 'react-toastify';
-import { getUserOrder } from './ManageUserServices';
 
 export default function OrderDialog(props) {
     let {
@@ -19,7 +17,6 @@ export default function OrderDialog(props) {
         handleClose
     } = props;
     const [state, setState] = useState({});
-    const [order, setOrder] = useState([]);
 
     const handleChange = (e) => {
         let { name, value } = e.target;
@@ -64,19 +61,8 @@ export default function OrderDialog(props) {
         setState({
             ...item?.user
         })
-        // getOrder()
     }, [item])
 
-    // const getOrder = async () => {
-    //     try {
-    //         const res = await getUserOrder(state?.user_id);
-    //         setOrder(res?.data?.data)
-    //     } catch (error) {
-    //         toast.error("Lỗi lấy dữ liệu")
-    //     }
-    // }
-
-    console.log(order)
     return (
         <>
             <Dialog
@@ -99,6 +85,7 @@ export default function OrderDialog(props) {
                             <TextField
                                 autoFocus
                                 required
+                                disabled={state?.user_id ? true : false}
                                 margin="dense"
                                 name="email"
                                 label="Email"
@@ -141,6 +128,7 @@ export default function OrderDialog(props) {
                                 margin="dense"
                                 name="first_name"
                                 label="First Name"
+                                disabled
                                 fullWidth
                                 variant="standard"
                                 value={state?.first_name || ""}
@@ -156,6 +144,7 @@ export default function OrderDialog(props) {
                                 margin="dense"
                                 name="last_name"
                                 label="Last Name"
+                                disabled
                                 fullWidth
                                 variant="standard"
                                 value={state?.last_name || ""}
@@ -164,7 +153,7 @@ export default function OrderDialog(props) {
                         </Grid>
                         }
                         <Grid item md={12} sm={12} xs={12}>
-                            <Select sx={{ minWidth: 100}} name="role" value={state?.role || ""} onChange={(e) => handleChange(e)}>
+                            <Select disabled={state?.user_id ? true : false} sx={{ minWidth: 100}} name="role" value={state?.role || ""} onChange={(e) => handleChange(e)}>
                                 <MenuItem value="admin">Admin</MenuItem>
                                 <MenuItem value="user">User</MenuItem>
                             </Select>

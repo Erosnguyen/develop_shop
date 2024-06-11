@@ -113,10 +113,10 @@ export default function ManageFoodDialog(props) {
       const dataSubmitUpdate = convertDataUpdate(state);
       if (state?.product_id) {
         await updateProduct(state?.product_id, dataSubmitUpdate);
-        if (updatedImage) {
+        if (imageData.length > 0) {
           const formData = new FormData();
 
-          formData.append('x_files', updatedImage);
+          formData.append('x_files', imageData[0].file);
 
           await addProductImage(state?.product_id, formData);
           toast.success('Cập nhật thành công');

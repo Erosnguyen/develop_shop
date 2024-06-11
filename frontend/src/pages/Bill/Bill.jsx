@@ -62,13 +62,6 @@ const Bill = ({ product }) => {
     pending: "warning",
   };
 
-  // const updateVariant = (optionName, itemId) => {
-  //   setCheckedVariant((prevVariant) => ({
-  //     ...prevVariant,
-  //     [optionName]: itemId,
-  //   }));
-  // };
-
   const handlePriceProduct = (item) => {
     return getVariantPrice(
       item?.product?.variants,
@@ -119,10 +112,10 @@ const Bill = ({ product }) => {
         if (isUser) {
           // xoá order cũ với status pending
           const listOrderPending = listYourOrders.filter(
-            (it) => it.status === "pending"
+            (it) => it?.status === "pending"
           );
           listOrderPending.forEach((it) => {
-            handleDeleteOrder(it.order_id);
+            handleDeleteOrder(it?.order_id);
           });
           // thêm order mới
           const convertData = {
@@ -134,16 +127,21 @@ const Bill = ({ product }) => {
               city: state?.city || "",
               state: state?.state || "",
               country: state?.country || "",
+              phone: state?.phone || "",
             },
           };
+          console.log(convertData)
           await handleAddOrder(convertData);
-          // xoá cart
+          // xoá những sản phẩm mua trong cart
+          // await selectedProduct.forEach((it) => {
+          //   handleDeleteProductInCart(it.product_id, it.variant_product_id);
+          // });
           localStorage.removeItem("cartItems");
           // Lấy lại order
           handleGetUserOrder();
           //Update status
           const order = listYourOrders.filter((it) => it.status === "pending");
-          await handleProcessingOrder(order[0].order_id);
+          await handleProcessingOrder(order[0]?.order_id);
           toast.success("Order successfully!");
           window.location = "/bill";
         } else {
@@ -154,6 +152,7 @@ const Bill = ({ product }) => {
               city: state?.city || "",
               state: state?.state || "",
               country: state?.country || "",
+              phone: state?.phone || "",
             },
             first_name: state?.first_name || "",
             last_name: state?.last_name || "",
@@ -221,6 +220,13 @@ const Bill = ({ product }) => {
                 />
               </>
             )}
+            <Input
+              onChange={handleChange}
+              isRequired
+              name="phone"
+              type="text"
+              label="Phone"
+            />
             <Input
               onChange={handleChange}
               isRequired
@@ -332,41 +338,8 @@ const Bill = ({ product }) => {
       </div>
       <div className="cart mt-10 w-full">
         <h2 className="bill-title font-semibold text-xl mb-5">
-          List your orders
+          Danh sách đơn hàng
         </h2>
-
-        {/* <Table>
-          <TableHeader columns={columns}>
-            {(column) => (
-              <TableColumn key={column.key}>{column.label}</TableColumn>
-            )}
-          </TableHeader>
-          <TableBody items={cartItems} emptyContent={"Bạn chưa đặt hàng!"}>
-            {listYourOrders
-              ?.filter((it) => it.status !== "pending")
-              .map((i, x) => {
-                return (
-                  <TableRow key={x}>
-                    <TableCell>{x + 1}</TableCell>
-                    <TableCell>
-                      <Chip
-                        className="capitalize"
-                        color={statusColorMap[i?.status]}
-                        size="sm"
-                        variant="flat"
-                      >
-                        {i?.status}
-                      </Chip>
-                    </TableCell>
-                    <TableCell>
-                      {i?.created_at && new Date(i.created_at).toLocaleString()}
-                    </TableCell>
-                    <TableCell>${i?.total_price || 0}</TableCell>
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table> */}
         <div className="">
           {listYourOrders
             ?.filter((it) => it.status !== "pending")
@@ -374,6 +347,9 @@ const Bill = ({ product }) => {
             .map((order, index) => (
               <div key={index} className="mb-4 shadow-md p-4">
                 <div className="flex justify-end space-x-4">
+                  <div>
+                    <p>{order?.address?.phone + " | "}</p>
+                  </div>
                   <div>
                     {order.address.street !== ""
                       ? order.address.street +
