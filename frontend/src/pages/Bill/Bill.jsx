@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
-import { getMedia, getOptionName, getVariantPrice } from "../../lib/utils";
+import { getMedia, getOptionName, getVariantPrice, getVariants } from "../../lib/utils";
 import {
   getUserOrder,
   handleAddOrder,
@@ -289,7 +289,8 @@ const Bill = ({ product }) => {
                           Variantion :
                           {getOptionName(
                             item?.product?.options,
-                            item?.product?.variants
+                            // item?.product?.variants
+                            [getVariants(item?.product?.variants, item.variant_product_id)]
                           )}
                         </p>
                       )}
