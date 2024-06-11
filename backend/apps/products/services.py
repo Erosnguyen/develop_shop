@@ -206,10 +206,10 @@ class ProductService:
             )
         if not product:
             return None
-    
+
         def convert_to_string(dt):
             return dt.strftime("%Y-%m-%d %H:%M:%S") if dt else None
-    
+
         variants = [
             {
                 "variant_id": v.id,
@@ -224,7 +224,7 @@ class ProductService:
             }
             for v in product.variants
         ]
-    
+
         options = [
             {
                 "options_id": option.id,
@@ -239,7 +239,7 @@ class ProductService:
             }
             for option in product.options
         ]
-    
+
         media = [
             {
                 "media_id": media.id,
@@ -252,7 +252,7 @@ class ProductService:
             }
             for media in product.media
         ]
-    
+
         return {
             "product_id": product.id,
             "product_name": product.product_name,
@@ -265,7 +265,7 @@ class ProductService:
             "variants": variants,  # Ensure this is a list of dictionaries
             "media": media,
         }
-    
+
     @classmethod
     def update_product(
         cls, product_id, product_data: dict, options: list = None, variants: list = None

@@ -1,4 +1,5 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, Numeric, String, func
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer, Numeric, String,
+                        func)
 from sqlalchemy.orm import relationship
 
 from config.database import FastModel
@@ -18,6 +19,7 @@ class Guest_Order(FastModel):
     address_city = Column(String(100), nullable=True)
     address_state = Column(String(100), nullable=True)
     address_country = Column(String(100), nullable=True)
+    address_phone = Column(String(20), nullable=True)
 
     items = relationship("Guest_OrderItem", back_populates="order")
 

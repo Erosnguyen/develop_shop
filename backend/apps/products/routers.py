@@ -28,18 +28,8 @@ Every time we create product, the media should be None, because the Media after 
 attached to it.
 """
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    File,
-    Form,
-    HTTPException,
-    Path,
-    Query,
-    Request,
-    UploadFile,
-    status,
-)
+from fastapi import (APIRouter, Depends, File, Form, HTTPException, Path,
+                     Query, Request, UploadFile, status)
 from fastapi.responses import JSONResponse
 
 from apps.accounts.services.permissions import Permission
