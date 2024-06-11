@@ -43,7 +43,7 @@ const ManageOrders = () => {
                 <ManageOrdersTable data={listitem} handleView={handleView} />
             </Card>
             {
-                open && <ManageOrdersDialog open={open} handleClose={handleClose} item={item}/>
+                open && <ManageOrdersDialog open={open} handleClose={handleClose} item={item} search={search}/>
             }
         </PageContainer>
     );

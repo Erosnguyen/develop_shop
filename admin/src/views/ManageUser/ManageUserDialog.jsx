@@ -64,17 +64,17 @@ export default function OrderDialog(props) {
         setState({
             ...item?.user
         })
-        getOrder()
+        // getOrder()
     }, [item])
 
-    const getOrder = async () => {
-        try {
-            const res = await getUserOrder(state?.user_id);
-            setOrder(res?.data?.data)
-        } catch (error) {
-            toast.error("Lỗi lấy dữ liệu")
-        }
-    }
+    // const getOrder = async () => {
+    //     try {
+    //         const res = await getUserOrder(state?.user_id);
+    //         setOrder(res?.data?.data)
+    //     } catch (error) {
+    //         toast.error("Lỗi lấy dữ liệu")
+    //     }
+    // }
 
     console.log(order)
     return (
@@ -92,7 +92,7 @@ export default function OrderDialog(props) {
                     },
                 }}
             >
-                <DialogTitle>Insert người dùng</DialogTitle>
+                <DialogTitle>{state?.user_id == null ? "Insert User" : "User Infomation"}</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
                         <Grid item md={12} sm={12} xs={12}>

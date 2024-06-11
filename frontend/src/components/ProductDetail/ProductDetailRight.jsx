@@ -7,11 +7,14 @@ import { Button } from "@nextui-org/react";
 import { AddIcon } from "../../assets/AddIcon";
 import { toast } from "react-toastify";
 import { AddCart } from "../../context/CartStoreContext";
+import { useNavigate } from "react-router-dom";
+import { AddToCartIcon } from "../../assets/AddToCartIcon";
 
 
 const ProductDetailRight = ({ product }) => {
   const variants = product?.variants;
   const options = product?.options;
+  const navigate = useNavigate();
 
   const [quantity, setQuantity] = useState(1);
 
@@ -23,6 +26,8 @@ const ProductDetailRight = ({ product }) => {
     decreaseCartQuantity,
     removeFromCart,
     addCart,
+    updateSelectedProductinCart,
+    chooseProduct
   } = useContext(StoreContext);
   const [checkedVariant, setCheckedVariant] = useState({
     option1: variants?.[0]?.option1,
@@ -70,6 +75,11 @@ const ProductDetailRight = ({ product }) => {
     addCart(product, checkedVariant, quantity);
   };
 
+  const handleBill = () => {
+    chooseProduct(product, checkedVariant, quantity);
+    navigate("/Bill");
+  }
+
   console.log(cartItems)
 
   return (
@@ -87,18 +97,18 @@ const ProductDetailRight = ({ product }) => {
               {option.items.map((item, index) => (
                 <Button
                   size="sm"
-                  variant={"solid"}
+                  variant={"flat"}
                   color={
                     item.item_id === checkedVariant.option1 ||
                     item.item_id === checkedVariant.option2 ||
                     item.item_id === checkedVariant.option3
-                    ? "amber" : "default"
+                    ? "warning" : "default"
                   }
                   className={`px-4 hover:border-amber-700 ${
                     item.item_id === checkedVariant.option1 ||
                     item.item_id === checkedVariant.option2 ||
                     item.item_id === checkedVariant.option3
-                      ? "text-white bg-amber"
+                      ? ""
                       : "text-gray-500 bg-gray-100"
                   }`}
                   key={item.item_id}
@@ -121,16 +131,19 @@ const ProductDetailRight = ({ product }) => {
       />
 
       <div className="">
-        <Link to="#">
-          <button
-            className="bg-amber text-white flex items-center space-x-2 px-6 py-3 rounded-lg hover:bg-amber-900"
-            // onClick={() => handleAddToCart()}
+        <div className="flex space-x-8 items-center">
+          <Button
+            color="warning"
+            variant="bordered"
+            startContent={<AddToCartIcon />}
             onClick={() => handleAddCart()}
           >
-            <AddIcon />
-            <p>Giỏ hàng</p>
-          </button>
-        </Link>
+            <p>Add to cart</p>
+          </Button>
+          <Button startContent={<AddIcon/>} color="warning" className="text-white" onPress={() => handleBill()}>
+            Buy Now
+          </Button>
+        </div>
       </div>
     </div>
   );

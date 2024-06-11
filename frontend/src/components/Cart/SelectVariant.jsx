@@ -4,16 +4,38 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@nextui-org/react";
-import React, {useState} from "react";
-import { getOptionName } from "../../lib/utils";
+import React, {useEffect, useState, useContext} from "react";
+import { getOptionName, getVariants } from "../../lib/utils";
+import { fetchApiConfig } from "../../config";
+import { StoreContext } from "../../context/StoreContext";
 
 export const SelectVariant = ({ item }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [variants, setVariants] = useState(item?.product?.variants);
     const [checkedVariant, setCheckedVariant] = useState({
         option1: item?.product?.variants[0]?.option1,
         option2: item?.product?.variants[0]?.option2,
         option3: item?.product?.variants[0]?.option3,
     })
+
+    const {
+      updateOption,
+    } = useContext(StoreContext);
+
+    useEffect(() => {
+        getProductDetail(item?.product.product_id);
+    }, []);
+    
+    const getProductDetail = async(product_id) => {
+      try {
+        const res = await fetchApiConfig(`products/${product_id}`)
+        setVariants(res.product.variants);
+        // console.log(res.product.variants)
+      } catch (error) {
+        console.log(error)
+      }
+        
+    }
 
     const handleCancel = () => {
         setIsOpen(false);
@@ -25,6 +47,7 @@ export const SelectVariant = ({ item }) => {
     }
 
     const handleApply = () => {
+        updateOption(variants, checkedVariant, item?.variant_product_id);
         setIsOpen(false);
     }
 
@@ -40,13 +63,13 @@ export const SelectVariant = ({ item }) => {
       };
 
 
-//   console.log(checkedVariant);
+  // console.log(variants);
   return (
     <>
       <Popover isOpen={isOpen} onOpenChange={(open) => setIsOpen(open)} placement="bottom">
         <PopoverTrigger>
           <Button variant="light" size="sm" color="default">
-            {getOptionName(item?.product?.options, item?.product?.variants)}
+            {getOptionName(item?.product?.options, [getVariants(item?.product?.variants, item.variant_product_id)])}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

@@ -14,9 +14,10 @@ import {
 } from './ManageFoodServices';
 import { toast } from 'react-toastify';
 import { IconTrash } from '@tabler/icons';
-import { Avatar, ImageList, ImageListItem } from '@mui/material';
+import { Avatar, FormControl, ImageList, ImageListItem, InputLabel, Select, MenuItem } from '@mui/material';
 import { RemoveCircle } from '@mui/icons-material';
 import './ManageFood.css';
+import { getMedia } from 'src/utils/utils';
 
 export default function ManageFoodDialog(props) {
   let { open, item, search, handleClose } = props;
@@ -336,7 +337,7 @@ export default function ManageFoodDialog(props) {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
+              {/* <TextField
                 required
                 margin="dense"
                 name="status"
@@ -345,7 +346,20 @@ export default function ManageFoodDialog(props) {
                 variant="standard"
                 value={state?.status}
                 onChange={(e) => handleChange(e.target.value, 'status')}
-              />
+              /> */}
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Status</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={state?.status}
+                  label="Status"
+                  onChange={(e) => handleChange(e.target.value, 'status')}
+                >
+                  <MenuItem key={"active"} value={'active'}>Active</MenuItem>
+                  <MenuItem key={"inactive"} value={'inactive'}>Inactive</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -398,7 +412,7 @@ export default function ManageFoodDialog(props) {
                 </Grid>
                 {i?.items?.map((item) => {
                   return (
-                    <Grid item md={10} sm={10} xs={10} sx={{ display: 'flex' }}>
+                    <Grid item md={10} sm={10} xs={10} sx={{ display: 'flex', marginLeft: '40px', marginRight: '10px' }}>
                       <TextField
                         disabled={state?.product_id}
                         required
@@ -448,13 +462,13 @@ export default function ManageFoodDialog(props) {
                   <ImageListItem key={x} sx={{ position: 'relative' }}>
                     <img
                       srcSet={`${item.src}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                      src={`${item.src}?w=164&h=164&fit=crop&auto=format`}
+                      src={`${getMedia(state.product_id, item.src)}?w=164&h=164&fit=crop&auto=format`}
                       alt={item.alt}
                       loading="lazy"
                     />
                     <div
                       onClick={() => handleRemove(item?.media_id)}
-                      style={{ position: 'absolute', top: 5, right: 5, color: 'red' }}
+                      style={{ position: 'absolute', top: 5, right: 5, color: 'red', cursor: 'pointer' }}
                     >
                       <RemoveCircle />
                     </div>
