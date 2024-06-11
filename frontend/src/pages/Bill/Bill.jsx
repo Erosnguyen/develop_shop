@@ -1,6 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
-import { getMedia, getOptionName, getVariantPrice, getVariants } from "../../lib/utils";
+import {
+  getMedia,
+  getOptionName,
+  getVariantPrice,
+  getVariants,
+} from "../../lib/utils";
 import {
   getUserOrder,
   handleAddOrder,
@@ -41,6 +46,7 @@ const Bill = ({ product }) => {
     removeFromCart,
     increaseCartQuantity,
     decreaseCartQuantity,
+    stateBill,
   } = useContext(StoreContext);
 
   const handleDeleteProductInCart = (data, checkedVariant) => {
@@ -110,40 +116,70 @@ const Bill = ({ product }) => {
         return;
       } else {
         if (isUser) {
-          // xoá order cũ với status pending
-          const listOrderPending = listYourOrders.filter(
-            (it) => it?.status === "pending"
-          );
-          listOrderPending.forEach((it) => {
-            handleDeleteOrder(it?.order_id);
-          });
-          // thêm order mới
-          const convertData = {
-            order: {
-              items: selectedProduct,
-            },
-            address: {
-              street: state?.street || "",
-              city: state?.city || "",
-              state: state?.state || "",
-              country: state?.country || "",
-              phone: state?.phone || "",
-            },
-          };
-          console.log(convertData)
-          await handleAddOrder(convertData);
-          // xoá những sản phẩm mua trong cart
-          // await selectedProduct.forEach((it) => {
-          //   handleDeleteProductInCart(it.product_id, it.variant_product_id);
-          // });
-          localStorage.removeItem("cartItems");
-          // Lấy lại order
-          handleGetUserOrder();
-          //Update status
-          const order = listYourOrders.filter((it) => it.status === "pending");
-          await handleProcessingOrder(order[0]?.order_id);
-          toast.success("Order successfully!");
-          window.location = "/bill";
+          if (stateBill === "buynow") {
+            const convertData = {
+              order: {
+                items: selectedProduct,
+              },
+              address: {
+                street: state?.street || "",
+                city: state?.city || "",
+                state: state?.state || "",
+                country: state?.country || "",
+                phone: state?.phone || "",
+              },
+            };
+            console.log(convertData);
+            await handleAddOrder(convertData);
+            // Lấy lại order
+            await handleGetUserOrder();
+            //Update status
+            const order = listYourOrders.filter(
+              (it) => it.status === "pending"
+            ).reverse();
+            await handleProcessingOrder(order[0]?.order_id);
+            toast.success("Order successfully!");
+            window.location = "/bill";
+          } else {
+            // xoá những sản phẩm mua trong cart
+            await selectedProduct.forEach((it) => {
+              handleDeleteProductInCart(it.product_id, it.variant_product_id);
+            });
+            // localStorage.removeItem("cartItems");
+            // xoá order cũ với status pending
+            const listOrderPending = listYourOrders.filter(
+              (it) => it?.status === "pending"
+            );
+            await listOrderPending.forEach((it) => {
+              handleDeleteOrder(it?.order_id);
+            });
+            
+            // thêm order mới
+            const convertData = {
+              order: {
+                items: selectedProduct,
+              },
+              address: {
+                street: state?.street || "",
+                city: state?.city || "",
+                state: state?.state || "",
+                country: state?.country || "",
+                phone: state?.phone || "",
+              },
+            };
+            console.log(convertData);
+            await handleAddOrder(convertData);
+            
+            // Lấy lại order
+            await handleGetUserOrder();
+            //Update status
+            const order = listYourOrders.filter(
+              (it) => it.status === "pending"
+            ).reverse();
+            await handleProcessingOrder(order[0]?.order_id);
+            toast.success("Order successfully!");
+            window.location = "/bill";
+          }
         } else {
           const convertData = {
             items: selectedProduct,
@@ -184,7 +220,7 @@ const Bill = ({ product }) => {
     handleGetUserOrder();
   }, []);
 
-  console.log(selectedProduct);
+  console.log(listYourOrders);
 
   return (
     <>
@@ -296,7 +332,12 @@ const Bill = ({ product }) => {
                           {getOptionName(
                             item?.product?.options,
                             // item?.product?.variants
-                            [getVariants(item?.product?.variants, item.variant_product_id)]
+                            [
+                              getVariants(
+                                item?.product?.variants,
+                                item.variant_product_id
+                              ),
+                            ]
                           )}
                         </p>
                       )}

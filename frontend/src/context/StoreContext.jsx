@@ -8,6 +8,7 @@ export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
   const [products, setProducts] = useState([]);
+  const [stateBill, setStateBill] = useState(null);
   const [cartItems, setCartItems] = useState(() => {
     const savedCartItems = localStorage.getItem("cartItems");
     return savedCartItems ? JSON.parse(savedCartItems) : [];
@@ -177,8 +178,6 @@ const StoreContextProvider = (props) => {
     });
   }
 
-
-
   useEffect(() => {
     // code to run when the component mounts
     const getProducts = async () => {
@@ -212,6 +211,10 @@ const StoreContextProvider = (props) => {
     setSelectedProduct([product]);
   }
 
+  const handleSetStateBill = (data) => {
+    setStateBill(data);
+  }
+
   console.log(selectedProduct)
 
   return (
@@ -228,7 +231,9 @@ const StoreContextProvider = (props) => {
         updateOption,
         selectedProduct,
         updateSelectedProductinCart,
-        chooseProduct
+        chooseProduct,
+        stateBill,
+        handleSetStateBill,
       }}
     >
       {props.children}
