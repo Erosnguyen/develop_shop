@@ -60,6 +60,7 @@ class AddressSchema(BaseModel):
     city: str
     state: str
     country: str
+    phone: Optional[str] = None
 
 
 class OrderItemSchema(BaseModel):

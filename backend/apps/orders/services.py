@@ -7,17 +7,10 @@ from apps.orders.models import Order, OrderItem
 from apps.products.services import ProductService
 from config.database import DatabaseManager
 
-from .schemas import (
-    AddressSchema,
-    OrderItemSchema,
-    OrderSchema,
-    OrderUpdateSchema,
-    ProductMediaSchema,
-    ProductOptionItemSchema,
-    ProductOptionSchema,
-    ProductSchema,
-    ProductVariantSchema,
-)
+from .schemas import (AddressSchema, OrderItemSchema, OrderSchema,
+                      OrderUpdateSchema, ProductMediaSchema,
+                      ProductOptionItemSchema, ProductOptionSchema,
+                      ProductSchema, ProductVariantSchema)
 
 
 class OrderService:
@@ -48,6 +41,7 @@ class OrderService:
                 address_city=address.city,
                 address_state=address.state,
                 address_country=address.country,
+                address_phone=address.phone,
             )
             session.add(order)
             session.flush()
@@ -182,6 +176,7 @@ class OrderService:
                 city=order.address_city,
                 state=order.address_state,
                 country=order.address_country,
+                phone=order.address_phone,
             ),
             items=items_with_product,
         )
