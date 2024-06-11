@@ -1,4 +1,5 @@
 from typing import List, Optional
+
 from pydantic import BaseModel
 
 
@@ -59,6 +60,7 @@ class GuestAddressSchema(BaseModel):
     city: str
     state: str
     country: str
+    phone: Optional[str] = None
 
 
 class GuestOrderCreateSchema(BaseModel):

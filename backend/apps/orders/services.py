@@ -7,17 +7,10 @@ from apps.orders.models import Order, OrderItem
 from apps.products.services import ProductService
 from config.database import DatabaseManager
 
-from .schemas import (
-    AddressSchema,
-    OrderItemSchema,
-    OrderSchema,
-    OrderUpdateSchema,
-    ProductMediaSchema,
-    ProductOptionItemSchema,
-    ProductOptionSchema,
-    ProductSchema,
-    ProductVariantSchema,
-)
+from .schemas import (AddressSchema, OrderItemSchema, OrderSchema,
+                      OrderUpdateSchema, ProductMediaSchema,
+                      ProductOptionItemSchema, ProductOptionSchema,
+                      ProductSchema, ProductVariantSchema)
 
 
 class OrderService:
@@ -48,6 +41,7 @@ class OrderService:
                 address_city=address.city,
                 address_state=address.state,
                 address_country=address.country,
+                address_phone=address.phone,
             )
             session.add(order)
             session.flush()
@@ -119,7 +113,7 @@ class OrderService:
                     media_id=media.id,
                     product_id=media.product_id,
                     alt=media.alt,
-                    src=media.src,
+                    src=ProductService.__get_media_url(media.product_id, media.src),
                     type=media.type,
                     created_at=media.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                     updated_at=(
@@ -182,6 +176,7 @@ class OrderService:
                 city=order.address_city,
                 state=order.address_state,
                 country=order.address_country,
+                phone=order.address_phone,
             ),
             items=items_with_product,
         )

@@ -1,4 +1,5 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, Numeric, String, func
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer, Numeric, String,
+                        func)
 from sqlalchemy.orm import relationship
 
 from apps.accounts.models import User
@@ -17,6 +18,7 @@ class Order(FastModel):
     address_city = Column(String(100), nullable=True)
     address_state = Column(String(100), nullable=True)
     address_country = Column(String(100), nullable=True)
+    address_phone = Column(String(20), nullable=True)
 
     items = relationship("OrderItem", back_populates="order")
 

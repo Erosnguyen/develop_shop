@@ -1,20 +1,15 @@
 import logging
-from typing import List
 from contextlib import contextmanager
+from typing import List
+
 from apps.products.services import ProductService
 from config.database import DatabaseManager
+
 from .models import Guest_Order, Guest_OrderItem
-from .schemas import (
-    GuestAddressSchema,
-    GuestOrderCreateSchema,
-    GuestOrderItemSchema,
-    GuestOrderSchema,
-    ProductSchema,
-    ProductVariantSchema,
-    ProductMediaSchema,
-    ProductOptionSchema,
-    ProductOptionItemSchema,
-)
+from .schemas import (GuestAddressSchema, GuestOrderCreateSchema,
+                      GuestOrderItemSchema, GuestOrderSchema,
+                      ProductMediaSchema, ProductOptionItemSchema,
+                      ProductOptionSchema, ProductSchema, ProductVariantSchema)
 
 
 class GuestOrderService:
@@ -64,6 +59,7 @@ class GuestOrderService:
                 address_city=order_data.address.city,
                 address_state=order_data.address.state,
                 address_country=order_data.address.country,
+                address_phone=order_data.address.phone,
             )
             session.add(order)
             session.flush()
@@ -113,7 +109,7 @@ class GuestOrderService:
                     media_id=media.id,
                     product_id=media.product_id,
                     alt=media.alt,
-                    src=media.src,
+                    src=ProductService.__get_media_url(media.product_id, media.src),
                     type=media.type,
                     created_at=media.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                     updated_at=(
@@ -176,6 +172,12 @@ class GuestOrderService:
             first_name=order_data.first_name,
             last_name=order_data.last_name,
             email=order_data.email,
-            address=order_data.address,
+            address=GuestAddressSchema(
+                street=order_data.address.street,
+                city=order_data.address.city,
+                state=order_data.address.state,
+                country=order_data.address.country,
+                phone=order_data.address.phone,
+            ),
             items=items_with_product,
         )

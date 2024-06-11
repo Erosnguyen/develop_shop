@@ -4,7 +4,8 @@ from apps.accounts.services.authenticate import AccountService
 from apps.accounts.services.permissions import Permission
 from apps.accounts.services.user import User
 
-from .schemas import OrderCreateSchema, OrderItemSchema, OrderSchema, OrderUpdateSchema
+from .schemas import (OrderCreateSchema, OrderItemSchema, OrderSchema,
+                      OrderUpdateSchema)
 from .services import AddressSchema, OrderService
 
 router = APIRouter(prefix="/orders", tags=["Orders"])

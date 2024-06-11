@@ -5,7 +5,8 @@ from faker import Faker
 from faker.providers import lorem
 from fastapi import UploadFile
 
-from apps.demo.settings import DEMO_DOCS_DIR, DEMO_LARGE_DIR, DEMO_PRODUCTS_MEDIA_DIR
+from apps.demo.settings import (DEMO_DOCS_DIR, DEMO_LARGE_DIR,
+                                DEMO_PRODUCTS_MEDIA_DIR)
 from apps.products.models import Product
 from apps.products.services import ProductService
 
