@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Button, Input } from "@nextui-org/react";
+import { resendOTP } from "../../components/LoginPopup/loginServices";
 
-const OTPVerification = ({ onVerify }) => {
+const OTPVerification = ({ onVerify, onResend }) => {
   const [otp, setOtp] = useState("");
   const [otpInput, setOtpInput] = useState(new Array(6).fill(""));
+  const [waitTime, setWaitTime] = useState(0);
 
   const handleChange = (el, index) => {
     if (isNaN(el.value)) return false;
@@ -20,6 +22,27 @@ const OTPVerification = ({ onVerify }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     onVerify(otp);
+  };
+
+  const handleResend = () => {
+    if (waitTime > 0) return; // Nếu thời gian đợi còn lại, không làm gì cả
+  
+    onResend();
+  
+    // Bắt đầu đếm ngược 60 giây
+    setWaitTime(60);
+    const intervalId = setInterval(() => {
+      setWaitTime((time) => {
+        if (time <= 1) {
+          // Nếu thời gian đợi đã hết, dừng setInterval
+          clearInterval(intervalId);
+          return 0;
+        } else {
+          // Ngược lại, giảm thời gian đợi đi 1
+          return time - 1;
+        }
+      });
+    }, 1000);
   };
 
   return (
@@ -48,6 +71,14 @@ const OTPVerification = ({ onVerify }) => {
             <Button fullWidth color="warning" type="submit">Xác nhận</Button>
         </div>
       </form>
+      <div>
+          <p className="text-[15px] text-slate-500 mt-4">
+            Không nhận được mã OTP?{" "}
+            <button onClick={handleResend} disabled={waitTime > 0} className={waitTime == 0 ? "text-primary" : "text-foreground"}>
+              {waitTime > 0 ? `Gửi lại sau (${waitTime}s)` : 'Gửi lại'}
+            </button>
+          </p>
+        </div>
     </div>
   );
 };

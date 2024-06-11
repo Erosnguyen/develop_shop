@@ -104,6 +104,14 @@ export default function ManageFoodDialog(props) {
       product_name: value?.product_name,
       status: value?.status,
       description: value?.description,
+      options: state?.listOption?.map((option) => {
+        return {
+          option_name: option?.option_name,
+          items: option?.items?.map((item) => {
+            return item?.item_name;
+          }),
+        }
+      }),
     };
   };
 
@@ -277,6 +285,7 @@ export default function ManageFoodDialog(props) {
     });
   }, [item]);
 
+  // console.log(state)
   console.log(state)
 
   return (
@@ -352,7 +361,7 @@ export default function ManageFoodDialog(props) {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={state?.status}
+                  value={state?.status  || item?.status}
                   label="Status"
                   onChange={(e) => handleChange(e.target.value, 'status')}
                 >
@@ -374,9 +383,9 @@ export default function ManageFoodDialog(props) {
                 onChange={(e) => handleChange(e.target.value, 'description')}
               />
             </Grid>
-            {!state?.product_id && (
+            {(
               <Grid item xs={12}>
-                <Button variant="contained" size="small" onClick={() => handleAddOption()}>
+                <Button disabled={state?.options?.length >= 3} variant="contained" size="small" onClick={() => handleAddOption()}>
                   Add option
                 </Button>
               </Grid>
@@ -387,7 +396,7 @@ export default function ManageFoodDialog(props) {
               <Grid container spacing={2}>
                 <Grid item md={11} sm={11} xs={11} sx={{ mt: 1 }}>
                   <TextField
-                    disabled={state?.product_id}
+                    // disabled={state?.product_id}
                     required
                     margin="dense"
                     name="option_name"
@@ -399,7 +408,7 @@ export default function ManageFoodDialog(props) {
                   />
                 </Grid>
                 <Grid item md={1} sm={1} xs={1}>
-                  {!state?.product_id && (
+                  {(
                     <Button
                       onClick={() => handleDeleteOption(i?.option_id)}
                       sx={{ minWidth: 0, mt: 3 }}
@@ -414,7 +423,7 @@ export default function ManageFoodDialog(props) {
                   return (
                     <Grid item md={10} sm={10} xs={10} sx={{ display: 'flex', marginLeft: '40px', marginRight: '10px' }}>
                       <TextField
-                        disabled={state?.product_id}
+                        // disabled={state?.product_id}
                         required
                         margin="dense"
                         name="item_name"
@@ -427,7 +436,7 @@ export default function ManageFoodDialog(props) {
                         }
                       />
 
-                      {!state?.product_id && (
+                      {(
                         <Button
                           onClick={() => handleDeleteOptionItem(item?.item_id)}
                           sx={{ minWidth: 0, mt: 3 }}
@@ -441,7 +450,7 @@ export default function ManageFoodDialog(props) {
                   );
                 })}
                 <Grid item md={2} sm={2} xs={2}>
-                  {!state?.product_id && (
+                  {(
                     <Button
                       sx={{ mt: 3 }}
                       variant="contained"
