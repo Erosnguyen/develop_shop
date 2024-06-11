@@ -113,7 +113,7 @@ class GuestOrderService:
                     media_id=media.id,
                     product_id=media.product_id,
                     alt=media.alt,
-                    src=media.src,
+                    src=ProductService.__get_media_url(media.product_id, media.src),
                     type=media.type,
                     created_at=media.created_at.strftime("%Y-%m-%d %H:%M:%S"),
                     updated_at=(
