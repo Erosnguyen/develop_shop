@@ -137,7 +137,10 @@ const Bill = ({ product }) => {
             },
           };
           await handleAddOrder(convertData);
-          // xoá cart
+          // xoá những sản phẩm mua trong cart
+          // await selectedProduct.forEach((it) => {
+          //   handleDeleteProductInCart(it.product_id, it.variant_product_id);
+          // });
           localStorage.removeItem("cartItems");
           // Lấy lại order
           handleGetUserOrder();
