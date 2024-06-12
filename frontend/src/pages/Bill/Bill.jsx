@@ -134,18 +134,13 @@ const Bill = ({ product }) => {
             // Lấy lại order
             await handleGetUserOrder();
             //Update status
-            const order = listYourOrders.filter(
-              (it) => it.status === "pending"
-            ).reverse();
+            const order = listYourOrders
+              .filter((it) => it.status === "pending")
+              .reverse();
             await handleProcessingOrder(order[0]?.order_id);
             toast.success("Order successfully!");
             window.location = "/bill";
           } else {
-            // xoá những sản phẩm mua trong cart
-            await selectedProduct.forEach((it) => {
-              handleDeleteProductInCart(it.product_id, it.variant_product_id);
-            });
-            // localStorage.removeItem("cartItems");
             // xoá order cũ với status pending
             const listOrderPending = listYourOrders.filter(
               (it) => it?.status === "pending"
@@ -153,7 +148,6 @@ const Bill = ({ product }) => {
             await listOrderPending.forEach((it) => {
               handleDeleteOrder(it?.order_id);
             });
-            
             // thêm order mới
             const convertData = {
               order: {
@@ -167,15 +161,18 @@ const Bill = ({ product }) => {
                 phone: state?.phone || "",
               },
             };
-            console.log(convertData);
             await handleAddOrder(convertData);
-            
+            // xoá những sản phẩm mua trong cart
+            // await selectedProduct.forEach((it) => {
+            //   handleDeleteProductInCart(it.product_id, it.variant_product_id);
+            // });
+            localStorage.removeItem("cartItems");
             // Lấy lại order
             await handleGetUserOrder();
             //Update status
             const order = listYourOrders.filter(
               (it) => it.status === "pending"
-            ).reverse();
+            );
             await handleProcessingOrder(order[0]?.order_id);
             toast.success("Order successfully!");
             window.location = "/bill";
