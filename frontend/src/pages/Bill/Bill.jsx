@@ -84,24 +84,15 @@ const Bill = ({ product }) => {
     return total.toFixed(2);
   };
 
-  const columns = [
-    {
-      key: "id",
-      label: "STT",
-    },
-    {
-      key: "status",
-      label: "Status",
-    },
-    {
-      key: "created_at",
-      label: "Time Ordered",
-    },
-    {
-      key: "total_price",
-      label: "Total Price",
-    },
-  ];
+  const handleGetUserOrder = async () => {
+    try {
+      if (!isUser) return;
+      const data = await getUserOrder();
+      setListYourOrders(data?.data || []);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleOrder = async (e) => {
     e.preventDefault();
@@ -129,25 +120,19 @@ const Bill = ({ product }) => {
                 phone: state?.phone || "",
               },
             };
-            console.log(convertData);
-            await handleAddOrder(convertData);
-            // Lấy lại order
-            await handleGetUserOrder();
-            //Update status
-            const order = listYourOrders
-              .filter((it) => it.status === "pending")
-              .reverse();
-            await handleProcessingOrder(order[0]?.order_id);
+            const newOrder = await handleAddOrder(convertData);
+            await handleProcessingOrder(newOrder.data.order_id);
             toast.success("Order successfully!");
-            window.location = "/bill";
+            handleGetUserOrder()
           } else {
+
             // xoá order cũ với status pending
-            const listOrderPending = listYourOrders.filter(
-              (it) => it?.status === "pending"
-            );
-            await listOrderPending.forEach((it) => {
-              handleDeleteOrder(it?.order_id);
-            });
+            // const listOrderPending = listYourOrders.filter(
+            //   (it) => it?.status === "pending"
+            // );
+            // await listOrderPending.forEach((it) => {
+            //   handleDeleteOrder(it?.order_id);
+            // });
             // thêm order mới
             const convertData = {
               order: {
@@ -161,21 +146,16 @@ const Bill = ({ product }) => {
                 phone: state?.phone || "",
               },
             };
-            await handleAddOrder(convertData);
+            const newOrder = await handleAddOrder(convertData);
+            await handleProcessingOrder(newOrder.data.order_id);
             // xoá những sản phẩm mua trong cart
-            // await selectedProduct.forEach((it) => {
-            //   handleDeleteProductInCart(it.product_id, it.variant_product_id);
-            // });
-            localStorage.removeItem("cartItems");
-            // Lấy lại order
-            await handleGetUserOrder();
-            //Update status
-            const order = listYourOrders.filter(
-              (it) => it.status === "pending"
-            );
-            await handleProcessingOrder(order[0]?.order_id);
+            await selectedProduct.forEach((it) => {
+              handleDeleteProductInCart(it.product_id, it.variant_product_id);
+            });
+            // localStorage.removeItem("cartItems");
             toast.success("Order successfully!");
-            window.location = "/bill";
+            handleGetUserOrder()
+            // window.location = "/bill";
           }
         } else {
           const convertData = {
@@ -199,16 +179,6 @@ const Bill = ({ product }) => {
       }
     } catch (error) {
       toast.error("Order failed!");
-      console.log(error);
-    }
-  };
-
-  const handleGetUserOrder = async () => {
-    try {
-      if (!isUser) return;
-      const data = await getUserOrder();
-      setListYourOrders(data?.data || []);
-    } catch (error) {
       console.log(error);
     }
   };

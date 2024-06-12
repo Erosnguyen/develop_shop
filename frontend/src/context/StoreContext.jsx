@@ -133,6 +133,9 @@ const StoreContextProvider = (props) => {
     });
   }
 
+  //remove selectedProduct from cart
+  
+
   function addCart(data, checkedVariant, quantity) {
     setCartItems((currItems) => {
       let updatedCartItems;
@@ -247,7 +250,7 @@ const StoreContextProvider = (props) => {
         updateSelectedProductinCart,
         chooseProduct,
         stateBill,
-        handleSetStateBill,
+        handleSetStateBill
       }}
     >
       {props.children}
