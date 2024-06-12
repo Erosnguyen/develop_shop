@@ -209,6 +209,10 @@ const StoreContextProvider = (props) => {
 
   //Choose product in selected product
   const chooseProduct = (data, checkedVariant, quantity) => {
+    if (data == null) {
+      setSelectedProduct([]);
+      return;
+    }
     // Thêm mới sản phẩm vào selectedProdct , thay thế select product chỉ có đúng 1 sản phẩm đó
     const product = {
       variant_product_id: getVariantId(data?.variants, checkedVariant),

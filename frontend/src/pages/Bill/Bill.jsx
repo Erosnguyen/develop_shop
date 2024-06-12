@@ -47,6 +47,7 @@ const Bill = ({ product }) => {
     increaseCartQuantity,
     decreaseCartQuantity,
     stateBill,
+    chooseProduct
   } = useContext(StoreContext);
 
   const handleDeleteProductInCart = (data, checkedVariant) => {
@@ -124,6 +125,7 @@ const Bill = ({ product }) => {
             await handleProcessingOrder(newOrder.data.order_id);
             toast.success("Order successfully!");
             handleGetUserOrder()
+            chooseProduct(null, null, null)
           } else {
 
             // xoá order cũ với status pending
@@ -155,6 +157,7 @@ const Bill = ({ product }) => {
             // localStorage.removeItem("cartItems");
             toast.success("Order successfully!");
             handleGetUserOrder()
+            chooseProduct(null, null, null)
             // window.location = "/bill";
           }
         } else {
