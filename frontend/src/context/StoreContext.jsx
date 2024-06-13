@@ -12,6 +12,7 @@ const StoreContextProvider = (props) => {
     const savedCartItems = localStorage.getItem("cartItems");
     return savedCartItems ? JSON.parse(savedCartItems) : [];
   });
+  const [selectedProduct, setSelectedProduct] = useState([]);
   const [orders, setOrders] = useState([]);
 
   const isUser = localStorage.getItem("access_token") != null;
@@ -182,12 +183,36 @@ const StoreContextProvider = (props) => {
     // code to run when the component mounts
     const getProducts = async () => {
       const response = await fetchApiConfig("products");
-      setProducts(response.products);
+      setProducts(response.products.reverse());
     };
     getProducts();
   }, []);
 
-  console.log(cartItems)
+  //Update selected Product 
+  const updateSelectedProductinCart = (itemsIndex) => {
+    if(itemsIndex == "all") {
+      setSelectedProduct(cartItems);
+    }
+    else {
+      const selectedProduct = itemsIndex.map((index) => {
+        return cartItems[index];
+      });
+      setSelectedProduct(selectedProduct);
+    }
+  }
+
+  //Choose product in selected product
+  const chooseProduct = (data, checkedVariant, quantity) => {
+    // Thêm mới sản phẩm vào selectedProdct , thay thế select product chỉ có đúng 1 sản phẩm đó
+    const product = {
+      variant_product_id: getVariantId(data?.variants, checkedVariant),
+      quantity: quantity,
+      product: { ...data }
+    }
+    setSelectedProduct([product]);
+  }
+
+  console.log(selectedProduct)
 
   return (
     <StoreContext.Provider
@@ -201,6 +226,9 @@ const StoreContextProvider = (props) => {
         removeFromCart,
         handleFetchOrderToCart,
         updateOption,
+        selectedProduct,
+        updateSelectedProductinCart,
+        chooseProduct
       }}
     >
       {props.children}

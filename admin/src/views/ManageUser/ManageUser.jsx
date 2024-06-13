@@ -7,7 +7,6 @@ import { deleteUser, getAllUser } from './ManageUserServices';
 import { toast } from 'react-toastify';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ConfirmDialog from '../components/ConfirmDialog';
-import OrderDialog from './ManageUserDialog';
 
 const ManageUser = () => {
 
@@ -15,7 +14,6 @@ const ManageUser = () => {
     const [listitem, setListItem] = useState([]);
     const [open, setOpen] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
-    const [openOrder, setOpenOrder] = useState(false);
 
 
     const handleClickOpen = () => {
@@ -79,13 +77,6 @@ const ManageUser = () => {
                 item={item}
                 handleClose={handleClose}
             />}
-            {
-                openOrder && <OrderDialog
-                    open={openOrder}
-                    onClose={() => setOpenOrder(false)}
-                    item={item}
-                />
-            }
             {openDelete && 
             <ConfirmDialog
                 open={openDelete}

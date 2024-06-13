@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { IconEdit, IconTrash } from '@tabler/icons';
 import { convertDateFormat } from 'src/AppConst';
+import { getMedia } from 'src/utils/utils';
 
 function ManageFoodTable(props) {
   let { data, handleEdit, handleOpenDelete } = props;
@@ -99,7 +100,7 @@ function ManageFoodTable(props) {
                     <Box sx={{ mr: 1 }}>
                       <img
                         style={{ width: 50, height: 50 }}
-                        src={product?.media?.length ? product?.media[0]?.src : ''}
+                        src={product?.media?.length ? getMedia(product?.product_id, product?.media[0]?.src) : ''}
                       />
                     </Box>
                     <Box>

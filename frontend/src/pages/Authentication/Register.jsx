@@ -27,7 +27,7 @@ export const Register = () => {
     try {
       const formData = {
         email: email,
-        role: role,
+        role: "user",
         password: password,
         password_confirm: confirmPassword,
       }
@@ -111,14 +111,14 @@ export const Register = () => {
               label="Xác nhận mật khẩu"
             />
 
-              <Select label="Role" placeholder="Chọn quyền" variant="bordered" value={role} onChange={handleRoleChange}>
+              {/* <Select label="Role" placeholder="Chọn quyền" variant="bordered" value={role} onChange={handleRoleChange}>
                 <SelectItem key="admin" value="admin">
                   Admin
                 </SelectItem>
                 <SelectItem key="user" value="user">
                   User
                 </SelectItem>
-              </Select>
+              </Select> */}
 
             <div className="flex justify-between items-center">
                 <Checkbox size="sm" defaultSelected>By continuing, i agree to the terms of use & privacy policy.</Checkbox>
