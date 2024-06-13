@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Input, Checkbox, Select, SelectItem } from "@nextui-org/react";
 import { EyeFilledIcon } from "../../assets/EyeFilledIcon ";
 import { EyeSlashFilledIcon } from "../../assets/EyeSlashFilledIcon ";
-import { handleRegister, handleVerify } from "../../components/LoginPopup/loginServices";
+import { handleRegister, handleVerify, resendOTP } from "../../components/LoginPopup/loginServices";
 import OTPVerification from "./OTPVerfication";
 import { toast } from "react-toastify";
 
@@ -58,11 +58,23 @@ export const Register = () => {
     }
   }
 
+  const handleResend = async() => {
+    try {
+      await resendOTP({
+        request_type: "register",
+        email: email
+      })
+    } catch (error) {
+      console.log(error);
+    }
+    
+  };
+ 
   console.log(email, password, confirmPassword, role);
 
   return (
     isRegistered ? 
-    <OTPVerification onVerify={handleVerifyOTP} />
+    <OTPVerification onVerify={handleVerifyOTP} onResend={handleResend} />
     :
     <div className="flex items-center justify-center">
       <div className="flex h-screen w-screen items-center justify-center p-2 sm:p-4 lg:p-8">

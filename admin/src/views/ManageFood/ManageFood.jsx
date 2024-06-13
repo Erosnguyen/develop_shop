@@ -27,14 +27,15 @@ const ManageBook = () => {
     const handleEdit = async (value) => {
         try {
             const data = await getById(value?.product_id);
+            console.log(data)
             setOpen(true);
             setItem({
                 ...data?.data?.product,
-                price: data?.data?.product?.variants?.reduce((total, item) => total + item?.price, 0),
-                stock: data?.data?.product?.variants?.reduce((total, item) => total + item?.stock, 0),
+                price: data?.data?.product?.variants[0].price,
+                stock: data?.data?.product?.variants[0].stock,
             });
         } catch (error) {
- 
+            console.log(error)
         }
     }
 
@@ -69,6 +70,8 @@ const ManageBook = () => {
     useEffect(() => {
         search();
     }, []);
+
+    console.log(item)
 
     return (
         <PageContainer title="Manage food">

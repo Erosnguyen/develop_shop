@@ -257,13 +257,15 @@ class AccountService:
         if current_request_type == "change_email":
             email = token.get_new_email()
 
-        token.check_time_remaining()
+        # token.check_time_remaining()
         match request_type:
             case "register":
                 EmailService.register_send_verification_email(email)
             case "change-email":
+                token.check_time_remaining()
                 EmailService.change_email_send_verification_email(email)
             case "reset-password":
+                token.check_time_remaining()
                 EmailService.reset_password_send_verification_email(email)
 
     @classmethod

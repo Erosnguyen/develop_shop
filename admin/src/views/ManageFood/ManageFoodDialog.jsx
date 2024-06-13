@@ -14,17 +14,28 @@ import {
 } from './ManageFoodServices';
 import { toast } from 'react-toastify';
 import { IconTrash } from '@tabler/icons';
-import { Avatar, FormControl, ImageList, ImageListItem, InputLabel, Select, MenuItem } from '@mui/material';
+import {
+  Avatar,
+  FormControl,
+  ImageList,
+  ImageListItem,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import { RemoveCircle } from '@mui/icons-material';
 import './ManageFood.css';
 import { getMedia } from 'src/utils/utils';
+import { VariantTable } from './VariantTable';
 
 export default function ManageFoodDialog(props) {
   let { open, item, search, handleClose } = props;
-  const [state, setState] = useState({});
+  const [state, setState] = useState(null);
   const [updatedImage, setUpdatedImage] = useState('');
   const [imageData, setImageData] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [variantList, setVariantList] = useState([]);
+  const [stateEdit, setStateEdit] = useState(null);
   const fileInputRef = useRef(null);
 
   const selectFiles = () => {
@@ -35,51 +46,61 @@ export default function ManageFoodDialog(props) {
     setState((pre) => ({ ...pre, [name]: value }));
   };
 
+  const handleSetVariantList = (value) => {
+    setVariantList(value);
+  };
+
   const onFileSelect = (e) => {
     const files = e.target.files;
     if (files.length == 0) return;
     for (let i = 0; i < files.length; i++) {
       if (files[i].type.split('/')[0] !== 'image') continue;
       if (!imageData.some((e) => e.name === files[i].name)) {
-        setImageData((prev) => [...prev, {
+        setImageData((prev) => [
+          ...prev,
+          {
             file: files[i],
             name: files[i].name,
             url: URL.createObjectURL(files[i]),
-            }]);
-        };
+          },
+        ]);
+      }
     }
   };
 
   const deleteImage = (index) => {
     setImageData((prev) => prev.filter((_, i) => i !== index));
-  }
+  };
 
   const onDragOver = (e) => {
     e.preventDefault();
     setIsDragging(true);
-    };
+  };
 
-    const onDragLeave = (e) => {
+  const onDragLeave = (e) => {
     e.preventDefault();
     setIsDragging(false);
-    };
+  };
 
-    const onDrop = (e) => {
+  const onDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
     const files = e.dataTransfer.files;
     if (files.length == 0) return;
     for (let i = 0; i < files.length; i++) {
-        if (files[i].type.split('/')[0] !== 'image') continue;
-        if (!imageData.some((e) => e.name === files[i].name)) {
-        setImageData((prev) => [...prev, {
+      if (files[i].type.split('/')[0] !== 'image') continue;
+      if (!imageData.some((e) => e.name === files[i].name)) {
+        setImageData((prev) => [
+          ...prev,
+          {
             file: files[i],
             name: files[i].name,
             url: URL.createObjectURL(files[i]),
-            }]);
-        };
+          },
+        ]);
+      }
     }
-    };
+  };
 
   const convertData = (value) => {
     return {
@@ -99,7 +120,31 @@ export default function ManageFoodDialog(props) {
       }),
     };
   };
+
   const convertDataUpdate = (value) => {
+    if (stateEdit == "variant") {
+      return {
+        product_name: value?.product_name,
+        status: value?.status,
+        description: value?.description,
+        variants: variantList ,
+      };
+    }
+    else if (stateEdit == "option") {
+      return {
+        product_name: value?.product_name,
+        status: value?.status,
+        description: value?.description,
+        options: state?.listOption?.map((option) => {
+          return {
+            option_name: option?.option_name,
+            items: option?.items?.map((item) => {
+              return item?.item_name;
+            }),
+          };
+        }) ,
+      };
+    }
     return {
       product_name: value?.product_name,
       status: value?.status,
@@ -259,17 +304,17 @@ export default function ManageFoodDialog(props) {
     } catch (error) {}
   };
 
-//   const handleImageChange = (e) => {
-//     const newImage = e.target.files[0];
-//     if (newImage) {
-//       setUpdatedImage(newImage);
-//       const reader = new FileReader();
-//       reader.onload = () => {
-//         setImageData(reader.result);
-//       };
-//       reader.readAsDataURL(newImage);
-//     }
-//   };
+  //   const handleImageChange = (e) => {
+  //     const newImage = e.target.files[0];
+  //     if (newImage) {
+  //       setUpdatedImage(newImage);
+  //       const reader = new FileReader();
+  //       reader.onload = () => {
+  //         setImageData(reader.result);
+  //       };
+  //       reader.readAsDataURL(newImage);
+  //     }
+  //   };
   useEffect(() => {
     setState({
       ...item,
@@ -277,7 +322,12 @@ export default function ManageFoodDialog(props) {
     });
   }, [item]);
 
-  console.log(state)
+  const handleChangeStateEdit = (value) => {
+    setStateEdit(value);
+  };
+
+  // console.log(state)
+  console.log(item);
 
   return (
     <>
@@ -352,12 +402,16 @@ export default function ManageFoodDialog(props) {
                 <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={state?.status}
+                  value={state?.status || item?.status}
                   label="Status"
                   onChange={(e) => handleChange(e.target.value, 'status')}
                 >
-                  <MenuItem key={"active"} value={'active'}>Active</MenuItem>
-                  <MenuItem key={"inactive"} value={'inactive'}>Inactive</MenuItem>
+                  <MenuItem key={'active'} value={'active'}>
+                    Active
+                  </MenuItem>
+                  <MenuItem key={'inactive'} value={'inactive'}>
+                    Inactive
+                  </MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -374,47 +428,73 @@ export default function ManageFoodDialog(props) {
                 onChange={(e) => handleChange(e.target.value, 'description')}
               />
             </Grid>
-            {!state?.product_id && (
+            <Grid item xs={12}>
+              {
+                state?.options?.length > 0 &&
+                <VariantTable data={state?.options} variants={state?.variants} handleSetVariantList={handleSetVariantList} handleChangeStateEdit={handleChangeStateEdit} stateEdit={stateEdit}  />
+              }
+            </Grid>
+            {
               <Grid item xs={12}>
-                <Button variant="contained" size="small" onClick={() => handleAddOption()}>
+                <Button
+                  disabled={state?.options?.length >= 3 || stateEdit != "option" && stateEdit != null}
+                  variant="contained"
+                  size="small"
+                  onClick={() => handleAddOption()}
+                >
                   Add option
                 </Button>
               </Grid>
-            )}
+            }
           </Grid>
-          {state?.listOption?.map((i) => {
+          
+          {state?.listOption?.map((i, idx) => {
             return (
               <Grid container spacing={2}>
                 <Grid item md={11} sm={11} xs={11} sx={{ mt: 1 }}>
                   <TextField
-                    disabled={state?.product_id}
+                    disabled={stateEdit != "option" && stateEdit != null}
                     required
                     margin="dense"
-                    name="option_name"
+                    name={`option_name`}
                     label={'Option name'}
                     fullWidth
                     variant="standard"
                     value={i?.option_name}
-                    onChange={(e) => handleChangeOptionName(e.target.value, i?.option_id)}
+                    onChange={(e) => {
+                      handleChangeOptionName(e.target.value, i?.option_id)
+                      setStateEdit("option")
+                    }}
                   />
                 </Grid>
                 <Grid item md={1} sm={1} xs={1}>
-                  {!state?.product_id && (
+                  {
                     <Button
-                      onClick={() => handleDeleteOption(i?.option_id)}
+                      disabled={stateEdit != "option" && stateEdit != null}
+                      onClick={() => {
+                        handleDeleteOption(i?.option_id)
+                        setStateEdit("option")
+                      }}
                       sx={{ minWidth: 0, mt: 3 }}
                       variant="contained"
                       size="small"
                     >
                       <IconTrash size="1.3rem" />
                     </Button>
-                  )}
+                  }
                 </Grid>
+                
                 {i?.items?.map((item) => {
                   return (
-                    <Grid item md={10} sm={10} xs={10} sx={{ display: 'flex', marginLeft: '40px', marginRight: '10px' }}>
+                    <Grid
+                      item
+                      md={10}
+                      sm={10}
+                      xs={10}
+                      sx={{ display: 'flex', marginLeft: '40px', marginRight: '10px' }}
+                    >
                       <TextField
-                        disabled={state?.product_id}
+                        disabled={stateEdit != "option" && stateEdit != null}
                         required
                         margin="dense"
                         name="item_name"
@@ -422,35 +502,44 @@ export default function ManageFoodDialog(props) {
                         fullWidth
                         variant="standard"
                         value={item?.item_name}
-                        onChange={(e) =>
+                        onChange={(e) =>{
                           handleChangeItemName(e.target.value, item?.item_id, i?.option_id)
-                        }
+                          setStateEdit("option")
+                        }}
                       />
 
-                      {!state?.product_id && (
+                      {
                         <Button
-                          onClick={() => handleDeleteOptionItem(item?.item_id)}
+                          disabled={stateEdit != "option" && stateEdit != null}
+                          onClick={() => {
+                            handleDeleteOptionItem(item?.item_id)
+                            setStateEdit("option")
+                          }}
                           sx={{ minWidth: 0, mt: 3 }}
                           variant="contained"
                           size="small"
                         >
                           <IconTrash size="1.3rem" />
                         </Button>
-                      )}
+                      }
                     </Grid>
                   );
                 })}
                 <Grid item md={2} sm={2} xs={2}>
-                  {!state?.product_id && (
+                  {
                     <Button
+                    disabled={stateEdit != "option" && stateEdit != null}
                       sx={{ mt: 3 }}
                       variant="contained"
                       size="small"
-                      onClick={() => handleAddDetailOption(i?.option_id)}
+                      onClick={() => {
+                        handleAddDetailOption(i?.option_id)
+                        setStateEdit("option")
+                      }}
                     >
                       Add detail
                     </Button>
-                  )}
+                  }
                 </Grid>
               </Grid>
             );
@@ -462,13 +551,22 @@ export default function ManageFoodDialog(props) {
                   <ImageListItem key={x} sx={{ position: 'relative' }}>
                     <img
                       srcSet={`${item.src}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                      src={`${getMedia(state.product_id, item.src)}?w=164&h=164&fit=crop&auto=format`}
+                      src={`${getMedia(
+                        state.product_id,
+                        item.src,
+                      )}?w=164&h=164&fit=crop&auto=format`}
                       alt={item.alt}
                       loading="lazy"
                     />
                     <div
                       onClick={() => handleRemove(item?.media_id)}
-                      style={{ position: 'absolute', top: 5, right: 5, color: 'red', cursor: 'pointer' }}
+                      style={{
+                        position: 'absolute',
+                        top: 5,
+                        right: 5,
+                        color: 'red',
+                        cursor: 'pointer',
+                      }}
                     >
                       <RemoveCircle />
                     </div>
@@ -478,7 +576,12 @@ export default function ManageFoodDialog(props) {
             </Grid>
             <Grid item xs={12}>
               <div className="card">
-                <div className="drag-area" onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop} >
+                <div
+                  className="drag-area"
+                  onDragOver={onDragOver}
+                  onDragLeave={onDragLeave}
+                  onDrop={onDrop}
+                >
                   {isDragging ? (
                     <span className="select">Drop Image Here</span>
                   ) : (
@@ -503,7 +606,9 @@ export default function ManageFoodDialog(props) {
                 <div className="container">
                   {imageData?.map((image, index) => (
                     <div className="image" key={index}>
-                      <span onClick={() => deleteImage(index)} className="delete">&times;</span>
+                      <span onClick={() => deleteImage(index)} className="delete">
+                        &times;
+                      </span>
                       <img src={image.url} alt={image.name} />
                     </div>
                   ))}

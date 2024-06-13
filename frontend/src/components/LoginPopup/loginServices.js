@@ -18,3 +18,8 @@ export const handleVerify = (data) => {
   let url = API_PATH + "/register/verify";
   return axios.patch(url, data);
 };
+
+export const resendOTP = (data) => {
+  let url = API_PATH + "/otp";
+  return axios.post(url, data);
+};

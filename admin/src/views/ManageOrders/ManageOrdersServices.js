@@ -16,3 +16,7 @@ export const getCustomerById = (id) => {
 export const updateOrder = (id, data) => {
   return axios.put(API_PATH + '/orders/' + id, data);
 }
+
+export const deleteOrder = (id) => {
+  return axios.delete(API_PATH + '/orders/' + id);
+}
