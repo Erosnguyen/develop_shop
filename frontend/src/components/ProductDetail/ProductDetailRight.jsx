@@ -27,7 +27,8 @@ const ProductDetailRight = ({ product }) => {
     removeFromCart,
     addCart,
     updateSelectedProductinCart,
-    chooseProduct
+    chooseProduct,
+    handleSetStateBill,
   } = useContext(StoreContext);
   const [checkedVariant, setCheckedVariant] = useState({
     option1: variants?.[0]?.option1,
@@ -77,6 +78,7 @@ const ProductDetailRight = ({ product }) => {
 
   const handleBill = () => {
     chooseProduct(product, checkedVariant, quantity);
+    handleSetStateBill("buynow");
     navigate("/Bill");
   }
 

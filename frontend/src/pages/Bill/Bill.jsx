@@ -1,6 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
-import { getMedia, getOptionName, getVariantPrice, getVariants } from "../../lib/utils";
+import {
+  getMedia,
+  getOptionName,
+  getVariantPrice,
+  getVariants,
+} from "../../lib/utils";
 import {
   getUserOrder,
   handleAddOrder,
@@ -41,6 +46,8 @@ const Bill = ({ product }) => {
     removeFromCart,
     increaseCartQuantity,
     decreaseCartQuantity,
+    stateBill,
+    chooseProduct
   } = useContext(StoreContext);
 
   const handleDeleteProductInCart = (data, checkedVariant) => {
@@ -78,24 +85,15 @@ const Bill = ({ product }) => {
     return total.toFixed(2);
   };
 
-  const columns = [
-    {
-      key: "id",
-      label: "STT",
-    },
-    {
-      key: "status",
-      label: "Status",
-    },
-    {
-      key: "created_at",
-      label: "Time Ordered",
-    },
-    {
-      key: "total_price",
-      label: "Total Price",
-    },
-  ];
+  const handleGetUserOrder = async () => {
+    try {
+      if (!isUser) return;
+      const data = await getUserOrder();
+      setListYourOrders(data?.data || []);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleOrder = async (e) => {
     e.preventDefault();
@@ -110,40 +108,58 @@ const Bill = ({ product }) => {
         return;
       } else {
         if (isUser) {
-          // xoá order cũ với status pending
-          const listOrderPending = listYourOrders.filter(
-            (it) => it?.status === "pending"
-          );
-          listOrderPending.forEach((it) => {
-            handleDeleteOrder(it?.order_id);
-          });
-          // thêm order mới
-          const convertData = {
-            order: {
-              items: selectedProduct,
-            },
-            address: {
-              street: state?.street || "",
-              city: state?.city || "",
-              state: state?.state || "",
-              country: state?.country || "",
-              phone: state?.phone || "",
-            },
-          };
-          console.log(convertData)
-          await handleAddOrder(convertData);
-          // xoá những sản phẩm mua trong cart
-          // await selectedProduct.forEach((it) => {
-          //   handleDeleteProductInCart(it.product_id, it.variant_product_id);
-          // });
-          localStorage.removeItem("cartItems");
-          // Lấy lại order
-          handleGetUserOrder();
-          //Update status
-          const order = listYourOrders.filter((it) => it.status === "pending");
-          await handleProcessingOrder(order[0]?.order_id);
-          toast.success("Order successfully!");
-          window.location = "/bill";
+          if (stateBill === "buynow") {
+            const convertData = {
+              order: {
+                items: selectedProduct,
+              },
+              address: {
+                street: state?.street || "",
+                city: state?.city || "",
+                state: state?.state || "",
+                country: state?.country || "",
+                phone: state?.phone || "",
+              },
+            };
+            const newOrder = await handleAddOrder(convertData);
+            await handleProcessingOrder(newOrder.data.order_id);
+            toast.success("Order successfully!");
+            handleGetUserOrder()
+            chooseProduct(null, null, null)
+          } else {
+
+            // xoá order cũ với status pending
+            // const listOrderPending = listYourOrders.filter(
+            //   (it) => it?.status === "pending"
+            // );
+            // await listOrderPending.forEach((it) => {
+            //   handleDeleteOrder(it?.order_id);
+            // });
+            // thêm order mới
+            const convertData = {
+              order: {
+                items: selectedProduct,
+              },
+              address: {
+                street: state?.street || "",
+                city: state?.city || "",
+                state: state?.state || "",
+                country: state?.country || "",
+                phone: state?.phone || "",
+              },
+            };
+            const newOrder = await handleAddOrder(convertData);
+            await handleProcessingOrder(newOrder.data.order_id);
+            // xoá những sản phẩm mua trong cart
+            await selectedProduct.forEach((it) => {
+              handleDeleteProductInCart(it.product_id, it.variant_product_id);
+            });
+            // localStorage.removeItem("cartItems");
+            toast.success("Order successfully!");
+            handleGetUserOrder()
+            chooseProduct(null, null, null)
+            // window.location = "/bill";
+          }
         } else {
           const convertData = {
             items: selectedProduct,
@@ -170,21 +186,11 @@ const Bill = ({ product }) => {
     }
   };
 
-  const handleGetUserOrder = async () => {
-    try {
-      if (!isUser) return;
-      const data = await getUserOrder();
-      setListYourOrders(data?.data || []);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
     handleGetUserOrder();
   }, []);
 
-  console.log(selectedProduct);
+  console.log(listYourOrders);
 
   return (
     <>
@@ -296,7 +302,12 @@ const Bill = ({ product }) => {
                           {getOptionName(
                             item?.product?.options,
                             // item?.product?.variants
-                            [getVariants(item?.product?.variants, item.variant_product_id)]
+                            [
+                              getVariants(
+                                item?.product?.variants,
+                                item.variant_product_id
+                              ),
+                            ]
                           )}
                         </p>
                       )}

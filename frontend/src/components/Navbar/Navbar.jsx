@@ -148,15 +148,15 @@ const NavBar = () => {
               </DropdownTrigger>
               <DropdownMenu aria-label="Profile Actions" variant="flat">
                 <DropdownItem key="profile" className="h-14 gap-2">
-                  <p className="font-semibold">Signed in as</p>
+                  <p className="font-semibold">Đăng nhập bằng</p>
                   <p className="font-semibold">user@example.com</p>
                 </DropdownItem>
                 <DropdownItem key="logout" >
-                  <a href="/information">User Information</a>
+                  <a href="/information">Thông tin tài khoản</a>
                   
                 </DropdownItem>
                 <DropdownItem onClick={handleLogout} key="logout" color="danger">
-                  Log Out
+                  Đăng xuất
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
