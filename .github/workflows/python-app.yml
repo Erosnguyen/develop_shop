@@ -64,8 +64,11 @@ jobs:
         run: |
           cd backend
           python demo.py
-          make dev
+          make dev & 
+          sleep 10  
           pytest apps/products/inter_tests/test_product.py
+          echo "Server started successfully"
+          pkill -f 'uvicorn'
 
   start-server:
     runs-on: ubuntu-latest
