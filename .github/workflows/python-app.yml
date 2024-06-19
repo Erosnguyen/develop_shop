@@ -72,9 +72,9 @@ jobs:
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           USE_LOCAL_FALLBACK: ${{ secrets.USE_LOCAL_FALLBACK }}
-          DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
         run: |
           cd backend
+          make dev &
           pytest apps/products/tests/test_product.py
 
   start-server:
