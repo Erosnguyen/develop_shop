@@ -34,20 +34,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     environment: dev
-    services:
-      postgres:
-        image: postgres:latest
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: test_db
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.10
@@ -74,7 +60,8 @@ jobs:
           USE_LOCAL_FALLBACK: ${{ secrets.USE_LOCAL_FALLBACK }}
         run: |
           cd backend
-          make dev &
+          make dev & 
+          sleep 10 
           pytest apps/products/tests/test_product.py
 
   start-server:
