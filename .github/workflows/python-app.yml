@@ -1,6 +1,3 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
 name: Python application
 
 on:
@@ -15,26 +12,13 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: dev
-    env:
-      ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
-      APP_NAME: ${{ secrets.APP_NAME }}
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      OTP_SECRET_KEY: ${{ secrets.OTP_SECRET_KEY }}
-      OTP_EXPIRE_SECONDS: ${{ secrets.OTP_EXPIRE_SECONDS }}
-      SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
-      SMTP_PORT: ${{ secrets.SMTP_PORT }}
-      SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
-      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-      USE_LOCAL_FALLBACK: ${{ secrets.USE_LOCAL_FALLBACK }}
-
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.10
         uses: actions/setup-python@v3
         with:
           python-version: "3.10"
-          cache: 'pip'
+          cache: "pip"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -47,11 +31,42 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-      - name: Run make dev and check if it started successfully
+  test:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          cache: "pip"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+      - name: Prepare test environment
+        run: |
+          # Remove existing SQLite database file
+          if [ -f backend/fast_store.db ]; then rm backend/fast_store.db; fi
+      - name: Run tests with pytest
+        env:
+          PYTHONPATH: ./backend
+          ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+          APP_NAME: ${{ secrets.APP_NAME }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          OTP_SECRET_KEY: ${{ secrets.OTP_SECRET_KEY }}
+          OTP_EXPIRE_SECONDS: ${{ secrets.OTP_EXPIRE_SECONDS }}
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          USE_LOCAL_FALLBACK: ${{ secrets.USE_LOCAL_FALLBACK }}
         run: |
           cd backend
-          make dev & 
-          sleep 10   
-          curl --fail http://localhost:8000/ 
+          python demo.py
+          make dev & sleep 10
+          pytest apps/products/inter_tests/test_product.py
           echo "Server started successfully"
           pkill -f 'uvicorn'

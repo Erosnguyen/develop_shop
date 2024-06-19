@@ -530,7 +530,6 @@ class ProductService:
 
     @classmethod
     def update_media(cls, media_id, **kwargs):
-        # check media exist
         media: ProductMedia = ProductMedia.get_or_404(media_id)
         file = kwargs.pop("file", None)
         if file is not None:

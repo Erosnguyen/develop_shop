@@ -160,8 +160,10 @@ export default function ManageFoodDialog(props) {
         await updateProduct(state?.product_id, dataSubmitUpdate);
         if (imageData.length > 0) {
           const formData = new FormData();
-
-          formData.append('x_files', imageData[0].file);
+          imageData.forEach((file, index) => {
+            formData.append(`x_files`, file.file);
+            console.log(file.file)
+           }); 
 
           await addProductImage(state?.product_id, formData);
           toast.success('Cập nhật thành công');
@@ -175,11 +177,11 @@ export default function ManageFoodDialog(props) {
           const newProductId = res.data.product.product_id;
           if (imageData.length > 0) {
             const formData = new FormData();
-            // imageData.forEach((file, index) => {
-            //     formData.append(`x_files`, file.file);
-            //     console.log(file.file)
-            // });
-            formData.append('x_files', imageData[0].file);
+            imageData.forEach((file, index) => {
+                formData.append(`x_files`, file.file);
+                console.log(file.file)
+            });
+            // formData.append('x_files', imageData[0].file);
             await addProductImage(newProductId, formData);
             toast.success('Thêm sản phẩm thành công');
           } else {
