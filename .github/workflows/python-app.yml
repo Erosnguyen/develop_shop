@@ -50,9 +50,6 @@ jobs:
         run: |
           # Remove existing SQLite database file
           if [ -f backend/fast_store.db ]; then rm backend/fast_store.db; fi
-          # Run make dev to set up the demo SQLite database
-          cd backend
-          make dev
       - name: Run tests with pytest
         env:
           PYTHONPATH: ./backend
@@ -68,7 +65,11 @@ jobs:
           USE_LOCAL_FALLBACK: ${{ secrets.USE_LOCAL_FALLBACK }}
         run: |
           cd backend
+          python demo.py
+          make dev & sleep 10
           pytest apps/products/inter_tests/test_product.py
+          echo "Server started successfully"
+          pkill -f 'uvicorn'
 
   start-server:
     runs-on: ubuntu-latest
