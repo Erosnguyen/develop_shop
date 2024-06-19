@@ -65,7 +65,7 @@ jobs:
           USE_LOCAL_FALLBACK: ${{ secrets.USE_LOCAL_FALLBACK }}
         run: |
           cd backend
-          pytest apps/products/tests/test_product.py
+          pytest apps/products/inter_tests/test_product.py
 
   start-server:
     runs-on: ubuntu-latest
