@@ -9,19 +9,6 @@ on:
 permissions:
   contents: read
 
-env:
-  ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
-  APP_NAME: ${{ secrets.APP_NAME }}
-  SECRET_KEY: ${{ secrets.SECRET_KEY }}
-  OTP_SECRET_KEY: ${{ secrets.OTP_SECRET_KEY }}
-  OTP_EXPIRE_SECONDS: ${{ secrets.OTP_EXPIRE_SECONDS }}
-  SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
-  SMTP_PORT: ${{ secrets.SMTP_PORT }}
-  SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
-  SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-  USE_LOCAL_FALLBACK: ${{ secrets.USE_LOCAL_FALLBACK }}
-  DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -47,7 +34,6 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    needs: build
     services:
       postgres:
         image: postgres:latest
@@ -75,6 +61,18 @@ jobs:
           pip install pytest
           if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
       - name: Run tests with pytest
+        env:
+          ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+          APP_NAME: ${{ secrets.APP_NAME }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          OTP_SECRET_KEY: ${{ secrets.OTP_SECRET_KEY }}
+          OTP_EXPIRE_SECONDS: ${{ secrets.OTP_EXPIRE_SECONDS }}
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          USE_LOCAL_FALLBACK: ${{ secrets.USE_LOCAL_FALLBACK }}
+          DATABASE_URL: postgresql://postgres:password@localhost:5432/test_db
         run: |
           cd backend
           pytest apps/products/tests/test_product.py
