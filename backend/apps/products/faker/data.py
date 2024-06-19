@@ -21,7 +21,7 @@ class FakeProduct:
     # Define regional specialties options for Vietnam
     options = ["Region", "Type", "Ingredient"]
     option_region_items = ["Miền Bắc", "Miền Trung", "Miền Nam"]
-    option_type_items = ["Cay", "Không cay","Ngọt"]
+    option_type_items = ["Cay", "Không cay", "Ngọt"]
     option_ingredient_items = [
         "Nước mắm",
         "Bún",
