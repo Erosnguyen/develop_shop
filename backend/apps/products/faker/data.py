@@ -20,14 +20,13 @@ class FakeProduct:
 
     # Define regional specialties options for Vietnam
     options = ["Region", "Type", "Ingredient"]
-    option_region_items = ["North", "Central", "South"]
-    option_type_items = ["Pho", "Banh Mi", "Spring Rolls", "Bun Cha", "Com Tam"]
+    option_region_items = ["Miền Bắc", "Miền Trung", "Miền Nam"]
+    option_type_items = ["Cay", "Không cay", "Ngọt"]
     option_ingredient_items = [
-        "Nuoc Mam",
-        "Rice Noodles",
-        "Lemongrass",
-        "Pork",
-        "Fish Sauce",
+        "Nước mắm",
+        "Bún",
+        "Trà",
+        "Thịt lợn",
     ]
 
     def fill_products(self):
