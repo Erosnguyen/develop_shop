@@ -45,13 +45,13 @@ make dev
 Build backend
 
 ```
-docker build -t huongvietbe:latest .
+docker build -t backend:latest .
 ```
 
 Run docker
 
 ```
-docker run -p 8000:8000 huongvietbe:latest
+docker run -p 8000:8000 backend:latest
 ```
 
 Check api endpoint:
